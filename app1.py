@@ -675,15 +675,15 @@ elif page == "配方建议":
                 individual = [random.uniform(0, 100) for _ in all_features]
                 individual[pp_idx] = random.uniform(40, 60)  # PP初始值40-60%
                 
-                # 其他成分确保不为负值并进行合理的归一化
+                # 强制归一化处理
                 total = sum(individual)
                 if total > 0:
-                    # 强制每个成分值都在0到100之间
-                    individual = [max(0, min(100, x)) for x in individual]
-                    return [x / total * 100 for x in individual]  # 确保加和为100
-                else:
-                    # 如果总和为零，返回一个合理的默认值，避免出现零值
-                    return [100.0 / len(individual)] * len(individual)
+                    # 每个配方成分的值限制在0到100之间，并且总和必须为100%
+                    normalized_individual = [max(0, min(100, x)) for x in individual]  # 确保每个成分值在0到100之间
+                    total_normalized = sum(normalized_individual)
+                    if total_normalized > 0:
+                        return [x / total_normalized * 100 for x in normalized_individual]  # 确保加和为100
+                return [100.0 / len(individual)] * len(individual)  # 如果总和为0，默认值均匀分配为100%
             
             toolbox.register("individual", tools.initIterate, creator.Individual, generate_individual)
             toolbox.register("population", tools.initRepeat, list, toolbox.individual)
@@ -785,7 +785,8 @@ elif page == "配方建议":
                 
                 st.dataframe(df.style.apply(highlight_row, axis=1))
             else:
-                st.warning("⚠️ 输入值不合理，请重新输入")
+                st.warning("⚠️ 没有符合配方总和为100%的配方，建议重新输入配方参数。")
+
 
     elif sub_page == "添加剂推荐":
         st.subheader("🧪 PVC添加剂智能推荐")
