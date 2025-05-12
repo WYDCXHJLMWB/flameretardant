@@ -669,7 +669,7 @@ elif page == "配方建议":
                 return loi_error, ts_error
 
             toolbox.register("mate", tools.cxBlend, alpha=0.5)
-            toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.2)
+            toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.3)  # 增加变异概率，以增加多样性
             toolbox.register("select", tools.selTournament, tournsize=3)
             toolbox.register("evaluate", evaluate)
 
@@ -677,7 +677,7 @@ elif page == "配方建议":
             if st.button("🚀 开始优化"):
                 # 2. 运行遗传算法
                 population = toolbox.population(n=num_individuals)
-                algorithms.eaSimple(population, toolbox, cxpb=0.7, mutpb=0.2, ngen=50, verbose=False)
+                algorithms.eaSimple(population, toolbox, cxpb=0.7, mutpb=0.3, ngen=50, verbose=False)
 
                 # 3. 选择最优的个体，生成配方
                 best_individuals = tools.selBest(population, num_individuals)
@@ -717,6 +717,7 @@ elif page == "配方建议":
 
         else:
             st.warning("请选择基体、阻燃剂、助剂，并输入目标LOI和目标TS值以生成配方")
+
 
 
 
