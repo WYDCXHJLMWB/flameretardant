@@ -668,7 +668,7 @@ elif page == "配方建议":
             st.subheader("🎯 优化结果：根据目标LOI和TS生成的配方")
 
             # 初始化配方生成的参数
-            all_features = ["PP", "PA", "PC/ABS", "POM", "PBT", "PVC", "ZS", "XiuCheng", "Al(OH)3", "MPP"]  # 示例特征列表，实际可以根据需要调整
+            all_features = [selected_matrix] + selected_flame_retardants + selected_additives
             num_individuals = 10  # 生成10个配方
             min_value, max_value = 0.0, 100.0
 
