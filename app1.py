@@ -762,12 +762,6 @@ elif page == "配方建议":
 
         else:
             st.warning("请选择基体、阻燃剂、助剂，并输入目标LOI和目标TS值以生成配方")
-
-
-
-
-
-    
     elif sub_page == "添加剂推荐":
         st.subheader("🧪 PVC添加剂智能推荐")
         predictor = Predictor("scaler_fold_1.pkl", "svc_fold_1.pkl")
