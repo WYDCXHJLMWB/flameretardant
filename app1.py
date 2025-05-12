@@ -714,7 +714,7 @@ elif page == "配方建议":
                     loi_error = abs(target_loi - loi_pred)
                     ts_error = abs(target_ts - ts_pred)
 
-                    # 如果LOI或TS的误差大于阈值，直接返回一个无效的适应度
+                    # 如果LOI或TS的误差大于阈值，返回一个较大的适应度值
                     if loi_error > 10 or ts_error > 10:
                         return float('inf'), float('inf')  # 使这个个体无效
 
@@ -735,12 +735,13 @@ elif page == "配方建议":
                 algorithms.eaSimple(population, toolbox, cxpb=0.7, mutpb=0.3, ngen=50, verbose=False)
 
                 # 3. 选择最优的个体，生成配方
-                best_individuals = tools.selBest(population, num_individuals)
+                best_individuals = [ind for ind in population if ind.fitness.values[0] != float('inf')]  # 只保留有效的个体
 
                 # 4. 转换为DataFrame格式
                 best_values = []
                 loi_preds = []
                 ts_preds = []
+
                 for individual in best_individuals:
                     best_values.append([round(val, 2) for val in individual])
 
@@ -773,13 +774,6 @@ elif page == "配方建议":
 
         else:
             st.warning("请选择基体、阻燃剂、助剂，并输入目标LOI和目标TS值以生成配方")
-
-
-
-
-
-
-
     
     elif sub_page == "添加剂推荐":
         st.subheader("🧪 PVC添加剂智能推荐")
