@@ -735,6 +735,7 @@ elif page == "配方建议":
             
             # 构建结果DataFrame
             results = []
+            valid_results = []  # 用来存储符合配方总和为100%条件的样本
             for idx, ind in enumerate(best_individuals, 1):
                 # 强制归一化
                 if fraction_type in ["质量分数", "体积分数"]:
@@ -751,7 +752,7 @@ elif page == "配方建议":
                     [np.array([normalized[all_features.index(f)] if f in all_features else 0.0 for f in models["ts_features"]])]
                 ))[0]
                 
-                # 只计算配方成分（排除LOI和TS）之和
+                # 计算配方成分（排除LOI和TS）之和
                 formula_sum = sum(normalized)  # 计算配方成分总和
                 
                 # 构建记录
@@ -761,29 +762,31 @@ elif page == "配方建议":
                     "TS预测值 (MPa)": round(ts_pred, 2),
                     "总和（配方成分）": round(formula_sum, 2)
                 })
+                
+                # 仅当配方总和为100%时才保留
+                if abs(formula_sum - 100) <= 0.1:
+                    valid_results.append(record)
+                
                 results.append(record)
             
-            # 显示结果
-            df = pd.DataFrame(results)
-            
-            # 添加单位
-            unit = get_unit(fraction_type)
-            df.columns = [f"{col} ({unit})" if col in all_features else col for col in df.columns]
-            
-            # 高亮最优结果
-            def highlight_row(row):
-                loi_diff = abs(row["LOI预测值 (%)"] - target_loi)
-                ts_diff = abs(row["TS预测值 (MPa)"] - target_ts)
-                return ['background-color: #e6ffe6' if (loi_diff < 2 and ts_diff < 2) else '' for _ in row]
-            
-            st.dataframe(df.style.apply(highlight_row, axis=1))
-            
-            # 校验提示
-            invalid = df[abs(df.filter(like="总和（配方成分）") - 100) > 0.1]  # 检查配方成分总和是否为100
-            if invalid.empty:  # 只有没有异常的配方才显示警告
-                st.success("所有配方总和校验通过！")
+            # 显示符合总和为100%的配方
+            if valid_results:
+                df = pd.DataFrame(valid_results)
+                
+                # 添加单位
+                unit = get_unit(fraction_type)
+                df.columns = [f"{col} ({unit})" if col in all_features else col for col in df.columns]
+                
+                # 高亮最优结果
+                def highlight_row(row):
+                    loi_diff = abs(row["LOI预测值 (%)"] - target_loi)
+                    ts_diff = abs(row["TS预测值 (MPa)"] - target_ts)
+                    return ['background-color: #e6ffe6' if (loi_diff < 2 and ts_diff < 2) else '' for _ in row]
+                
+                st.dataframe(df.style.apply(highlight_row, axis=1))
             else:
-                st.warning("⚠️ 部分配方总和校验异常，建议重新优化")
+                st.warning("⚠️ 输入值不合理，请重新输入")
+
 
 
 
