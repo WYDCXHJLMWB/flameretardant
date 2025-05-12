@@ -689,8 +689,8 @@ elif page == "配方建议":
                     individual[pp_index] = random.uniform(40.0, 60.0)  # PP的含量设置为40%到60%之间
                 
                 total = sum(individual)
-                # 强制总和为100
-                return [x / total * 100 for x in individual]  # 标准化总和为100
+                # 强制总和为100，并且避免出现负值
+                return [max(0.0, min(100.0, x / total * 100)) for x in individual]  # 确保每个成分都在0到100之间
 
             toolbox.register("individual", tools.initIterate, creator.Individual, generate_individual)
             toolbox.register("population", tools.initRepeat, list, toolbox.individual)
