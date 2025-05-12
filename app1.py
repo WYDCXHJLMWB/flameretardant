@@ -715,7 +715,7 @@ elif page == "配方建议":
                     ts_error = abs(target_ts - ts_pred)
 
                     # 如果LOI或TS的误差大于阈值，显示警告
-                    if loi_error > 10 or ts_error > 10:
+                    if loi_error > 20 or ts_error > 20:
                         st.warning(f"🚨 输入值不合理！LOI预测值 ({loi_pred:.2f}%) 和目标LOI差距为 {loi_error:.2f}，TS预测值 ({ts_pred:.2f} MPa) 和目标TS差距为 {ts_error:.2f}。请检查输入数据。")
 
                     return loi_error, ts_error
