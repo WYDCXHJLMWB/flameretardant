@@ -708,13 +708,14 @@ elif page == "配方建议":
                 result_df["TS预测值 (MPa)"] = ts_preds
 
                 # 设置单位为质量分数或体积分数
-                units = [get_unit(fraction_type) for _ in all_features]
-                result_df.columns = [f"{col} ({unit})" for col, unit in zip(result_df.columns, units)]
+                units = [get_unit(fraction_type) for _ in range(len(all_features))]  # 使用all_features的长度来生成单位
+                result_df.columns = [f"{col} ({unit})" for col, unit in zip(result_df.columns, units)]  # 确保列名与单位一致
 
                 st.write(result_df)
 
         else:
             st.warning("请选择基体、阻燃剂、助剂，并输入目标LOI和目标TS值以生成配方")
+
 
 
 
