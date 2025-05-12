@@ -1282,27 +1282,27 @@ elif page == "配方建议":
         # 材料选择部分
         matrix_materials = ["PP", "PA", "PC/ABS", "POM", "PBT", "PVC", "其他"]
         flame_retardants = ["AHP", "ammonium octamolybdate", "Al(OH)3", "CFA", "APP", "Pentaerythritol", "DOPO",
-        "EPFR-1100NT", "XS-FR-8310", "ZS", "XiuCheng", "ZHS", "ZnB", "antimony oxides",
-        "Mg(OH)2", "TCA", "MPP", "PAPP", "其他"]
+                            "EPFR-1100NT", "XS-FR-8310", "ZS", "XiuCheng", "ZHS", "ZnB", "antimony oxides",
+                            "Mg(OH)2", "TCA", "MPP", "PAPP", "其他"]
         additives = ["Anti-drip-agent", "wollastonite", "M-2200B", "ZBS-PV-OA", "FP-250S", "silane coupling agent", "antioxidant",
-        "SiO2", "其他"]
+                     "SiO2", "其他"]
 
         # 配方参数输入
         selected_matrix = st.selectbox("选择基体", matrix_materials, index=0)
         selected_flame_retardants = st.multiselect("选择阻燃剂", flame_retardants, default=["ZS"])
         selected_additives = st.multiselect("选择助剂", additives, default=["wollastonite"])
-        
+
         target_loi = st.number_input("目标LOI值（%）", min_value=0.0, max_value=100.0, value=30.0)
         target_ts = st.number_input("目标TS值（MPa）", min_value=0.0, value=40.0)
 
         if st.button("🚀 开始优化"):
             # 特征集合
             all_features = [selected_matrix] + selected_flame_retardants + selected_additives
-            
+
             # 遗传算法配置
             creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
             creator.create("Individual", list, fitness=creator.FitnessMin)
-            
+
             toolbox = base.Toolbox()
 
             def repair_individual(individual):
@@ -1310,10 +1310,10 @@ elif page == "配方建议":
                 # 非负处理
                 individual = [max(0.0, x) for x in individual]
                 total = sum(individual)
-                
+
                 if total <= 1e-6:  # 处理全零情况
                     return [100.0/len(individual)]*len(individual)
-                
+
                 # 归一化处理
                 scale = 100.0 / total
                 return [x*scale for x in individual]
@@ -1324,51 +1324,51 @@ elif page == "配方建议":
                     matrix_idx = all_features.index(selected_matrix)
                 except ValueError:
                     matrix_idx = 0
-                
+
                 # 基体材料比例 (40-60%)
                 matrix_percent = random.uniform(40, 60)
-                
+
                 # 其他材料比例总和
                 remaining = 100 - matrix_percent
                 n_others = len(all_features) - 1
-                
+
                 if n_others == 0:
                     return [matrix_percent]
-                
+
                 # 使用Dirichlet分布生成其他成分比例
                 others = np.random.dirichlet(np.ones(n_others)*0.1) * remaining
                 others = others.tolist()
-                
+
                 # 构建个体
                 individual = [0.0]*len(all_features)
                 individual[matrix_idx] = matrix_percent
-                
+
                 other_idx = 0
                 for i in range(len(all_features)):
                     if i != matrix_idx:
                         individual[i] = others[other_idx]
                         other_idx += 1
-                
+
                 return repair_individual(individual)
 
             toolbox.register("individual", tools.initIterate, creator.Individual, generate_individual)
             toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-            
+
             def evaluate(individual):
                 try:
                     # 直接使用已修复的个体
                     input_values = dict(zip(all_features, individual))
-                    
+
                     # LOI预测
                     loi_input = np.array([[input_values.get(f, 0.0) for f in models["loi_features"]]])
                     loi_scaled = models["loi_scaler"].transform(loi_input)
                     loi_pred = models["loi_model"].predict(loi_scaled)[0]
-                    
+
                     # TS预测
                     ts_input = np.array([[input_values.get(f, 0.0) for f in models["ts_features"]]])
                     ts_scaled = models["ts_scaler"].transform(ts_input)
                     ts_pred = models["ts_model"].predict(ts_scaled)[0]
-                    
+
                     return (abs(target_loi - loi_pred), abs(target_ts - ts_pred))
                 except:
                     return (float('inf'), float('inf'))
@@ -1389,7 +1389,7 @@ elif page == "配方建议":
             toolbox.register("mate", cxBlendWithRepair, alpha=0.5)
             toolbox.register("mutate", mutGaussianWithRepair, mu=0, sigma=5, indpb=0.1)
             toolbox.register("select", tools.selNSGA2)
-            
+
             # 运行算法
             population = toolbox.population(n=100)
             algorithms.eaMuPlusLambda(
@@ -1398,7 +1398,7 @@ elif page == "配方建议":
                 cxpb=0.7, mutpb=0.3,
                 ngen=200, verbose=False
             )
-            
+
             # 结果处理
             valid_individuals = [ind for ind in population if not np.isinf(ind.fitness.values[0])]
             best_individuals = tools.selBest(valid_individuals, k=5)
@@ -1408,7 +1408,7 @@ elif page == "配方建议":
             for ind in best_individuals:
                 # 四舍五入保留两位小数
                 normalized = [round(x, 2) for x in repair_individual(ind)]
-                
+
                 # 计算预测值
                 input_dict = dict(zip(all_features, normalized))
                 loi_pred = models["loi_model"].predict(
@@ -1432,26 +1432,27 @@ elif page == "配方建议":
             # 显示结果
             if results:
                 df = pd.DataFrame(results)
-                
+
                 # 添加单位
                 unit = "%" if "分数" in fraction_type else "质量单位"
                 df.columns = [f"{col} ({unit})" if col in all_features else col for col in df.columns]
-                
+
                 # 筛选有效结果（考虑浮点误差）
                 df = df[df["总和（配方成分）"] >= 99.99]
-                
+
                 if not df.empty:
                     # 高亮最优结果
                     def highlight_row(row):
                         loi_diff = abs(row["LOI预测值 (%)"] - target_loi)
                         ts_diff = abs(row["TS预测值 (MPa)"] - target_ts)
                         return ['background: #e6ffe6' if loi_diff < 2 and ts_diff < 2 else '' for _ in row]
-                    
+
                     st.dataframe(df.style.apply(highlight_row, axis=1))
                 else:
                     st.warning("⚠️ 未找到符合要求的配方，请尝试调整参数")
             else:
                 st.warning("⚠️ 优化失败，请尝试调整参数")
+
 
     elif sub_page == "添加剂推荐":
         st.subheader("🧪 PVC添加剂智能推荐")
