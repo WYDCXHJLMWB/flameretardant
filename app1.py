@@ -677,7 +677,8 @@ elif page == "配方建议":
                 # 强制归一化处理
                 if fraction_type in ["质量分数", "体积分数"]:
                     total = sum(individual)
-                    return [x/total*100 for x in individual] if total > 0 else individual
+                    if total > 0:
+                        return [x / total * 100 for x in individual]  # 确保加和为100
                 return individual
             
             toolbox.register("individual", tools.initIterate, creator.Individual, generate_individual)
@@ -689,7 +690,7 @@ elif page == "配方建议":
                     if fraction_type in ["质量分数", "体积分数"]:
                         total = sum(individual)
                         if total <= 0: return (float('inf'), float('inf'))
-                        normalized = [x/total*100 for x in individual]
+                        normalized = [x / total * 100 for x in individual]
                     else:
                         normalized = individual
                     
@@ -733,16 +734,16 @@ elif page == "配方建议":
                 # 强制归一化
                 if fraction_type in ["质量分数", "体积分数"]:
                     total = sum(ind)
-                    normalized = [x/total*100 for x in ind]
+                    normalized = [x / total * 100 for x in ind]
                 else:
                     normalized = ind
                 
                 # 获取预测值
                 loi_pred = models["loi_model"].predict(models["loi_scaler"].transform(
-                    [np.array([normalized[all_features.index(f)] if f in all_features else 0.0 for f in models["loi_features"])]
+                    [np.array([normalized[all_features.index(f)] if f in all_features else 0.0 for f in models["loi_features"]])]
                 ))[0]
                 ts_pred = models["ts_model"].predict(models["ts_scaler"].transform(
-                    [np.array([normalized[all_features.index(f)] if f in all_features else 0.0 for f in models["ts_features"])]
+                    [np.array([normalized[all_features.index(f)] if f in all_features else 0.0 for f in models["ts_features"]])]
                 ))[0]
                 
                 # 构建记录
@@ -771,9 +772,10 @@ elif page == "配方建议":
             
             # 校验提示
             if fraction_type in ["质量分数", "体积分数"]:
-                invalid = df[abs(df.filter(like="总和") - 100 > 0.1]
+                invalid = df[abs(df.filter(like="总和") - 100) > 0.1]
                 if not invalid.empty:
                     st.warning("⚠️ 部分配方总和校验异常，建议重新优化")
+
 
 
     
