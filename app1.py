@@ -714,9 +714,9 @@ elif page == "配方建议":
                     loi_error = abs(target_loi - loi_pred)
                     ts_error = abs(target_ts - ts_pred)
 
-                    # 如果LOI或TS的误差大于阈值，显示警告
-                    if loi_error > 20 or ts_error > 20:
-                        st.warning(f"🚨 输入值不合理！LOI预测值 ({loi_pred:.2f}%) 和目标LOI差距为 {loi_error:.2f}，TS预测值 ({ts_pred:.2f} MPa) 和目标TS差距为 {ts_error:.2f}。请检查输入数据。")
+                    # 如果LOI或TS的误差大于阈值，直接返回一个无效的适应度
+                    if loi_error > 10 or ts_error > 10:
+                        return float('inf'), float('inf')  # 使这个个体无效
 
                     return loi_error, ts_error
                 except Exception as e:
@@ -773,7 +773,7 @@ elif page == "配方建议":
 
         else:
             st.warning("请选择基体、阻燃剂、助剂，并输入目标LOI和目标TS值以生成配方")
-    
+
     elif sub_page == "添加剂推荐":
         st.subheader("🧪 PVC添加剂智能推荐")
         predictor = Predictor("scaler_fold_1.pkl", "svc_fold_1.pkl")
