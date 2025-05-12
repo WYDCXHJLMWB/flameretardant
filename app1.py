@@ -508,7 +508,7 @@ elif page == "配方建议":
                 individual = [random.uniform(min_value, max_value) for _ in range(len(all_features))]
                 
                 if pp_index is not None:
-                    individual[pp_index] = random.uniform(40.0, 60.0)  # PP的含量设置为40%到60%之间
+                    individual[pp_index] = random.uniform(60.0, 100.0)  # PP的含量设置为40%到60%之间
                 
                 total = sum(individual)
                 # 强制总和为100
