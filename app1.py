@@ -648,7 +648,7 @@ elif page == "配方建议":
         flame_retardants = ["AHP", "ammonium octamolybdate", "Al(OH)3", "CFA", "APP", "Pentaerythritol", "DOPO",
         "EPFR-1100NT", "XS-FR-8310", "ZS", "XiuCheng", "ZHS", "ZnB", "antimony oxides",
         "Mg(OH)2", "TCA", "MPP", "PAPP", "其他"]
-        additives = [  "Anti-drip-agent", "wollastonite", "M-2200B", "ZBS-PV-OA", "FP-250S", "silane coupling agent", "antioxidant",
+        additives = ["Anti-drip-agent", "wollastonite", "M-2200B", "ZBS-PV-OA", "FP-250S", "silane coupling agent", "antioxidant",
         "SiO2", "其他"]
 
         # 配方参数输入
@@ -680,6 +680,9 @@ elif page == "配方建议":
                     total = sum(individual)
                     if total > 0:
                         return [x / total * 100 for x in individual]  # 确保加和为100
+                    else:
+                        # 如果总和为零，则返回一个合理的默认值，避免出现零值
+                        return [100.0 / len(individual)] * len(individual)
                 return individual
             
             toolbox.register("individual", tools.initIterate, creator.Individual, generate_individual)
@@ -713,7 +716,8 @@ elif page == "配方建议":
                     ts_error = abs(target_ts - ts_pred)
                     
                     return (loi_error, ts_error)
-                except:
+                except Exception as e:
+                    # 捕获异常并返回极大值，避免算法出错
                     return (float('inf'), float('inf'))
             
             toolbox.register("evaluate", evaluate)
@@ -780,6 +784,7 @@ elif page == "配方建议":
                 st.success("所有配方总和校验通过！")
             else:
                 st.warning("⚠️ 部分配方总和校验异常，建议重新优化")
+
 
 
 
