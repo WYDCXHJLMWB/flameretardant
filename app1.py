@@ -679,7 +679,13 @@ elif page == "配方建议":
             toolbox = base.Toolbox()
 
             def generate_individual():
+                # 给PP设置一个更高的初始比例权重
+                pp_index = all_features.index("PP") if "PP" in all_features else None
                 individual = [random.uniform(min_value, max_value) for _ in range(len(all_features))]
+                
+                if pp_index is not None:
+                    individual[pp_index] = random.uniform(40.0, 60.0)  # PP的含量设置为40%到60%之间
+                
                 total = sum(individual)
                 # 强制总和为100
                 return [x / total * 100 for x in individual]  # 标准化总和为100
@@ -723,43 +729,36 @@ elif page == "配方建议":
 
                 # 4. 转换为DataFrame格式
                 best_values = []
+                loi_preds = []
+                ts_preds = []
                 for individual in best_individuals:
                     best_values.append([round(val, 2) for val in individual])
 
+                    # 预测LOI和TS
+                    input_values = dict(zip(all_features, individual))
+
+                    # LOI预测
+                    loi_input = np.array([[input_values.get(f, 0.0) for f in models["loi_features"]]])
+                    loi_scaled = models["loi_scaler"].transform(loi_input)
+                    loi_pred = models["loi_model"].predict(loi_scaled)[0]
+                    loi_preds.append(round(loi_pred, 2))
+
+                    # TS预测
+                    ts_input = np.array([[input_values.get(f, 0.0) for f in models["ts_features"]]])
+                    ts_scaled = models["ts_scaler"].transform(ts_input)
+                    ts_pred = models["ts_model"].predict(ts_scaled)[0]
+                    ts_preds.append(round(ts_pred, 2))
+
+                # 将LOI和TS预测值添加到数据框中
                 result_df = pd.DataFrame(best_values, columns=all_features)
+                result_df["LOI预测值 (%)"] = loi_preds
+                result_df["TS预测值 (MPa)"] = ts_preds
 
                 # 设置单位为质量分数或体积分数
                 units = [get_unit(fraction_type) for _ in all_features]
                 result_df.columns = [f"{col} ({unit})" for col, unit in zip(result_df.columns, units)]
 
                 st.write(result_df)
-
-                st.subheader("📊 性能预测")
-                # 性能预测部分：基于生成的配方，进行LOI和TS预测
-                try:
-                    for individual in best_individuals:
-                        input_values = dict(zip(all_features, individual))
-
-                        # LOI预测
-                        loi_input = np.array([[input_values.get(f, 0.0) for f in models["loi_features"]]])
-                        loi_scaled = models["loi_scaler"].transform(loi_input)
-                        loi_pred = models["loi_model"].predict(loi_scaled)[0]
-
-                        # TS预测
-                        ts_input = np.array([[input_values.get(f, 0.0) for f in models["ts_features"]]])
-                        ts_scaled = models["ts_scaler"].transform(ts_input)
-                        ts_pred = models["ts_model"].predict(ts_scaled)[0]
-
-                        # 显示LOI和TS预测结果
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            st.metric(label="LOI预测值", value=f"{loi_pred:.2f}%")
-                        with col2:
-                            st.metric(label="TS预测值", value=f"{ts_pred:.2f} MPa")
-
-                except KeyError as e:
-                    st.error(f"模型特征缺失: {e}，请检查模型配置")
-                    st.stop()
 
         else:
             st.warning("请选择基体、阻燃剂、助剂，并输入目标LOI和目标TS值以生成配方")
