@@ -645,8 +645,11 @@ elif page == "配方建议":
 
         # 材料选择部分
         matrix_materials = ["PP", "PA", "PC/ABS", "POM", "PBT", "PVC", "其他"]
-        flame_retardants = [/* 保持原有阻燃剂列表不变 */]
-        additives = [/* 保持原有助剂列表不变 */]
+        flame_retardants = ["AHP", "ammonium octamolybdate", "Al(OH)3", "CFA", "APP", "Pentaerythritol", "DOPO",
+        "EPFR-1100NT", "XS-FR-8310", "ZS", "XiuCheng", "ZHS", "ZnB", "antimony oxides",
+        "Mg(OH)2", "TCA", "MPP", "PAPP", "其他"]
+        additives = [       "Anti-drip-agent", "wollastonite", "M-2200B", "ZBS-PV-OA", "FP-250S", "silane coupling agent", "antioxidant",
+        "SiO2", "其他"]
 
         # 配方参数输入
         selected_matrix = st.selectbox("选择基体", matrix_materials, index=0)
