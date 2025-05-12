@@ -671,6 +671,10 @@ elif page == "配方建议":
                     loi_error = abs(target_loi - loi_pred)
                     ts_error = abs(target_ts - ts_pred)
 
+                    # 设置误差阈值（例如，当误差大于10时视为不合理）
+                    if loi_error > 10 or ts_error > 10:
+                        st.warning("🚨 输入值不合理！预测值与目标值差距较大，请检查输入数据。")
+
                     return loi_error, ts_error
                 except Exception as e:
                     print(f"Error in evaluate function for individual {individual}: {e}")
@@ -681,12 +685,29 @@ elif page == "配方建议":
             toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.3)  # 增加变异的幅度，确保差异
             toolbox.register("select", tools.selTournament, tournsize=3)
 
+            # 遗传算法避免相似样本
+            def is_similar(ind1, ind2):
+                """检查两个个体是否过于相似，定义相似度的阈值"""
+                similarity_threshold = 0.01
+                return sum(abs(i1 - i2) for i1, i2 in zip(ind1, ind2)) < similarity_threshold
+
+            def filter_similar_population(population):
+                """过滤掉与其他个体过于相似的个体"""
+                unique_population = []
+                for ind in population:
+                    if not any(is_similar(ind, existing) for existing in unique_population):
+                        unique_population.append(ind)
+                return unique_population
+
             # 运行遗传算法
             if st.button("🚀 开始优化"):
                 # 2. 运行遗传算法
                 population = toolbox.population(n=num_individuals)
                 algorithms.eaSimple(population, toolbox, cxpb=0.7, mutpb=0.3, ngen=50, verbose=False)
-                
+
+                # 过滤掉相似的个体
+                population = filter_similar_population(population)
+
                 # 3. 选择最优的个体，生成配方
                 best_individuals = tools.selBest(population, num_individuals)
                 
@@ -726,12 +747,6 @@ elif page == "配方建议":
 
         else:
             st.warning("请选择基体、阻燃剂、助剂，并输入目标LOI和目标TS值以生成配方")
-
-
-
-
-
-
 
     elif sub_page == "添加剂推荐":
         st.subheader("🧪 PVC添加剂智能推荐")
