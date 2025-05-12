@@ -681,7 +681,7 @@ elif page == "配方建议":
             toolbox = base.Toolbox()
 
             def generate_individual():
-                # 给PP设置一个更高的初始比例权重
+                # 给PP设置一个更高的初始比例权重，确保PP比例最大
                 pp_index = all_features.index("PP") if "PP" in all_features else None
                 individual = [random.uniform(min_value, max_value) for _ in range(len(all_features))]
                 
