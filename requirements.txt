@@ -1,6 +1,10 @@
 streamlit
-pandas
-scikit-learn
-openpyxl
 hyperopt
+pandas
+scikit-learn==1.5.1
+joblib
+numpy
+setuptools
+openpyxl
 deap
+feature_engineering
