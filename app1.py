@@ -684,8 +684,25 @@ elif page == "配方建议":
                 individual = [random.uniform(min_value, max_value) for _ in range(len(all_features))]
                 
                 if pp_index is not None:
-                    individual[pp_index] = random.uniform(40.0, 60.0)  # PP的含量设置为40%到60%之间
+                    # 保证PP的含量最多，范围为40%到60%
+                    individual[pp_index] = random.uniform(40.0, 60.0)
+
+                # 除去基体的比例，将剩余的比例分配给其他材料
+                remaining_percentage = 100.0 - individual[pp_index]
+
+                # 分配剩余的比例给其他材料
+                other_materials = [individual[i] for i in range(len(all_features)) if i != pp_index]
+                total_other = sum(other_materials)
+                if total_other > 0:
+                    other_materials = [x / total_other * remaining_percentage for x in other_materials]
                 
+                # 更新个体
+                j = 0
+                for i in range(len(individual)):
+                    if i != pp_index:
+                        individual[i] = other_materials[j]
+                        j += 1
+
                 total = sum(individual)
                 # 强制总和为100
                 return [x / total * 100 for x in individual]  # 标准化总和为100
@@ -767,6 +784,7 @@ elif page == "配方建议":
 
         else:
             st.warning("请选择基体、阻燃剂、助剂，并输入目标LOI和目标TS值以生成配方")
+
 
     elif sub_page == "添加剂推荐":
         st.subheader("🧪 PVC添加剂智能推荐")
