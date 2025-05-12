@@ -681,7 +681,7 @@ elif page == "配方建议":
             toolbox = base.Toolbox()
 
             def generate_individual():
-                # 给PP设置一个更高的初始比例权重
+                # 给PP设置一个更高的初始比例权重，确保PP比例最大
                 pp_index = all_features.index("PP") if "PP" in all_features else None
                 individual = [random.uniform(min_value, max_value) for _ in range(len(all_features))]
                 
@@ -689,8 +689,8 @@ elif page == "配方建议":
                     individual[pp_index] = random.uniform(40.0, 60.0)  # PP的含量设置为40%到60%之间
                 
                 total = sum(individual)
-                # 强制总和为100
-                return [x / total * 100 for x in individual]  # 标准化总和为100
+                # 强制总和为100，并且避免出现负值
+                return [max(0.0, min(100.0, x / total * 100)) for x in individual]  # 确保每个成分都在0到100之间
 
             toolbox.register("individual", tools.initIterate, creator.Individual, generate_individual)
             toolbox.register("population", tools.initRepeat, list, toolbox.individual)
@@ -714,9 +714,9 @@ elif page == "配方建议":
                     loi_error = abs(target_loi - loi_pred)
                     ts_error = abs(target_ts - ts_pred)
 
-                    # 设置误差阈值（例如，当误差大于10时视为不合理）
+                    # 如果LOI或TS的误差大于阈值，直接返回一个无效的适应度
                     if loi_error > 10 or ts_error > 10:
-                        st.warning("🚨 输入值不合理！预测值与目标值差距较大，请检查输入数据。")
+                        return float('inf'), float('inf')  # 使这个个体无效
 
                     return loi_error, ts_error
                 except Exception as e:
@@ -728,32 +728,15 @@ elif page == "配方建议":
             toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.3)  # 增加变异的幅度，确保差异
             toolbox.register("select", tools.selTournament, tournsize=3)
 
-            # 遗传算法避免相似样本
-            def is_similar(ind1, ind2):
-                """检查两个个体是否过于相似，定义相似度的阈值"""
-                similarity_threshold = 0.01
-                return sum(abs(i1 - i2) for i1, i2 in zip(ind1, ind2)) < similarity_threshold
-
-            def filter_similar_population(population):
-                """过滤掉与其他个体过于相似的个体"""
-                unique_population = []
-                for ind in population:
-                    if not any(is_similar(ind, existing) for existing in unique_population):
-                        unique_population.append(ind)
-                return unique_population
-
             # 运行遗传算法
             if st.button("🚀 开始优化"):
                 # 2. 运行遗传算法
                 population = toolbox.population(n=num_individuals)
                 algorithms.eaSimple(population, toolbox, cxpb=0.7, mutpb=0.3, ngen=50, verbose=False)
 
-                # 过滤掉相似的个体
-                population = filter_similar_population(population)
-
                 # 3. 选择最优的个体，生成配方
                 best_individuals = tools.selBest(population, num_individuals)
-                
+
                 # 4. 转换为DataFrame格式
                 best_values = []
                 loi_preds = []
@@ -790,6 +773,7 @@ elif page == "配方建议":
 
         else:
             st.warning("请选择基体、阻燃剂、助剂，并输入目标LOI和目标TS值以生成配方")
+
 
 
 
