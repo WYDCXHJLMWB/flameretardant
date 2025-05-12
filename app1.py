@@ -574,15 +574,17 @@ elif page == "配方建议":
                     ts_preds.append(round(ts_pred, 2))
 
                 # 将LOI和TS预测值添加到数据框中
-                result_df = pd.DataFrame(best_values, columns=all_features)
-                result_df["LOI预测值 (%)"] = loi_preds
-                result_df["TS预测值 (MPa)"] = ts_preds
-
-                # 设置单位为质量分数或体积分数
-                units = [get_unit(fraction_type) for _ in range(len(result_df.columns) - 2)]  # 减去LOI和TS列
-                result_df.columns = [f"{col} ({unit})" for col, unit in zip(result_df.columns, units)]  # 确保列名与单位一致
-
-                st.write(result_df)
+         # 将LOI和TS预测值添加到数据框中
+        result_df = pd.DataFrame(best_values, columns=all_features)
+        result_df["LOI预测值 (%)"] = loi_preds
+        result_df["TS预测值 (MPa)"] = ts_preds
+        
+        # 设置单位为质量分数或体积分数
+        units = [get_unit(fraction_type) for _ in all_features]  # 正确生成单位列表
+        new_columns = [f"{col} ({unit})" for col, unit in zip(all_features, units)]  # 处理特征列
+        new_columns += ["LOI预测值 (%)", "TS预测值 (MPa)"]  # 保留预测列原有单位
+        result_df.columns = new_columns  # 列名数量一致
+        st.write(result_df)
 
         else:
             st.warning("请选择基体、阻燃剂、助剂，并输入目标LOI和目标TS值以生成配方")
