@@ -675,15 +675,14 @@ elif page == "配方建议":
                 individual = [random.uniform(0, 100) for _ in all_features]
                 individual[pp_idx] = random.uniform(40, 60)  # PP初始值40-60%
                 
-                # 强制归一化处理
-                if fraction_type in ["质量分数", "体积分数"]:
-                    total = sum(individual)
-                    if total > 0:
-                        return [x / total * 100 for x in individual]  # 确保加和为100
-                    else:
-                        # 如果总和为零，则返回一个合理的默认值，避免出现零值
-                        return [100.0 / len(individual)] * len(individual)
-                return individual
+                # 其他成分确保不为负值并进行合理的归一化
+                total = sum(individual)
+                if total > 0:
+                    individual = [max(0, x) for x in individual]  # 确保成分值不为负
+                    return [x / total * 100 for x in individual]  # 确保加和为100
+                else:
+                    # 如果总和为零，返回一个合理的默认值，避免出现零值
+                    return [100.0 / len(individual)] * len(individual)
             
             toolbox.register("individual", tools.initIterate, creator.Individual, generate_individual)
             toolbox.register("population", tools.initRepeat, list, toolbox.individual)
