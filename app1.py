@@ -690,7 +690,12 @@ elif page == "配方建议":
                 
                 total = sum(individual)
                 # 强制总和为100，并且避免出现负值
-                return [max(0.0, min(100.0, x / total * 100)) for x in individual]  # 确保每个成分都在0到100之间
+                normalized_individual = [x / total * 100 for x in individual]
+                
+                # 确保所有值都不为负数
+                normalized_individual = [max(0.0, min(100.0, val)) for val in normalized_individual]
+                
+                return normalized_individual
 
             toolbox.register("individual", tools.initIterate, creator.Individual, generate_individual)
             toolbox.register("population", tools.initRepeat, list, toolbox.individual)
@@ -774,6 +779,7 @@ elif page == "配方建议":
 
         else:
             st.warning("请选择基体、阻燃剂、助剂，并输入目标LOI和目标TS值以生成配方")
+
     
     elif sub_page == "添加剂推荐":
         st.subheader("🧪 PVC添加剂智能推荐")
