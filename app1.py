@@ -678,7 +678,8 @@ elif page == "配方建议":
                 # 其他成分确保不为负值并进行合理的归一化
                 total = sum(individual)
                 if total > 0:
-                    individual = [max(0, x) for x in individual]  # 确保成分值不为负
+                    # 强制每个成分值都在0到100之间
+                    individual = [max(0, min(100, x)) for x in individual]
                     return [x / total * 100 for x in individual]  # 确保加和为100
                 else:
                     # 如果总和为零，返回一个合理的默认值，避免出现零值
@@ -786,16 +787,6 @@ elif page == "配方建议":
             else:
                 st.warning("⚠️ 输入值不合理，请重新输入")
 
-
-
-
-
-
-
-
-
-
-    
     elif sub_page == "添加剂推荐":
         st.subheader("🧪 PVC添加剂智能推荐")
         predictor = Predictor("scaler_fold_1.pkl", "svc_fold_1.pkl")
