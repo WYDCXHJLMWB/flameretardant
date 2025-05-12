@@ -755,13 +755,19 @@ elif page == "配方建议":
                 result_df["TS预测值 (MPa)"] = ts_preds
 
                 # 设置单位为质量分数或体积分数
-                units = [get_unit(fraction_type) for _ in all_features]
-                result_df.columns = [f"{col} ({unit})" for col, unit in zip(result_df.columns, units)]
+                units = [get_unit(fraction_type) for _ in all_features] + ['%'] * 2  # 追加LOI和TS的单位
+
+                # 确保单位数量与列数匹配
+                if len(units) == len(result_df.columns):
+                    result_df.columns = [f"{col} ({unit})" for col, unit in zip(result_df.columns, units)]
+                else:
+                    st.error("列数与单位数不匹配，请检查配置")
 
                 st.write(result_df)
 
         else:
             st.warning("请选择基体、阻燃剂、助剂，并输入目标LOI和目标TS值以生成配方")
+
     elif sub_page == "添加剂推荐":
         st.subheader("🧪 PVC添加剂智能推荐")
         predictor = Predictor("scaler_fold_1.pkl", "svc_fold_1.pkl")
