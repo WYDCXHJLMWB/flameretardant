@@ -90,7 +90,24 @@ class Predictor:
         
         X_scaled = self.scaler.transform(feature_df)
         return self.model.predict(X_scaled)[0]
+st.title("账号登录与预测")
 
+# 手机号和验证码输入
+phone_number = st.text_input("请输入您的手机号", "")
+code = st.text_input("请输入验证码", "")
+
+# 发送验证码按钮
+if st.button("发送验证码"):
+    if phone_number:
+        sent_code = send_verification_code(phone_number)
+        st.success(f"验证码已发送：{sent_code}")
+    else:
+        st.error("请先输入手机号")
+
+# 验证验证码按钮
+if st.button("验证验证码"):
+    if verify_code(phone_number, code):
+        st.success("验证码验证成功！")
 import streamlit as st
 import pandas as pd
 import numpy as np
