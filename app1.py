@@ -695,7 +695,7 @@ elif page == "配方建议":
                     matrix_percent = random.uniform(60, 100)
                 else:
                     matrix_percent = random.uniform(60, 100)
-60
+
                 # 其他材料比例总和
                 remaining = 100 - matrix_percent
                 n_others = len(all_features) - 1
