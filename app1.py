@@ -811,7 +811,6 @@ elif page == "配方建议":
                     **{f: normalized[i] for i,f in enumerate(all_features)},
                     "LOI预测值 (%)": round(loi_pred, 2),
                     "TS预测值 (MPa)": round(ts_pred, 2),
-                    "总和": round(sum(normalized), 2)
                 })
     
             if results:
@@ -826,10 +825,6 @@ elif page == "配方建议":
                 )
             else:
                 st.warning("未找到符合要求的配方，请尝试调整目标值")
-
-
-
-
 
     
     elif sub_page == "添加剂推荐":
