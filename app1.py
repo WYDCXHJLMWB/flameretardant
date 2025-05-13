@@ -674,14 +674,12 @@ elif page == "配方建议":
 
             def repair_individual(individual):
                 """确保个体所有成分非负且总和为100%"""
-                # 非负处理
                 individual = [max(0.0, x) for x in individual]
                 total = sum(individual)
 
-                if total <= 1e-6:  # 处理全零情况
+                if total <= 1e-6:
                     return [100.0/len(individual)]*len(individual)
 
-                # 归一化处理
                 scale = 100.0 / total
                 return [x*scale for x in individual]
 
@@ -692,21 +690,16 @@ elif page == "配方建议":
                 except ValueError:
                     matrix_idx = 0
 
-                # 基体材料比例 (40-60%)
                 matrix_percent = random.uniform(40, 60)
-
-                # 其他材料比例总和
                 remaining = 100 - matrix_percent
                 n_others = len(all_features) - 1
 
                 if n_others == 0:
                     return [matrix_percent]
 
-                # 使用Dirichlet分布生成其他成分比例
                 others = np.random.dirichlet(np.ones(n_others)*0.1) * remaining
                 others = others.tolist()
 
-                # 构建个体
                 individual = [0.0]*len(all_features)
                 individual[matrix_idx] = matrix_percent
 
@@ -723,7 +716,6 @@ elif page == "配方建议":
 
             def evaluate(individual):
                 try:
-                    # 直接使用已修复的个体
                     input_values = dict(zip(all_features, individual))
 
                     # LOI预测
@@ -770,13 +762,10 @@ elif page == "配方建议":
             valid_individuals = [ind for ind in population if not np.isinf(ind.fitness.values[0])]
             best_individuals = tools.selBest(valid_individuals, k=5)
 
-            # 构建结果（已自动保证总和100%）
             results = []
             for ind in best_individuals:
-                # 四舍五入保留两位小数
                 normalized = [round(x, 2) for x in repair_individual(ind)]
 
-                # 计算预测值
                 input_dict = dict(zip(all_features, normalized))
                 loi_pred = models["loi_model"].predict(
                     models["loi_scaler"].transform([
@@ -789,11 +778,18 @@ elif page == "配方建议":
                     ])
                 )[0]
 
+                loi_diff = abs(target_loi - loi_pred)
+                ts_diff = abs(target_ts - ts_pred)
+
+                # 只显示LOI和TS都在合理范围内的样本
+                if loi_diff > 5 or ts_diff > 5:
+                    continue
+
                 results.append({
                     **{f: normalized[i] for i, f in enumerate(all_features)},
                     "LOI预测值 (%)": round(loi_pred, 2),
                     "TS预测值 (MPa)": round(ts_pred, 2),
-                    "总和（配方成分）": round(sum(normalized), 2)  # 应始终显示100.00
+                    "总和（配方成分）": round(sum(normalized), 2)  # 始终显示100.00
                 })
 
             # 显示结果
@@ -810,11 +806,10 @@ elif page == "配方建议":
 
                 df.columns = [f"{col} ({unit})" if col in all_features else col for col in df.columns]
 
-                # 筛选有效结果（考虑浮点误差）
-                df = df[df["总和（配方成分）"] >= 99.99]
+                # 筛选有效结果
+                df = df[df["总和（配方成分）"] >= 100]
 
                 if not df.empty:
-                    # 高亮最优结果
                     def highlight_row(row):
                         loi_diff = abs(row["LOI预测值 (%)"] - target_loi)
                         ts_diff = abs(row["TS预测值 (MPa)"] - target_ts)
@@ -824,8 +819,7 @@ elif page == "配方建议":
                 else:
                     st.warning("⚠️ 未找到符合要求的配方，请尝试调整参数")
             else:
-                st.warning("⚠️ 优化失败，请尝试调整参数")
-
+                st.warning("⚠️ 输入值不合理，请检查目标LOI或TS与预测值的差异")
 
 
 
