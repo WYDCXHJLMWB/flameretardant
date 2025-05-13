@@ -782,7 +782,7 @@ elif page == "配方建议":
                 ts_diff = abs(target_ts - ts_pred)
 
                 # 只显示LOI和TS都在合理范围内的样本
-                if loi_diff > 5 or ts_diff > 5:
+                if loi_diff > 10 or ts_diff > 10:
                     continue
 
                 results.append({
