@@ -789,15 +789,15 @@ elif sub_page == "配方优化":
                 
             input_dict = dict(zip(all_features, normalized))
             
-            # 修正括号结构
-            loi_input = [[input_dict.get(f, 0) for f in models["loi_features"]]
+            # 修复的LOI预测部分
+            loi_input = [[input_dict.get(f, 0) for f in models["loi_features"]]  # 注意结尾两个]]
             loi_scaled = models["loi_scaler"].transform(loi_input)
             loi_pred = models["loi_model"].predict(loi_scaled)[0]
             
-            ts_input = [[input_dict.get(f, 0) for f in models["ts_features"]]
+            # 修复的TS预测部分
+            ts_input = [[input_dict.get(f, 0) for f in models["ts_features"]]  # 注意结尾两个]]
             ts_scaled = models["ts_scaler"].transform(ts_input)
             ts_pred = models["ts_model"].predict(ts_scaled)[0]
-
             if abs(target_loi - loi_pred) > 10 or abs(target_ts - ts_pred) > 10:
                 continue
                 
