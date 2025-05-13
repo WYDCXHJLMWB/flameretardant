@@ -102,12 +102,23 @@ class Predictor:
         
         X_scaled = self.scaler.transform(feature_df)
         return self.model.predict(X_scaled)[0]
+sent_codes = {}
+
 def send_verification_code(phone_number):
     """模拟发送验证码"""
-    import random
+    if not phone_number:
+        raise ValueError("手机号不能为空")
     code = str(random.randint(1000, 9999))  # 生成一个四位数验证码
-    sent_codes[phone_number] = code
+    sent_codes[phone_number] = code  # 保存手机号与验证码的映射
     return code
+
+def verify_code(phone_number, code):
+    """验证验证码"""
+    if phone_number in sent_codes and sent_codes[phone_number] == code:
+        return True
+    return False
+
+# Streamlit前端界面
 st.title("账号登录与预测")
 
 # 手机号和验证码输入
@@ -117,8 +128,11 @@ code = st.text_input("请输入验证码", "")
 # 发送验证码按钮
 if st.button("发送验证码"):
     if phone_number:
-        sent_code = send_verification_code(phone_number)
-        st.success(f"验证码已发送：{sent_code}")
+        try:
+            sent_code = send_verification_code(phone_number)
+            st.success(f"验证码已发送：{sent_code}")
+        except ValueError as e:
+            st.error(str(e))  # 如果手机号为空，显示错误信息
     else:
         st.error("请先输入手机号")
 
