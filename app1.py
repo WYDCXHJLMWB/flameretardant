@@ -684,17 +684,16 @@ elif page == "配方建议":
                 return [x * scale for x in individual]
 
             def generate_individual():
-                """生成初始个体，确保PP的含量最大"""
+                """生成初始个体，确保基体含量最大"""
                 try:
                     matrix_idx = all_features.index(selected_matrix)
                 except ValueError:
                     matrix_idx = 0
 
-                # 确保PP的比例最大 (PP的比例60%-100%)
-                if selected_matrix == "PP":
+                # 确保基体的比例最大 (基体比例60%-100%)
+                if selected_matrix != "其他":
                     matrix_percent = random.uniform(60, 100)
                 else:
-                    # 其他基体材料的比例（10%-30%）
                     matrix_percent = random.uniform(10, 30)
 
                 # 其他材料比例总和
@@ -830,7 +829,8 @@ elif page == "配方建议":
                 else:
                     st.warning("⚠️ 未找到符合要求的配方，请尝试调整参数")
             else:
-                st.warning("⚠️ 输入值不合理，请检查输入的目标值是否合理")
+                st.warning("⚠️ 输入值不合理，请重新检查输入的值")
+
 
 
 
