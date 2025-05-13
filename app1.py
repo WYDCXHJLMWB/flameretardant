@@ -795,7 +795,7 @@ elif sub_page == "配方优化":
             loi_pred = models["loi_model"].predict(loi_scaled)[0]
             
             # 修复后的TS预测部分（添加缺失的闭合括号）
-            ts_input = [[input_dict.get(f, 0) for f in models["ts_features"]]]  # 双重闭合]]
+            ts_input = [[input_dict.get(f, 0) for f in models["ts_features"]]  # 双重闭合]]
             ts_scaled = models["ts_scaler"].transform(ts_input)
             ts_pred = models["ts_model"].predict(ts_scaled)[0]
 
