@@ -684,26 +684,26 @@ elif page == "配方建议":
                 return [x * scale for x in individual]
 
             def generate_individual():
-                """生成初始个体，确保基体含量最大"""
+                """生成初始个体，确保PP含量最大"""
                 try:
                     matrix_idx = all_features.index(selected_matrix)
                 except ValueError:
                     matrix_idx = 0
 
-                # 确保基体的比例最大 (基体比例60%-100%)
-                if selected_matrix != "其他":
-                    matrix_percent = random.uniform(60, 100)
+                # 确保PP的比例最大
+                if selected_matrix == "PP":
+                    matrix_percent = random.uniform(60, 100)  # 如果基体是PP，比例为60%-100%
                 else:
-                    matrix_percent = random.uniform(10, 30)
+                    matrix_percent = random.uniform(10, 40)  # 其他基体的比例为10%-40%
 
                 # 其他材料比例总和
                 remaining = 100 - matrix_percent
-                n_others = len(all_features) - 1  # 剩下的材料
+                n_others = len(all_features) - 1  # 剩余的材料数量
 
                 if n_others == 0:
                     return [matrix_percent]
 
-                # 其他材料使用dirichlet分布进行分配
+                # 使用dirichlet分布来分配剩余的比例
                 others = np.random.dirichlet(np.ones(n_others) * 0.1) * remaining
                 others = others.tolist()
 
@@ -711,14 +711,13 @@ elif page == "配方建议":
                 individual = [0.0] * len(all_features)
                 individual[matrix_idx] = matrix_percent
 
-                # 分配给其他材料
+                # 分配其他材料的比例
                 other_idx = 0
                 for i in range(len(all_features)):
                     if i != matrix_idx:
                         individual[i] = others[other_idx]
                         other_idx += 1
 
-                # 修复个体，确保总和为100%
                 return repair_individual(individual)
 
             toolbox.register("individual", tools.initIterate, creator.Individual, generate_individual)
@@ -829,7 +828,8 @@ elif page == "配方建议":
                 else:
                     st.warning("⚠️ 未找到符合要求的配方，请尝试调整参数")
             else:
-                st.warning("⚠️ 输入值不合理，请重新检查输入的值")
+                st.warning("⚠️ 输入值不合理，请检查目标LOI或TS与预测值的差异")
+
 
 
 
