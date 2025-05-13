@@ -690,19 +690,21 @@ elif page == "配方建议":
                 except ValueError:
                     matrix_idx = 0
 
-                # 确保PP的比例最大 (PP的比例40%-60%)
+                # 确保PP的比例最大 (PP的比例60%-100%)
                 if selected_matrix == "PP":
                     matrix_percent = random.uniform(60, 100)
                 else:
-                    matrix_percent = random.uniform(60, 100)
+                    # 其他基体材料的比例（10%-30%）
+                    matrix_percent = random.uniform(10, 30)
 
                 # 其他材料比例总和
                 remaining = 100 - matrix_percent
-                n_others = len(all_features) - 1
+                n_others = len(all_features) - 1  # 剩下的材料
 
                 if n_others == 0:
                     return [matrix_percent]
 
+                # 其他材料使用dirichlet分布进行分配
                 others = np.random.dirichlet(np.ones(n_others) * 0.1) * remaining
                 others = others.tolist()
 
@@ -710,12 +712,14 @@ elif page == "配方建议":
                 individual = [0.0] * len(all_features)
                 individual[matrix_idx] = matrix_percent
 
+                # 分配给其他材料
                 other_idx = 0
                 for i in range(len(all_features)):
                     if i != matrix_idx:
                         individual[i] = others[other_idx]
                         other_idx += 1
 
+                # 修复个体，确保总和为100%
                 return repair_individual(individual)
 
             toolbox.register("individual", tools.initIterate, creator.Individual, generate_individual)
@@ -826,7 +830,8 @@ elif page == "配方建议":
                 else:
                     st.warning("⚠️ 未找到符合要求的配方，请尝试调整参数")
             else:
-                st.warning("⚠️ 输入值不合理，请检查目标LOI或TS与预测值的差异")
+                st.warning("⚠️ 输入值不合理，请检查输入的目标值是否合理")
+
 
 
 
