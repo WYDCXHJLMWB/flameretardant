@@ -692,10 +692,10 @@ elif page == "配方建议":
 
                 # 确保PP的比例最大 (PP的比例40%-60%)
                 if selected_matrix == "PP":
-                    matrix_percent = random.uniform(40, 60)
+                    matrix_percent = random.uniform(60, 100)
                 else:
-                    matrix_percent = random.uniform(10, 30)
-
+                    matrix_percent = random.uniform(60, 100)
+60
                 # 其他材料比例总和
                 remaining = 100 - matrix_percent
                 n_others = len(all_features) - 1
@@ -789,7 +789,7 @@ elif page == "配方建议":
                 ts_diff = abs(target_ts - ts_pred)
 
                 # 只显示LOI和TS都在合理范围内的样本
-                if loi_diff > 5 or ts_diff > 5:
+                if loi_diff > 10 or ts_diff > 10:
                     continue
 
                 results.append({
