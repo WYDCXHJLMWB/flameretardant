@@ -789,11 +789,12 @@ elif sub_page == "配方优化":
                 
             input_dict = dict(zip(all_features, normalized))
             
-            # 修复后的LOI预测部分（添加缺失的闭合括号）
+            # LOI预测部分
             loi_input = [[input_dict.get(f, 0) for f in models["loi_features"]]]
+            loi_scaled = models["loi_scaler"].transform(loi_input)
             loi_pred = models["loi_model"].predict(loi_scaled)[0]
             
-          
+            # TS预测部分
             ts_input = [[input_dict.get(f, 0) for f in models["ts_features"]]]
             ts_scaled = models["ts_scaler"].transform(ts_input)
             ts_pred = models["ts_model"].predict(ts_scaled)[0]
@@ -801,13 +802,6 @@ elif sub_page == "配方优化":
             if abs(target_loi - loi_pred) > 10 or abs(target_ts - ts_pred) > 10:
                 continue
             
-            # 修复的TS预测部分
-            ts_input = [[input_dict.get(f, 0) for f in models["ts_features"]]  # 注意结尾两个]]
-            ts_scaled = models["ts_scaler"].transform(ts_input)
-            ts_pred = models["ts_model"].predict(ts_scaled)[0]
-            if abs(target_loi - loi_pred) > 10 or abs(target_ts - ts_pred) > 10:
-                continue
-                
             results.append({
                 **{f: normalized[i] for i,f in enumerate(all_features)},
                 "LOI预测值 (%)": round(loi_pred, 2),
@@ -827,6 +821,7 @@ elif sub_page == "配方优化":
             )
         else:
             st.warning("未找到符合要求的配方，请尝试调整目标值")
+
     
     elif sub_page == "添加剂推荐":
         st.subheader("🧪 PVC添加剂智能推荐")
