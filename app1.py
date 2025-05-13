@@ -780,7 +780,7 @@ elif sub_page == "配方优化":
         best_individuals = tools.selBest(valid_individuals, k=5)
 
         results = []
-         for ind in best_individuals:
+        for ind in best_individuals:
             normalized = [round(x, 2) for x in repair_individual(ind)]
             matrix_value = normalized[all_features.index(selected_matrix)]
             
