@@ -800,8 +800,14 @@ elif page == "配方建议":
             if results:
                 df = pd.DataFrame(results)
 
-                # 添加单位
-                unit = "%" if "分数" in fraction_type else "质量单位"
+                # 根据单位类型调整列名的单位
+                if fraction_type == "质量分数":
+                    unit = "wt%"
+                elif fraction_type == "体积分数":
+                    unit = "vol%"
+                else:
+                    unit = "g"
+
                 df.columns = [f"{col} ({unit})" if col in all_features else col for col in df.columns]
 
                 # 筛选有效结果（考虑浮点误差）
@@ -819,6 +825,7 @@ elif page == "配方建议":
                     st.warning("⚠️ 未找到符合要求的配方，请尝试调整参数")
             else:
                 st.warning("⚠️ 优化失败，请尝试调整参数")
+
 
 
 
