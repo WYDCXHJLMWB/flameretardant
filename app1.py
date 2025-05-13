@@ -780,7 +780,7 @@ elif sub_page == "配方优化":
         best_individuals = tools.selBest(valid_individuals, k=5)
 
         results = []
-        for ind in best_individuals:
+         for ind in best_individuals:
             normalized = [round(x, 2) for x in repair_individual(ind)]
             matrix_value = normalized[all_features.index(selected_matrix)]
             
@@ -789,10 +789,18 @@ elif sub_page == "配方优化":
                 
             input_dict = dict(zip(all_features, normalized))
             
-            # 修复的LOI预测部分
-            loi_input = [[input_dict.get(f, 0) for f in models["loi_features"]]  # 注意结尾两个]]
+            # 修复后的LOI预测部分（添加缺失的闭合括号）
+            loi_input = [[input_dict.get(f, 0) for f in models["loi_features"]]]  # 双重闭合]]
             loi_scaled = models["loi_scaler"].transform(loi_input)
             loi_pred = models["loi_model"].predict(loi_scaled)[0]
+            
+            # 修复后的TS预测部分（添加缺失的闭合括号）
+            ts_input = [[input_dict.get(f, 0) for f in models["ts_features"]]]  # 双重闭合]]
+            ts_scaled = models["ts_scaler"].transform(ts_input)
+            ts_pred = models["ts_model"].predict(ts_scaled)[0]
+
+            if abs(target_loi - loi_pred) > 10 or abs(target_ts - ts_pred) > 10:
+                continue
             
             # 修复的TS预测部分
             ts_input = [[input_dict.get(f, 0) for f in models["ts_features"]]  # 注意结尾两个]]
