@@ -637,13 +637,13 @@ elif page == "性能预测":
 
 
 
-elif sub_page == "配方优化":
+elif sub_page == "配方建议":
     fraction_type = st.sidebar.radio(
         "📐 单位类型",
         ["质量", "质量分数", "体积分数"],
         key="unit_type"
     )
-    st.subheader("🧪 配方建议：根据目标LOI和TS优化配方")
+    st.subheader("🧪 配方优化：根据目标LOI和TS优化配方")
 
     matrix_materials = ["PP", "PA", "PC/ABS", "POM", "PBT", "PVC", "其他"]
     flame_retardants = ["AHP", "ammonium octamolybdate", "Al(OH)3", "CFA", "APP", "Pentaerythritol", "DOPO",
@@ -740,16 +740,19 @@ elif sub_page == "配方优化":
             try:
                 input_values = dict(zip(all_features, individual))
                 
+                # LOI预测部分
                 loi_input = np.array([[input_values.get(f, 0.0) for f in models["loi_features"]]])
                 loi_scaled = models["loi_scaler"].transform(loi_input)
                 loi_pred = models["loi_model"].predict(loi_scaled)[0]
 
+                # TS预测部分
                 ts_input = np.array([[input_values.get(f, 0.0) for f in models["ts_features"]]])
                 ts_scaled = models["ts_scaler"].transform(ts_input)
                 ts_pred = models["ts_model"].predict(ts_scaled)[0]
 
                 return (abs(target_loi - loi_pred), abs(target_ts - ts_pred))
-            except:
+            except Exception as e:
+                print(f"Error in evaluate: {e}")
                 return (float('inf'), float('inf'))
 
         def cxBlendWithConstraint(ind1, ind2, alpha):
@@ -776,6 +779,7 @@ elif sub_page == "配方优化":
             ngen=250, verbose=False
         )
 
+        # 获取符合条件的个体并计算最终结果
         valid_individuals = [ind for ind in population if not np.isinf(ind.fitness.values[0])]
         best_individuals = tools.selBest(valid_individuals, k=5)
 
@@ -811,7 +815,7 @@ elif sub_page == "配方优化":
 
         if results:
             df = pd.DataFrame(results)
-            unit = "wt%" if "分数" in fraction_type else "g"
+            unit = "wt%" if "质量分数" in fraction_type else "vol%" if "体积分数" in fraction_type else "g"
             df.columns = [f"{col} ({unit})" if col in all_features else col for col in df.columns]
             
             st.dataframe(
@@ -821,6 +825,7 @@ elif sub_page == "配方优化":
             )
         else:
             st.warning("未找到符合要求的配方，请尝试调整目标值")
+
 
     
     elif sub_page == "添加剂推荐":
