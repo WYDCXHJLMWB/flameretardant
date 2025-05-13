@@ -678,29 +678,36 @@ elif page == "配方建议":
                 total = sum(individual)
 
                 if total <= 1e-6:
-                    return [100.0/len(individual)]*len(individual)
+                    return [100.0 / len(individual)] * len(individual)
 
                 scale = 100.0 / total
-                return [x*scale for x in individual]
+                return [x * scale for x in individual]
 
             def generate_individual():
-                """生成初始个体，基体材料占40-60%"""
+                """生成初始个体，确保PP的含量最大"""
                 try:
                     matrix_idx = all_features.index(selected_matrix)
                 except ValueError:
                     matrix_idx = 0
 
-                matrix_percent = random.uniform(40, 60)
+                # 确保PP的比例最大 (PP的比例40%-60%)
+                if selected_matrix == "PP":
+                    matrix_percent = random.uniform(40, 60)
+                else:
+                    matrix_percent = random.uniform(10, 30)
+
+                # 其他材料比例总和
                 remaining = 100 - matrix_percent
                 n_others = len(all_features) - 1
 
                 if n_others == 0:
                     return [matrix_percent]
 
-                others = np.random.dirichlet(np.ones(n_others)*0.1) * remaining
+                others = np.random.dirichlet(np.ones(n_others) * 0.1) * remaining
                 others = others.tolist()
 
-                individual = [0.0]*len(all_features)
+                # 构建个体
+                individual = [0.0] * len(all_features)
                 individual[matrix_idx] = matrix_percent
 
                 other_idx = 0
@@ -782,7 +789,7 @@ elif page == "配方建议":
                 ts_diff = abs(target_ts - ts_pred)
 
                 # 只显示LOI和TS都在合理范围内的样本
-                if loi_diff > 10 or ts_diff > 10:
+                if loi_diff > 5 or ts_diff > 5:
                     continue
 
                 results.append({
@@ -807,7 +814,7 @@ elif page == "配方建议":
                 df.columns = [f"{col} ({unit})" if col in all_features else col for col in df.columns]
 
                 # 筛选有效结果
-                df = df[df["总和（配方成分）"] >= 100]
+                df = df[df["总和（配方成分）"] >= 99.99]
 
                 if not df.empty:
                     def highlight_row(row):
@@ -820,6 +827,7 @@ elif page == "配方建议":
                     st.warning("⚠️ 未找到符合要求的配方，请尝试调整参数")
             else:
                 st.warning("⚠️ 输入值不合理，请检查目标LOI或TS与预测值的差异")
+
 
 
 
