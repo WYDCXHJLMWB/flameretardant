@@ -102,6 +102,12 @@ class Predictor:
         
         X_scaled = self.scaler.transform(feature_df)
         return self.model.predict(X_scaled)[0]
+def send_verification_code(phone_number):
+    """模拟发送验证码"""
+    import random
+    code = str(random.randint(1000, 9999))  # 生成一个四位数验证码
+    sent_codes[phone_number] = code
+    return code
 st.title("账号登录与预测")
 
 # 手机号和验证码输入
