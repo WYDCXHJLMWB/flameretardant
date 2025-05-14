@@ -61,12 +61,24 @@ def send_verification_code(phone):
 def verify_code(phone, code):
     """验证时检查有效期"""
     record = sent_codes.get(phone)
+    
     if not record:
+        st.write(f"没有找到验证码记录: {phone}")  # Debug
         return False
+    
+    # Check if the code is expired
     if datetime.now() > record[1]:
+        st.write(f"验证码已过期: {phone}, 过期时间: {record[1]}, 当前时间: {datetime.now()}")  # Debug
         del sent_codes[phone]
         return False
-    return code == record[0]
+
+    # Check if the code matches
+    if code != record[0]:
+        st.write(f"验证码不匹配: 输入的 {code}, 生成的 {record[0]}")  # Debug
+        return False
+    
+    return True
+
 
 # --------------------- 全局状态 ---------------------
 if 'logged_in' not in st.session_state:
