@@ -1,19 +1,41 @@
 import pandas as pd
-import numpy as np
-import warnings
-from scipy import stats
-from scipy.stats import kurtosis, skew
-from sklearn.impute import SimpleImputer
-import joblib
-from deap import base, creator, tools, algorithms
-import streamlit as st
-import base64
-import random
 import hashlib
 import os
-from datetime import datetime, timedelta
+import bcrypt
+import streamlit as st
 from PIL import Image
 import io
+
+# --------------------- 用户认证模块 ---------------------
+USERS_FILE = "users.csv"
+
+# 初始化用户数据
+if not os.path.exists(USERS_FILE):
+    pd.DataFrame(columns=["username", "password_hash"]).to_csv(USERS_FILE, index=False)
+
+def load_users():
+    return pd.read_csv(USERS_FILE)
+
+def save_user(username, password):
+    users = load_users()
+    if username in users['username'].values:
+        return False  # 用户名已存在
+    # 生成密码哈希
+    password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    new_user = pd.DataFrame([[username, password_hash]], columns=["username", "password_hash"])
+    users = pd.concat([users, new_user], ignore_index=True)
+    users.to_csv(USERS_FILE, index=False)
+    return True
+
+def verify_user(username, password):
+    users = load_users()
+    user = users[users['username'] == username]
+    if not user.empty:
+        stored_hash = user.iloc[0]['password_hash']
+        # 检查密码哈希是否匹配
+        if bcrypt.checkpw(password.encode(), stored_hash.encode()):
+            return True
+    return False
 
 # --------------------- 页面配置 ---------------------
 def image_to_base64(image_path):
@@ -21,64 +43,6 @@ def image_to_base64(image_path):
     buffered = io.BytesIO()
     img.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode()
-
-# 设置页面配置，必须放在代码的最前面
-icon_base64 = image_to_base64("图片1.jpg")  # 确保图片路径正确
-st.set_page_config(
-    page_title="阻燃聚合物复合材料智能设计平台",
-    layout="wide",
-    page_icon=f"data:image/png;base64,{icon_base64}"
-)
-
-# --------------------- 用户认证模块 ---------------------
-USERS_FILE = "users.csv"
-sent_codes = {}
-
-# 初始化用户数据
-if not os.path.exists(USERS_FILE):
-    pd.DataFrame(columns=["phone", "password_hash"]).to_csv(USERS_FILE, index=False)
-
-def load_users():
-    return pd.read_csv(USERS_FILE)
-
-def save_user(phone, password):
-    users = load_users()
-    if phone in users['phone'].values:
-        return False
-    password_hash = hashlib.sha256(password.encode()).hexdigest()
-    new_user = pd.DataFrame([[phone, password_hash]], columns=["phone", "password_hash"])
-    users = pd.concat([users, new_user], ignore_index=True)
-    users.to_csv(USERS_FILE, index=False)
-    return True
-
-def send_verification_code(phone):
-    """发送带有效期的验证码"""
-    code = str(random.randint(100000, 999999))  # 6位验证码
-    expire = datetime.now() + timedelta(minutes=5)
-    sent_codes[phone] = (code, expire)
-    return code
-
-def verify_code(phone, code):
-    """验证时检查有效期"""
-    record = sent_codes.get(phone)
-    
-    if not record:
-        st.write(f"没有找到验证码记录: {phone}")  # Debug
-        return False
-    
-    # Check if the code is expired
-    if datetime.now() > record[1]:
-        st.write(f"验证码已过期: {phone}, 过期时间: {record[1]}, 当前时间: {datetime.now()}")  # Debug
-        del sent_codes[phone]
-        return False
-
-    # Check if the code matches
-    if code != record[0]:
-        st.write(f"验证码不匹配: 输入的 {code}, 生成的 {record[0]}")  # Debug
-        return False
-    
-    return True
-
 
 # --------------------- 全局状态 ---------------------
 if 'logged_in' not in st.session_state:
@@ -137,6 +101,13 @@ st.markdown("""
 
 # --------------------- 认证页面 ---------------------
 if not st.session_state.logged_in:
+    icon_base64 = image_to_base64("图片1.jpg")
+    st.set_page_config(
+        page_title="阻燃聚合物复合材料智能设计平台",
+        layout="wide",
+        page_icon=f"data:image/png;base64,{icon_base64}"
+    )
+
     st.markdown(f"""
     <div class="global-header">
         <img src="data:image/png;base64,{icon_base64}" 
@@ -148,63 +119,36 @@ if not st.session_state.logged_in:
         </div>
     </div>
     """, unsafe_allow_html=True)
-    
+
     with st.container():
         with st.form("auth_form"):
             auth_mode = st.radio("请选择操作", ["登录", "注册"], horizontal=True)
-            
-            phone = st.text_input("手机号", max_chars=11, 
-                                help="请输入11位手机号码").strip()
-            
+
+            username = st.text_input("用户名", max_chars=20, help="请输入用户名").strip()
+
             if auth_mode == "注册":
-                password = st.text_input("设置密码", type="password",
-                                       help="至少6位字符")
+                password = st.text_input("设置密码", type="password", help="至少6位字符")
             elif auth_mode == "登录":
                 password = st.text_input("密码", type="password")
-            
-            col1, col2 = st.columns([2, 1])
-            with col1:
-                code = st.text_input("验证码", max_chars=6)
-            with col2:
-                if st.form_submit_button("获取验证码"):
-                    if len(phone) == 11 and phone.isdigit():
-                        send_verification_code(phone)
-                        st.success("验证码已发送（演示码：123456）")
-                    else:
-                        st.error("无效的手机号格式")
 
             if st.form_submit_button(auth_mode):
-                if not all([phone, code]):
+                if not all([username, password]):
                     st.error("请填写所有字段")
-                elif len(phone) != 11 or not phone.isdigit():
-                    st.error("请输入有效的11位手机号")
-                elif not verify_code(phone, code):
-                    st.error("验证码错误或已过期")
-                else:
-                    if auth_mode == "注册":
-                        if len(password) < 6:
-                            st.error("密码至少需要6位")
-                        elif save_user(phone, password):
-                            st.session_state.logged_in = True
-                            st.session_state.user = phone
-                            st.experimental_rerun()
-                        else:
-                            st.error("该手机号已注册")
+                elif auth_mode == "注册":
+                    if save_user(username, password):
+                        st.session_state.logged_in = True
+                        st.session_state.user = username
+                        st.experimental_rerun()
                     else:
-                        users = load_users()
-                        user = users[users['phone'] == phone]
-                        if not user.empty:
-                            pw_hash = hashlib.sha256(password.encode()).hexdigest()
-                            if user.iloc[0]['password_hash'] == pw_hash:
-                                st.session_state.logged_in = True
-                                st.session_state.user = phone
-                                st.experimental_rerun()
-                            else:
-                                st.error("密码错误")
-                        else:
-                            st.error("该用户未注册")
+                        st.error("该用户名已注册")
+                else:
+                    if verify_user(username, password):
+                        st.session_state.logged_in = True
+                        st.session_state.user = username
+                        st.experimental_rerun()
+                    else:
+                        st.error("用户名或密码错误")
     st.stop()
-
 
 
 class Predictor:
