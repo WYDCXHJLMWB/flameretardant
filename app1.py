@@ -140,7 +140,7 @@ st.markdown(f"""
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        opacity: 0.9; /* 透明度设置为90% */
+        opacity: 0.99; /* 透明度设置为90% */
     }}
 
     /* 修复标题显示问题 */
