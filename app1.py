@@ -86,49 +86,62 @@ if 'user' not in st.session_state:
     st.session_state.user = None
 
 # --------------------- 样式配置 ---------------------
-    st.markdown("""
-    <style>
-        /* 恢复页面标题和图标 */
-        .stApp header[data-testid="stHeader"] {
-            display: block !important;  /* 确保头部显示 */
-        }
-        
-        /* 恢复主标题样式 */
-        .stApp h1 {
-            font-size: 2.8rem !important;  /* 与之前设置的标题一致 */
-            visibility: visible !important;
-            margin: 0.5rem 0 1.5rem 0 !important;
-        }
+# --------------------- 样式配置 ---------------------
+st.markdown("""
+<style>
+    .global-header {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        margin: 0 0 2rem 0;
+        padding: 1rem 0;
+        border-bottom: 3px solid #1e3d59;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 1000;
+    }
     
-        /* 恢复图标容器 */
-        .stApp [data-testid="stDecoration"] {
-            display: block !important;
-            height: 4rem !important;  /* 调整图标显示区域 */
-        }
+    .header-logo {
+        width: 80px;
+        height: auto;
+        flex-shrink: 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
     
-        /* 修复侧边栏可能覆盖主内容的问题 */
-        .main .block-container {
-            padding-top: 3rem !important;  /* 给标题留出空间 */
-        }
+    .header-title {
+        font-size: 2.4rem !important;
+        color: #1e3d59;
+        margin: 0;
+        line-height: 1.2;
+        font-family: 'Microsoft YaHei', sans-serif;
+    }
     
-        /* 保留之前侧边栏样式但限定作用域 */
-        div[data-testid="stSidebarUserContent"] {
-            font-size: 19px !important;
-            padding: 2rem 1.5rem !important;
-        }
+    .header-subtitle {
+        font-size: 1.1rem;
+        color: #3f87a6;
+        margin: 0.3rem 0 0 0;
+    }
+
+    .auth-box {
+        max-width: 500px;
+        margin: 2rem auto;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background: white;
+    }
     
-        /* 确保流式布局正常 */
-        @media (max-width: 768px) {
-            .stApp header {
-                padding-left: 1rem !important;
-            }
-            .stApp h1 {
-                font-size: 2.2rem !important;
-            }
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    # 使用选项卡布局
+    /* 修复标题显示问题 */
+    .stApp h1 {
+        visibility: visible !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# --------------------- 登录验证 ---------------------
+if not st.session_state.logged_in:  # 仅当未登录时显示登录界面
     tab_login, tab_register, tab_forgot_password = st.tabs(["🔐 登录", "📝 注册", "忘记密码"])
 
     # 登录界面
