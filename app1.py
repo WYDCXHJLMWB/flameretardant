@@ -90,6 +90,12 @@ if 'user' not in st.session_state:
 # --------------------- 样式配置 ---------------------
 st.markdown(f"""
 <style>
+    /* 页面字体大小调整 */
+    body {{
+        font-size: 18px;  /* 增大字体 */
+        font-family: 'Microsoft YaHei', sans-serif;
+    }}
+    
     .global-header {{
         display: flex;
         align-items: center;
@@ -143,6 +149,21 @@ st.markdown(f"""
         opacity: 0.99; /* 透明度设置为90% */
     }}
 
+    /* 登录界面标题 */
+    .stApp h1 {{
+        text-align: center;
+        color: #1e3d59;
+        font-size: 3rem;
+        font-weight: bold;
+        margin-top: 2rem;
+    }}
+
+    /* 修改按钮样式 */
+    .stButton button {{
+        font-size: 1.5rem;
+        padding: 1rem 2rem;
+    }}
+
     /* 修复标题显示问题 */
     .stApp h1 {{
         visibility: visible !important;
@@ -159,7 +180,7 @@ if not st.session_state.logged_in:  # 仅当未登录时显示登录界面
         with st.container():
             # 显示登录界面标题和图标
             st.image("图片1.jpg", width=200, caption="阻燃聚合物复合材料智能设计平台")  # 显示图标
-            st.markdown("<h1 style='text-align: center; color: #1e3d59;'>登录</h1>", unsafe_allow_html=True)  # 显示标题
+            st.markdown("<h1>阻燃聚合物复合材料智能设计平台</h1>", unsafe_allow_html=True)  # 显示大标题
             with st.form("login_form"):
                 st.subheader("用户登录")
                 login_user = st.text_input("用户名", key="login_user").strip()
