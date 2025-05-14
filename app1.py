@@ -125,6 +125,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --------------------- 登录界面 ---------------------
+# --------------------- 登录界面 ---------------------
 if not st.session_state.logged_in:
     st.markdown(f"""
     <div class="global-header">
@@ -138,38 +139,96 @@ if not st.session_state.logged_in:
     </div>
     """, unsafe_allow_html=True)
 
-    with st.container():
-        with st.form("auth_form"):
-            auth_mode = st.radio("请选择操作", ["登录", "注册"], horizontal=True)
+    # 使用选项卡布局
+    tab_login, tab_register = st.tabs(["🔐 登录", "📝 注册"])
 
-            username = st.text_input("用户名", max_chars=20, help="请输入用户名").strip()
-
-            if auth_mode == "注册":
-                password = st.text_input("设置密码", type="password", help="至少6位字符")
-            elif auth_mode == "登录":
-                password = st.text_input("密码", type="password")
-
-            if st.form_submit_button(auth_mode):
-                if not all([username, password]):
-                    st.error("请填写所有字段")
-                elif auth_mode == "注册":
-                    if save_user(username, password):
+    with tab_login:
+        with st.container():
+            with st.form("login_form"):
+                st.subheader("用户登录")
+                login_user = st.text_input("用户名", key="login_user").strip()
+                login_pwd = st.text_input("密码", type="password", key="login_pwd")
+                
+                if st.form_submit_button("登录", use_container_width=True):
+                    if not all([login_user, login_pwd]):
+                        st.error("请输入用户名和密码")
+                    elif verify_user(login_user, login_pwd):
                         st.session_state.logged_in = True
-                        st.session_state.user = username
-                        # 登录成功后跳转到预测界面
-                        st.success("注册成功！")
-                        st.experimental_rerun()  # 跳转到下一个页面
-                    else:
-                        st.error("该用户名已注册")
-                else:
-                    if verify_user(username, password):
-                        st.session_state.logged_in = True
-                        st.session_state.user = username
-                        # 登录成功后跳转到预测界面
+                        st.session_state.user = login_user
                         st.success("登录成功！")
-                        st.experimental_rerun()  # 跳转到下一个页面
+                        st.experimental_rerun()
                     else:
                         st.error("用户名或密码错误")
+
+    with tab_register:
+        with st.container():
+            with st.form("register_form"):
+                st.subheader("新用户注册")
+                reg_user = st.text_input("用户名（4-20位字母数字）", 
+                                        key="reg_user",
+                                        help="用户名需唯一且不能包含特殊字符").strip()
+                reg_pwd = st.text_input("设置密码（至少6位字符）", 
+                                      type="password",
+                                      key="reg_pwd")
+                reg_pwd_confirm = st.text_input("确认密码", 
+                                               type="password",
+                                               key="reg_pwd_confirm")
+
+                if st.form_submit_button("注册", use_container_width=True):
+                    error = False
+                    if not all([reg_user, reg_pwd, reg_pwd_confirm]):
+                        st.error("请填写所有字段")
+                        error = True
+                    if len(reg_user) < 4 or not reg_user.isalnum():
+                        st.error("用户名需4-20位字母数字组合")
+                        error = True
+                    if len(reg_pwd) < 6:
+                        st.error("密码长度至少6位")
+                        error = True
+                    if reg_pwd != reg_pwd_confirm:
+                        st.error("两次输入的密码不一致")
+                        error = True
+                    
+                    if not error:
+                        if save_user(reg_user, reg_pwd):
+                            st.success("注册成功！请返回登录")
+                        else:
+                            st.error("该用户名已被注册")
+
+    st.markdown("""
+    <style>
+        /* 调整选项卡样式 */
+        [data-baseweb="tab-list"] {
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        [data-baseweb="tab"] {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        [data-baseweb="tab"]:hover {
+            background: #f0f2f6;
+        }
+        
+        /* 表单样式优化 */
+        .stForm {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 2rem;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* 输入框样式 */
+        .stTextInput input {
+            border-radius: 6px !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
     st.stop()
 
 # --------------------- 预测界面 ---------------------
