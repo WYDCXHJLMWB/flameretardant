@@ -88,58 +88,46 @@ if 'user' not in st.session_state:
 # --------------------- 样式配置 ---------------------
     st.markdown("""
     <style>
-        /* 全局基础字体放大 */
-        html, body, .stTextInput>label, .stButton>button, .stSelectbox>label, .stSlider>label {
-            font-size: 19px !important;  # 基础字号从16px→19px
-            line-height: 1.7 !important;
-        }
-    
-        /* 导航栏标题优化 */
-        .global-header {
-            gap: 2rem;  # 增大元素间距
+        /* 恢复页面标题和图标 */
+        .stApp header[data-testid="stHeader"] {
+            display: block !important;  /* 确保头部显示 */
         }
         
-        .header-title {
-            font-size: 2.8rem !important;  # 原2.4rem→2.8rem (提升16.6%)
-            line-height: 1.15 !important;
-            letter-spacing: -0.8px;  # 紧凑排版
-        }
-        
-        .header-subtitle {
-            font-size: 1.4rem !important;  # 原1.1rem→1.4rem (提升27%)
-            margin-top: 0.8rem;
-            opacity: 0.95;
+        /* 恢复主标题样式 */
+        .stApp h1 {
+            font-size: 2.8rem !important;  /* 与之前设置的标题一致 */
+            visibility: visible !important;
+            margin: 0.5rem 0 1.5rem 0 !important;
         }
     
-        /* 放大所有文本组件 */
-        .stMarkdown, .stText, .stAlert, .stSuccess {
-            font-size: 1.15em !important;  # 相对基础字号再放大15%
+        /* 恢复图标容器 */
+        .stApp [data-testid="stDecoration"] {
+            display: block !important;
+            height: 4rem !important;  /* 调整图标显示区域 */
         }
     
-        /* 表单组件字体同步放大 */
-        .stTextInput input, .stSelectbox select, .stTextArea textarea {
-            font-size: 1.05em !important;
-            padding: 0.8em 1em !important;
+        /* 修复侧边栏可能覆盖主内容的问题 */
+        .main .block-container {
+            padding-top: 3rem !important;  /* 给标题留出空间 */
         }
     
-        /* 按钮放大 */
-        .stButton>button {
-            font-size: 1.1em !important;
-            padding: 0.7em 1.5em !important;
+        /* 保留之前侧边栏样式但限定作用域 */
+        div[data-testid="stSidebarUserContent"] {
+            font-size: 19px !important;
+            padding: 2rem 1.5rem !important;
         }
     
-        /* 响应式适配 */
+        /* 确保流式布局正常 */
         @media (max-width: 768px) {
-            .header-title {
-                font-size: 2.2rem !important;
+            .stApp header {
+                padding-left: 1rem !important;
             }
-            .header-subtitle {
-                font-size: 1.2rem !important;
+            .stApp h1 {
+                font-size: 2.2rem !important;
             }
         }
     </style>
     """, unsafe_allow_html=True)
-
     # 使用选项卡布局
     tab_login, tab_register, tab_forgot_password = st.tabs(["🔐 登录", "📝 注册", "忘记密码"])
 
