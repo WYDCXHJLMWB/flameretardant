@@ -229,7 +229,6 @@ if not st.session_state.logged_in:
 
 
 
-
 # --------------------- 预测界面 ---------------------
 if st.session_state.logged_in:
     # 这里可以放你的后续预测功能代码，例如数据输入、模型预测等
