@@ -23,6 +23,8 @@ def image_to_base64(image_path):
 
 
 icon_base64 = image_to_base64("图片1.jpg")  
+background_base64 = image_to_base64("图片1.jpg")  # 设置背景图片
+
 if icon_base64:
     st.set_page_config(
         page_title="阻燃聚合物复合材料智能设计平台",
@@ -86,10 +88,9 @@ if 'user' not in st.session_state:
     st.session_state.user = None
 
 # --------------------- 样式配置 ---------------------
-# --------------------- 样式配置 ---------------------
-st.markdown("""
+st.markdown(f"""
 <style>
-    .global-header {
+    .global-header {{
         display: flex;
         align-items: center;
         gap: 25px;
@@ -100,43 +101,52 @@ st.markdown("""
         top: 0;
         background: white;
         z-index: 1000;
-    }
+    }}
     
-    .header-logo {
+    .header-logo {{
         width: 80px;
         height: auto;
         flex-shrink: 0;
         border-radius: 8px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
+    }}
     
-    .header-title {
+    .header-title {{
         font-size: 2.4rem !important;
         color: #1e3d59;
         margin: 0;
         line-height: 1.2;
         font-family: 'Microsoft YaHei', sans-serif;
-    }
+    }}
     
-    .header-subtitle {
+    .header-subtitle {{
         font-size: 1.1rem;
         color: #3f87a6;
         margin: 0.3rem 0 0 0;
-    }
+    }}
 
-    .auth-box {
+    .auth-box {{
         max-width: 500px;
         margin: 2rem auto;
         padding: 2rem;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         background: white;
-    }
+    }}
     
+    /* 登录界面背景 */
+    .stApp {{
+        background-image: url('data:image/jpeg;base64,{background_base64}');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0.9; /* 透明度设置为90% */
+    }}
+
     /* 修复标题显示问题 */
-    .stApp h1 {
+    .stApp h1 {{
         visibility: visible !important;
-    }
+    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -147,6 +157,9 @@ if not st.session_state.logged_in:  # 仅当未登录时显示登录界面
     # 登录界面
     with tab_login:
         with st.container():
+            # 显示登录界面标题和图标
+            st.image("图片1.jpg", width=80, caption="阻燃聚合物复合材料智能设计平台")  # 显示图标
+            st.markdown("<h1 style='text-align: center; color: #1e3d59;'>登录</h1>", unsafe_allow_html=True)  # 显示标题
             with st.form("login_form"):
                 st.subheader("用户登录")
                 login_user = st.text_input("用户名", key="login_user").strip()
@@ -212,7 +225,8 @@ if not st.session_state.logged_in:  # 仅当未登录时显示登录界面
                 else:
                     st.error("该邮箱未注册，无法重置密码")
 
-    st.stop()
+    st.stop() 
+
 
 
 # --------------------- 预测界面 ---------------------
