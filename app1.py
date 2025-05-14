@@ -8,6 +8,12 @@ import io
 import base64
 
 # --------------------- 页面配置: 这部分要放到最前面 ---------------------
+def image_to_base64(image_path):
+    img = Image.open(image_path)
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode()
+
 icon_base64 = image_to_base64("图片1.jpg")  # 确保路径正确
 if icon_base64:
     st.set_page_config(
@@ -165,6 +171,13 @@ if not st.session_state.logged_in:
                     else:
                         st.error("用户名或密码错误")
     st.stop()
+
+# --------------------- 预测界面 ---------------------
+if st.session_state.logged_in:
+    # 示例按钮
+    if st.button("开始预测"):
+        st.write("这里是预测结果区域...")
+
 # --------------------- 预测界面 ---------------------
 if st.session_state.logged_in:
     # 这里可以放你的后续预测功能代码，例如数据输入、模型预测等
