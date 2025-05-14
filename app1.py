@@ -35,6 +35,7 @@ def load_users():
 
 # 修改保存用户的密码哈希为字节类型
 # 保存用户时的密码哈希（确保哈希是字节类型）
+# 修改保存用户时的密码哈希（确保哈希是字节类型）
 def save_user(username, password, email):
     users = load_users()
     if username in users['username'].values:
@@ -56,9 +57,14 @@ def verify_user(username, password):
         # 确保从存储的哈希值转换为字节类型
         stored_hash_bytes = stored_hash.encode()  # 如果是字符串类型，转换为字节类型
         # 对比密码
-        if bcrypt.checkpw(password.encode(), stored_hash_bytes):
-            return True
+        try:
+            if bcrypt.checkpw(password.encode(), stored_hash_bytes):
+                return True
+        except ValueError as e:
+            # 打印错误信息以便调试
+            st.error(f"密码验证错误: {e}")
     return False
+
 
 
 
