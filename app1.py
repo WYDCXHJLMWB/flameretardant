@@ -59,6 +59,10 @@ def verify_user(username, password):
     stored_hash = user.iloc[0]['password_hash']
     stored_hash_bytes = stored_hash.encode()  # 转换为字节类型
 
+    # 打印调试信息
+    st.write("存储的密码哈希：", stored_hash_bytes)
+    st.write("输入的密码：", password.encode())
+
     try:
         if bcrypt.checkpw(password.encode(), stored_hash_bytes):
             return True
@@ -68,7 +72,6 @@ def verify_user(username, password):
     except ValueError as e:
         st.error(f"密码验证错误: {e}")
         return False
-
 
 def reset_password_by_email(email, new_password):
     users = load_users()
