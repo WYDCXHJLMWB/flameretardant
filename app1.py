@@ -15,7 +15,11 @@ if not os.path.exists(USERS_FILE):
     pd.DataFrame(columns=["username", "password_hash"]).to_csv(USERS_FILE, index=False)
 
 def load_users():
-    return pd.read_csv(USERS_FILE)
+    users = pd.read_csv(USERS_FILE)
+    # 检查列名是否匹配
+    if 'username' not in users.columns or 'password_hash' not in users.columns:
+        raise ValueError("CSV文件格式错误，缺少必要的列名 'username' 或 'password_hash'")
+    return users
 
 def save_user(username, password):
     users = load_users()
@@ -157,6 +161,7 @@ if not st.session_state.logged_in:
                     else:
                         st.error("用户名或密码错误")
     st.stop()
+
 
 
 class Predictor:
