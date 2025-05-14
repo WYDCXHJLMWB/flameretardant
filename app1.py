@@ -66,6 +66,14 @@ if 'logged_in' not in st.session_state:
 if 'user' not in st.session_state:
     st.session_state.user = None
 
+# --------------------- 页面配置 ---------------------
+icon_base64 = image_to_base64("图片1.jpg")  # 确保图片路径正确
+st.set_page_config(
+    page_title="阻燃聚合物复合材料智能设计平台",
+    layout="wide",
+    page_icon=f"data:image/png;base64,{icon_base64}"
+)
+
 # --------------------- 样式配置 ---------------------
 st.markdown("""
 <style>
@@ -117,13 +125,6 @@ st.markdown("""
 
 # --------------------- 认证页面 ---------------------
 if not st.session_state.logged_in:
-    icon_base64 = image_to_base64("图片1.jpg")
-    st.set_page_config(
-        page_title="阻燃聚合物复合材料智能设计平台",
-        layout="wide",
-        page_icon=f"data:image/png;base64,{icon_base64}"
-    )
-    
     st.markdown(f"""
     <div class="global-header">
         <img src="data:image/png;base64,{icon_base64}" 
@@ -191,6 +192,7 @@ if not st.session_state.logged_in:
                         else:
                             st.error("该用户未注册")
     st.stop()
+
 
 class Predictor:
     def __init__(self, scaler_path, svc_path):
