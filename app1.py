@@ -16,9 +16,21 @@ if not os.path.exists(USERS_FILE):
 
 def load_users():
     users = pd.read_csv(USERS_FILE)
-    # 检查列名是否匹配
+    # 检查列名是否正确
     if 'username' not in users.columns or 'password_hash' not in users.columns:
-        raise ValueError("CSV文件格式错误，缺少必要的列名 'username' 或 'password_hash'")
+        st.error("CSV文件格式错误，缺少必要的列名 'username' 或 'password_hash'，正在修复...")
+        # 如果列名不正确，尝试修复
+        if 'phone' in users.columns:
+            # 如果CSV文件中存在类似的列名，可以尝试重新命名
+            users = users.rename(columns={'phone': 'username'})
+        # 如果列缺失，则添加空的列
+        if 'username' not in users.columns:
+            users['username'] = ''
+        if 'password_hash' not in users.columns:
+            users['password_hash'] = ''
+        # 保存修复后的文件
+        users.to_csv(USERS_FILE, index=False)
+        st.success("文件已修复，重新加载数据")
     return users
 
 def save_user(username, password):
