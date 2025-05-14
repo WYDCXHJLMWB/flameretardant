@@ -1,10 +1,26 @@
 import pandas as pd
-import bcrypt
+import hashlib
 import os
+import bcrypt
 import streamlit as st
+from PIL import Image
+import io
+import base64
 
 # --------------------- 页面配置 ---------------------
-# 省略之前的代码...
+def image_to_base64(image_path):
+    img = Image.open(image_path)
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode()
+
+icon_base64 = image_to_base64("图片1.jpg")  # 确保路径正确
+if icon_base64:
+    st.set_page_config(
+        page_title="阻燃聚合物复合材料智能设计平台",
+        layout="wide",
+        page_icon=f"data:image/png;base64,{icon_base64}"
+    )
 
 # --------------------- 用户认证模块 ---------------------
 USERS_FILE = "users.csv"
@@ -42,124 +58,6 @@ def reset_password_by_email(email, new_password):
     if not user.empty:
         password_hash = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt())
         users.loc[users['email'] == email, 'password_hash'] = password_hash
-        users.to_csv(USERS_FILE, index=False)
-        return True
-    return False
-
-# --------------------- 页面显示和用户交互 ---------------------
-if not st.session_state.logged_in:
-    st.markdown(f"""<div class="global-header"> ... </div>""", unsafe_allow_html=True)
-
-    tab_login, tab_register, tab_forgot_password = st.tabs(["🔐 登录", "📝 注册", "忘记密码"])
-
-    # 登录界面
-    with tab_login:
-        with st.container():
-            with st.form("login_form"):
-                login_user = st.text_input("用户名", key="login_user").strip()
-                login_pwd = st.text_input("密码", type="password", key="login_pwd")
-                
-                if st.form_submit_button("登录", use_container_width=True):
-                    if not all([login_user, login_pwd]):
-                        st.error("请输入用户名和密码")
-                    elif verify_user(login_user, login_pwd):
-                        st.session_state.logged_in = True
-                        st.session_state.user = login_user
-                        st.success("登录成功！")
-                        st.experimental_rerun()
-                    else:
-                        st.error("用户名或密码错误")
-
-    # 注册界面
-    with tab_register:
-        with st.container():
-            with st.form("register_form"):
-                reg_user = st.text_input("用户名（4-20位字母数字）", key="reg_user", help="用户名需唯一且不能包含特殊字符").strip()
-                reg_pwd = st.text_input("设置密码（至少6位字符）", type="password", key="reg_pwd")
-                reg_email = st.text_input("电子邮件", key="reg_email")
-                reg_pwd_confirm = st.text_input("确认密码", type="password", key="reg_pwd_confirm")
-
-                if st.form_submit_button("注册", use_container_width=True):
-                    if reg_pwd != reg_pwd_confirm:
-                        st.error("两次密码输入不一致")
-                    elif len(reg_user) < 4 or not reg_user.isalnum():
-                        st.error("用户名格式不正确")
-                    elif len(reg_pwd) < 6:
-                        st.error("密码长度至少为6个字符")
-                    elif "@" not in reg_email:
-                        st.error("请输入有效的邮箱地址")
-                    else:
-                        if save_user(reg_user, reg_pwd, reg_email):
-                            st.success("注册成功！请登录")
-                        else:
-                            st.error("用户名已存在")
-
-    # 忘记密码界面
-    with tab_forgot_password:
-        with st.container():
-            st.subheader("找回密码")
-            email_input = st.text_input("请输入您的邮箱", key="email_input")
-            new_password = st.text_input("请输入新密码", type="password", key="new_password")
-            confirm_new_password = st.text_input("确认新密码", type="password", key="confirm_new_password")
-
-            if st.button("重置密码"):
-                if not email_input or not new_password or not confirm_new_password:
-                    st.error("请输入所有字段")
-                elif new_password != confirm_new_password:
-                    st.error("两次输入的密码不一致")
-                elif reset_password_by_email(email_input, new_password):
-                    st.success("密码重置成功！请返回登录")
-                else:
-                    st.error("该邮箱未注册，无法重置密码")
-
-    st.stop()
-
-# --------------------- 用户认证模块 ---------------------
-USERS_FILE = "users.csv"
-
-# 初始化用户数据
-if not os.path.exists(USERS_FILE):
-    pd.DataFrame(columns=["username", "password_hash"]).to_csv(USERS_FILE, index=False)
-
-def load_users():
-    users = pd.read_csv(USERS_FILE)
-    if 'username' not in users.columns or 'password_hash' not in users.columns:
-        st.error("CSV文件格式错误，缺少必要的列名 'username' 或 'password_hash'，正在修复...")
-        if 'phone' in users.columns:
-            users = users.rename(columns={'phone': 'username'})
-        if 'username' not in users.columns:
-            users['username'] = ''
-        if 'password_hash' not in users.columns:
-            users['password_hash'] = ''
-        users.to_csv(USERS_FILE, index=False)
-        st.success("文件已修复，重新加载数据")
-    return users
-
-def save_user(username, password):
-    users = load_users()
-    if username in users['username'].values:
-        return False  # 用户名已存在
-    password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-    new_user = pd.DataFrame([[username, password_hash]], columns=["username", "password_hash"])
-    users = pd.concat([users, new_user], ignore_index=True)
-    users.to_csv(USERS_FILE, index=False)
-    return True
-
-def verify_user(username, password):
-    users = load_users()
-    user = users[users['username'] == username]
-    if not user.empty:
-        stored_hash = user.iloc[0]['password_hash']
-        if bcrypt.checkpw(password.encode(), stored_hash.encode()):
-            return True
-    return False
-
-def reset_password(username, new_password):
-    users = load_users()
-    user = users[users['username'] == username]
-    if not user.empty:
-        password_hash = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt())
-        users.loc[users['username'] == username, 'password_hash'] = password_hash
         users.to_csv(USERS_FILE, index=False)
         return True
     return False
@@ -236,6 +134,7 @@ if not st.session_state.logged_in:
     # 使用选项卡布局
     tab_login, tab_register, tab_forgot_password = st.tabs(["🔐 登录", "📝 注册", "忘记密码"])
 
+    # 登录界面
     with tab_login:
         with st.container():
             with st.form("login_form"):
@@ -254,6 +153,7 @@ if not st.session_state.logged_in:
                     else:
                         st.error("用户名或密码错误")
 
+    # 注册界面
     with tab_register:
         with st.container():
             with st.form("register_form"):
@@ -264,82 +164,46 @@ if not st.session_state.logged_in:
                 reg_pwd = st.text_input("设置密码（至少6位字符）", 
                                       type="password",
                                       key="reg_pwd")
+                reg_email = st.text_input("电子邮件", key="reg_email")
                 reg_pwd_confirm = st.text_input("确认密码", 
-                                               type="password",
+                                               type="password", 
                                                key="reg_pwd_confirm")
 
                 if st.form_submit_button("注册", use_container_width=True):
-                    error = False
-                    if not all([reg_user, reg_pwd, reg_pwd_confirm]):
-                        st.error("请填写所有字段")
-                        error = True
-                    if len(reg_user) < 4 or not reg_user.isalnum():
-                        st.error("用户名需4-20位字母数字组合")
-                        error = True
-                    if len(reg_pwd) < 6:
-                        st.error("密码长度至少6位")
-                        error = True
                     if reg_pwd != reg_pwd_confirm:
-                        st.error("两次输入的密码不一致")
-                        error = True
-                    
-                    if not error:
-                        if save_user(reg_user, reg_pwd):
-                            st.success("注册成功！请返回登录")
+                        st.error("两次密码输入不一致")
+                    elif len(reg_user) < 4 or not reg_user.isalnum():
+                        st.error("用户名格式不正确")
+                    elif len(reg_pwd) < 6:
+                        st.error("密码长度至少为6个字符")
+                    elif "@" not in reg_email:
+                        st.error("请输入有效的邮箱地址")
+                    else:
+                        if save_user(reg_user, reg_pwd, reg_email):
+                            st.success("注册成功！请登录")
                         else:
-                            st.error("该用户名已被注册")
+                            st.error("用户名已存在")
 
+    # 忘记密码界面
     with tab_forgot_password:
         with st.container():
             st.subheader("找回密码")
-            reset_user = st.text_input("请输入您的用户名", key="reset_user")
+            email_input = st.text_input("请输入您的邮箱", key="email_input")
             new_password = st.text_input("请输入新密码", type="password", key="new_password")
             confirm_new_password = st.text_input("确认新密码", type="password", key="confirm_new_password")
 
             if st.button("重置密码"):
-                if not reset_user:
-                    st.error("请输入用户名")
-                elif not new_password or not confirm_new_password:
-                    st.error("请输入新密码并确认")
+                if not email_input or not new_password or not confirm_new_password:
+                    st.error("请输入所有字段")
                 elif new_password != confirm_new_password:
                     st.error("两次输入的密码不一致")
-                elif reset_password(reset_user, new_password):
+                elif reset_password_by_email(email_input, new_password):
                     st.success("密码重置成功！请返回登录")
                 else:
-                    st.error("用户名不存在，无法重置密码")
-
-    st.markdown("""
-    <style>
-        [data-baseweb="tab-list"] {
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        [data-baseweb="tab"] {
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-        
-        [data-baseweb="tab"]:hover {
-            background: #f0f2f6;
-        }
-        
-        .stForm {
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 2rem;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .stTextInput input {
-            border-radius: 6px !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+                    st.error("该邮箱未注册，无法重置密码")
 
     st.stop()
+
 
 # --------------------- 预测界面 ---------------------
 if st.session_state.logged_in:
