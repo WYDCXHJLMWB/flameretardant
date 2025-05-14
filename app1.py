@@ -158,7 +158,7 @@ if not st.session_state.logged_in:  # 仅当未登录时显示登录界面
     with tab_login:
         with st.container():
             # 显示登录界面标题和图标
-            st.image("图片1.jpg", width=80, caption="阻燃聚合物复合材料智能设计平台")  # 显示图标
+            st.image("图片1.png", width=80, caption="阻燃聚合物复合材料智能设计平台")  # 显示图标
             st.markdown("<h1 style='text-align: center; color: #1e3d59;'>登录</h1>", unsafe_allow_html=True)  # 显示标题
             with st.form("login_form"):
                 st.subheader("用户登录")
