@@ -88,52 +88,57 @@ if 'user' not in st.session_state:
 # --------------------- 样式配置 ---------------------
 st.markdown("""
 <style>
-    .global-header {
-        display: flex;
-        align-items: center;
-        gap: 25px;
-        margin: 0 0 2rem 0;
-        padding: 1rem 0;
-        border-bottom: 3px solid #1e3d59;
-        position: sticky;
-        top: 0;
-        background: white;
-        z-index: 1000;
+    /* 全局基础字体放大 */
+    html, body, .stTextInput>label, .stButton>button, .stSelectbox>label, .stSlider>label {
+        font-size: 19px !important;  # 基础字号从16px→19px
+        line-height: 1.7 !important;
     }
-    
-    .header-logo {
-        width: 80px;
-        height: auto;
-        flex-shrink: 0;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+    /* 导航栏标题优化 */
+    .global-header {
+        gap: 2rem;  # 增大元素间距
     }
     
     .header-title {
-        font-size: 2.4rem !important;
-        color: #1e3d59;
-        margin: 0;
-        line-height: 1.2;
-        font-family: 'Microsoft YaHei', sans-serif;
+        font-size: 2.8rem !important;  # 原2.4rem→2.8rem (提升16.6%)
+        line-height: 1.15 !important;
+        letter-spacing: -0.8px;  # 紧凑排版
     }
     
     .header-subtitle {
-        font-size: 1.1rem;
-        color: #3f87a6;
-        margin: 0.3rem 0 0 0;
+        font-size: 1.4rem !important;  # 原1.1rem→1.4rem (提升27%)
+        margin-top: 0.8rem;
+        opacity: 0.95;
     }
 
-    .auth-box {
-        max-width: 500px;
-        margin: 2rem auto;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        background: white;
+    /* 放大所有文本组件 */
+    .stMarkdown, .stText, .stAlert, .stSuccess {
+        font-size: 1.15em !important;  # 相对基础字号再放大15%
+    }
+
+    /* 表单组件字体同步放大 */
+    .stTextInput input, .stSelectbox select, .stTextArea textarea {
+        font-size: 1.05em !important;
+        padding: 0.8em 1em !important;
+    }
+
+    /* 按钮放大 */
+    .stButton>button {
+        font-size: 1.1em !important;
+        padding: 0.7em 1.5em !important;
+    }
+
+    /* 响应式适配 */
+    @media (max-width: 768px) {
+        .header-title {
+            font-size: 2.2rem !important;
+        }
+        .header-subtitle {
+            font-size: 1.2rem !important;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
-
 # --------------------- 登录界面 ---------------------
 if not st.session_state.logged_in:
     st.markdown(f"""
