@@ -7,6 +7,15 @@ from PIL import Image
 import io
 import base64
 
+# --------------------- 页面配置: 这部分要放到最前面 ---------------------
+icon_base64 = image_to_base64("图片1.jpg")  # 确保路径正确
+if icon_base64:
+    st.set_page_config(
+        page_title="阻燃聚合物复合材料智能设计平台",
+        layout="wide",
+        page_icon=f"data:image/png;base64,{icon_base64}"
+    )
+
 # --------------------- 用户认证模块 ---------------------
 USERS_FILE = "users.csv"
 
@@ -53,27 +62,6 @@ def verify_user(username, password):
         if bcrypt.checkpw(password.encode(), stored_hash.encode()):
             return True
     return False
-
-# --------------------- 页面配置 ---------------------
-def image_to_base64(image_path):
-    """ 将图像转换为Base64编码 """
-    try:
-        img = Image.open(image_path)
-        buffered = io.BytesIO()
-        img.save(buffered, format="PNG")
-        return base64.b64encode(buffered.getvalue()).decode()
-    except Exception as e:
-        st.error(f"图片加载失败: {str(e)}")
-        return None
-
-# --------------------- 页面配置: 这部分要放到最前面 ---------------------
-icon_base64 = image_to_base64("图片1.jpg")  # 确保路径正确
-if icon_base64:
-    st.set_page_config(
-        page_title="阻燃聚合物复合材料智能设计平台",
-        layout="wide",
-        page_icon=f"data:image/png;base64,{icon_base64}"
-    )
 
 # --------------------- 全局状态 ---------------------
 if 'logged_in' not in st.session_state:
@@ -177,7 +165,6 @@ if not st.session_state.logged_in:
                     else:
                         st.error("用户名或密码错误")
     st.stop()
-
 # --------------------- 预测界面 ---------------------
 if st.session_state.logged_in:
     # 这里可以放你的后续预测功能代码，例如数据输入、模型预测等
