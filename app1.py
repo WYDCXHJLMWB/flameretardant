@@ -20,8 +20,8 @@ def image_to_base64(image_path):
     img.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode()
 
-# Page config should be the absolute first Streamlit command.
-icon_base64 = image_to_base64("图片1.jpg")  # Ensure the path is correct
+
+icon_base64 = image_to_base64("图片1.jpg")  
 if icon_base64:
     st.set_page_config(
         page_title="阻燃聚合物复合材料智能设计平台",
