@@ -37,7 +37,8 @@ def save_user(username, password, email):
     users = load_users()
     if username in users['username'].values:
         return False  # 用户名已存在
-    password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    # 生成哈希并转换为字符串存储
+    password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode('utf-8')
     new_user = pd.DataFrame([[username, password_hash, email]], columns=["username", "password_hash", "email"])
     users = pd.concat([users, new_user], ignore_index=True)
     users.to_csv(USERS_FILE, index=False)
@@ -48,19 +49,18 @@ def verify_user(username, password):
     user = users[users['username'] == username]
     if not user.empty:
         stored_hash = user.iloc[0]['password_hash']
-        # 确保从存储的哈希值转换为字节类型
-        if isinstance(stored_hash, str):
-            stored_hash = stored_hash.encode()  # 如果是字符串类型，转换为字节类型
-        if bcrypt.checkpw(password.encode(), stored_hash):
+        # 将字符串哈希转换为字节类型
+        stored_hash_bytes = stored_hash.encode('utf-8')
+        if bcrypt.checkpw(password.encode(), stored_hash_bytes):
             return True
     return False
-
 
 def reset_password_by_email(email, new_password):
     users = load_users()
     user = users[users['email'] == email]
     if not user.empty:
-        password_hash = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt())
+        # 生成新哈希并转换为字符串存储
+        password_hash = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode('utf-8')
         users.loc[users['email'] == email, 'password_hash'] = password_hash
         users.to_csv(USERS_FILE, index=False)
         return True
@@ -209,11 +209,8 @@ if not st.session_state.logged_in:
     st.stop()
 
 
-# --------------------- 预测界面 ---------------------
-if st.session_state.logged_in:
-    # 示例按钮
-    if st.button("开始预测"):
-        st.write("这里是预测结果区域...")
+
+
 
 # --------------------- 预测界面 ---------------------
 if st.session_state.logged_in:
