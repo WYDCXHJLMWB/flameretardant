@@ -407,22 +407,22 @@ if st.session_state.logged_in:
         )
     
     # 加载模型
-@st.experimental_memo
-def load_models():
-    # 确保模型文件路径正确
-    loi_data = joblib.load("model_and_scaler_loi.pkl")
-    ts_data = joblib.load("model_and_scaler_ts1.pkl")
-    return {
-        "loi_model": loi_data["model"],
-        "loi_scaler": loi_data["scaler"],
-        "ts_model": ts_data["model"],
-        "ts_scaler": ts_data["scaler"],
-        "loi_features": pd.read_excel("trainrg3.xlsx").drop(columns="LOI", errors='ignore').columns.tolist(),
-        "ts_features": pd.read_excel("trainrg3TS.xlsx").drop(columns="TS", errors='ignore').columns.tolist(),
-    }
-
-models = load_models()
+    @st.experimental_memo
+    def load_models():
+        # 确保模型文件路径正确
+        loi_data = joblib.load("model_and_scaler_loi.pkl")
+        ts_data = joblib.load("model_and_scaler_ts1.pkl")
+        return {
+            "loi_model": loi_data["model"],
+            "loi_scaler": loi_data["scaler"],
+            "ts_model": ts_data["model"],
+            "ts_scaler": ts_data["scaler"],
+            "loi_features": pd.read_excel("trainrg3.xlsx").drop(columns="LOI", errors='ignore').columns.tolist(),
+            "ts_features": pd.read_excel("trainrg3TS.xlsx").drop(columns="TS", errors='ignore').columns.tolist(),
+        }
     
+    models = load_models()
+        
     # 获取单位
     def get_unit(fraction_type):
         if fraction_type == "质量":
