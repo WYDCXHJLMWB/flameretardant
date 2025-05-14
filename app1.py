@@ -8,14 +8,15 @@ import io
 import base64
 
 # --------------------- 页面配置 ---------------------
+# Ensure this is the first Streamlit function executed
 def image_to_base64(image_path):
     img = Image.open(image_path)
     buffered = io.BytesIO()
     img.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode()
 
-# This should be the first Streamlit command
-icon_base64 = image_to_base64("图片1.jpg")  # 确保路径正确
+# Page config should be the absolute first Streamlit command.
+icon_base64 = image_to_base64("图片1.jpg")  # Ensure the path is correct
 if icon_base64:
     st.set_page_config(
         page_title="阻燃聚合物复合材料智能设计平台",
@@ -26,7 +27,7 @@ if icon_base64:
 # --------------------- 用户认证模块 ---------------------
 USERS_FILE = "users.csv"
 
-# 初始化用户数据
+# Initialize user data
 if not os.path.exists(USERS_FILE):
     pd.DataFrame(columns=["username", "password_hash", "email"]).to_csv(USERS_FILE, index=False)
 
@@ -213,7 +214,6 @@ if not st.session_state.logged_in:
                     st.error("该邮箱未注册，无法重置密码")
 
     st.stop()
-
 
 
 # --------------------- 预测界面 ---------------------
