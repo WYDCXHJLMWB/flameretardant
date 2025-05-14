@@ -48,24 +48,26 @@ def save_user(username, password, email):
     users.to_csv(USERS_FILE, index=False)
     return True
 
-# 修改验证密码时，确保密码哈希是字节类型
 def verify_user(username, password):
     users = load_users()
     user = users[users['username'] == username]
-    if not user.empty:
-        stored_hash = user.iloc[0]['password_hash']
-        # 确保从存储的哈希值转换为字节类型
-        stored_hash_bytes = stored_hash.encode()  # 如果是字符串类型，转换为字节类型
-        # 对比密码
-        try:
-            if bcrypt.checkpw(password.encode(), stored_hash_bytes):
-                return True
-        except ValueError as e:
-            # 打印错误信息以便调试
-            st.error(f"密码验证错误: {e}")
-    return False
+    
+    if user.empty:
+        st.error("用户不存在")
+        return False
+    
+    stored_hash = user.iloc[0]['password_hash']
+    stored_hash_bytes = stored_hash.encode()  # 转换为字节类型
 
-
+    try:
+        if bcrypt.checkpw(password.encode(), stored_hash_bytes):
+            return True
+        else:
+            st.error("密码错误")
+            return False
+    except ValueError as e:
+        st.error(f"密码验证错误: {e}")
+        return False
 
 
 def reset_password_by_email(email, new_password):
