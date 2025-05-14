@@ -34,14 +34,15 @@ def load_users():
     return users
 
 # 修改保存用户的密码哈希为字节类型
-def save_user(username, password):
+# 保存用户时的密码哈希（确保哈希是字节类型）
+def save_user(username, password, email):
     users = load_users()
     if username in users['username'].values:
         return False  # 用户名已存在
     # 生成密码哈希
     password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
     # 将字节类型的密码哈希转换为字符串并保存
-    new_user = pd.DataFrame([[username, password_hash.decode()]], columns=["username", "password_hash"])
+    new_user = pd.DataFrame([[username, password_hash.decode(), email]], columns=["username", "password_hash", "email"])
     users = pd.concat([users, new_user], ignore_index=True)
     users.to_csv(USERS_FILE, index=False)
     return True
@@ -54,9 +55,11 @@ def verify_user(username, password):
         stored_hash = user.iloc[0]['password_hash']
         # 确保从存储的哈希值转换为字节类型
         stored_hash_bytes = stored_hash.encode()  # 如果是字符串类型，转换为字节类型
+        # 对比密码
         if bcrypt.checkpw(password.encode(), stored_hash_bytes):
             return True
     return False
+
 
 
 def reset_password_by_email(email, new_password):
