@@ -15,6 +15,21 @@ from datetime import datetime, timedelta
 from PIL import Image
 import io
 
+# --------------------- 页面配置 ---------------------
+def image_to_base64(image_path):
+    img = Image.open(image_path)
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode()
+
+# 设置页面配置，必须放在代码的最前面
+icon_base64 = image_to_base64("图片1.jpg")  # 确保图片路径正确
+st.set_page_config(
+    page_title="阻燃聚合物复合材料智能设计平台",
+    layout="wide",
+    page_icon=f"data:image/png;base64,{icon_base64}"
+)
+
 # --------------------- 用户认证模块 ---------------------
 USERS_FILE = "users.csv"
 sent_codes = {}
@@ -53,26 +68,11 @@ def verify_code(phone, code):
         return False
     return code == record[0]
 
-# --------------------- 页面配置 ---------------------
-def image_to_base64(image_path):
-    img = Image.open(image_path)
-    buffered = io.BytesIO()
-    img.save(buffered, format="PNG")
-    return base64.b64encode(buffered.getvalue()).decode()
-
 # --------------------- 全局状态 ---------------------
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 if 'user' not in st.session_state:
     st.session_state.user = None
-
-# --------------------- 页面配置 ---------------------
-icon_base64 = image_to_base64("图片1.jpg")  # 确保图片路径正确
-st.set_page_config(
-    page_title="阻燃聚合物复合材料智能设计平台",
-    layout="wide",
-    page_icon=f"data:image/png;base64,{icon_base64}"
-)
 
 # --------------------- 样式配置 ---------------------
 st.markdown("""
@@ -192,6 +192,7 @@ if not st.session_state.logged_in:
                         else:
                             st.error("该用户未注册")
     st.stop()
+
 
 
 class Predictor:
