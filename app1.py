@@ -11,6 +11,7 @@ import numpy as np
 from scipy import stats
 from sklearn.impute import SimpleImputer
 from deap import base, creator, tools, algorithms
+import random  
 
 # --------------------- 页面配置 ---------------------
 # Ensure this is the first Streamlit function executed
