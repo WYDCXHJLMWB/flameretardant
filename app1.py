@@ -5,6 +5,7 @@ import bcrypt
 import streamlit as st
 from PIL import Image
 import io
+import base64
 
 # --------------------- 用户认证模块 ---------------------
 USERS_FILE = "users.csv"
@@ -39,10 +40,15 @@ def verify_user(username, password):
 
 # --------------------- 页面配置 ---------------------
 def image_to_base64(image_path):
-    img = Image.open(image_path)
-    buffered = io.BytesIO()
-    img.save(buffered, format="PNG")
-    return base64.b64encode(buffered.getvalue()).decode()
+    """ 将图像转换为Base64编码 """
+    try:
+        img = Image.open(image_path)
+        buffered = io.BytesIO()
+        img.save(buffered, format="PNG")
+        return base64.b64encode(buffered.getvalue()).decode()
+    except Exception as e:
+        st.error(f"图片加载失败: {str(e)}")
+        return None
 
 # --------------------- 全局状态 ---------------------
 if 'logged_in' not in st.session_state:
@@ -101,53 +107,56 @@ st.markdown("""
 
 # --------------------- 认证页面 ---------------------
 if not st.session_state.logged_in:
-    icon_base64 = image_to_base64("图片1.jpg")
-    st.set_page_config(
-        page_title="阻燃聚合物复合材料智能设计平台",
-        layout="wide",
-        page_icon=f"data:image/png;base64,{icon_base64}"
-    )
+    icon_base64 = image_to_base64("图片1.jpg")  # 确保路径正确
+    if icon_base64:
+        st.set_page_config(
+            page_title="阻燃聚合物复合材料智能设计平台",
+            layout="wide",
+            page_icon=f"data:image/png;base64,{icon_base64}"
+        )
 
-    st.markdown(f"""
-    <div class="global-header">
-        <img src="data:image/png;base64,{icon_base64}" 
-             class="header-logo"
-             alt="Platform Logo">
-        <div>
-            <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
-            <p class="header-subtitle">Flame Retardant Polymer Composite Intelligent Platform</p>
+        st.markdown(f"""
+        <div class="global-header">
+            <img src="data:image/png;base64,{icon_base64}" 
+                 class="header-logo"
+                 alt="Platform Logo">
+            <div>
+                <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
+                <p class="header-subtitle">Flame Retardant Polymer Composite Intelligent Platform</p>
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-    with st.container():
-        with st.form("auth_form"):
-            auth_mode = st.radio("请选择操作", ["登录", "注册"], horizontal=True)
+        with st.container():
+            with st.form("auth_form"):
+                auth_mode = st.radio("请选择操作", ["登录", "注册"], horizontal=True)
 
-            username = st.text_input("用户名", max_chars=20, help="请输入用户名").strip()
+                username = st.text_input("用户名", max_chars=20, help="请输入用户名").strip()
 
-            if auth_mode == "注册":
-                password = st.text_input("设置密码", type="password", help="至少6位字符")
-            elif auth_mode == "登录":
-                password = st.text_input("密码", type="password")
+                if auth_mode == "注册":
+                    password = st.text_input("设置密码", type="password", help="至少6位字符")
+                elif auth_mode == "登录":
+                    password = st.text_input("密码", type="password")
 
-            if st.form_submit_button(auth_mode):
-                if not all([username, password]):
-                    st.error("请填写所有字段")
-                elif auth_mode == "注册":
-                    if save_user(username, password):
-                        st.session_state.logged_in = True
-                        st.session_state.user = username
-                        st.experimental_rerun()
+                if st.form_submit_button(auth_mode):
+                    if not all([username, password]):
+                        st.error("请填写所有字段")
+                    elif auth_mode == "注册":
+                        if save_user(username, password):
+                            st.session_state.logged_in = True
+                            st.session_state.user = username
+                            st.experimental_rerun()
+                        else:
+                            st.error("该用户名已注册")
                     else:
-                        st.error("该用户名已注册")
-                else:
-                    if verify_user(username, password):
-                        st.session_state.logged_in = True
-                        st.session_state.user = username
-                        st.experimental_rerun()
-                    else:
-                        st.error("用户名或密码错误")
+                        if verify_user(username, password):
+                            st.session_state.logged_in = True
+                            st.session_state.user = username
+                            st.experimental_rerun()
+                        else:
+                            st.error("用户名或密码错误")
+    else:
+        st.error("图像加载失败，无法显示页面")
     st.stop()
 
 
