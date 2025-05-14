@@ -406,8 +406,7 @@ if st.session_state.logged_in:
             key="sub_nav"
         )
     
-    # 加载模型
-    @st.experimental_memo
+    @st.cache_resource  # 更新后的缓存装饰器
     def load_models():
         # 确保模型文件路径正确
         loi_data = joblib.load("model_and_scaler_loi.pkl")
