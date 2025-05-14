@@ -50,6 +50,15 @@ def image_to_base64(image_path):
         st.error(f"图片加载失败: {str(e)}")
         return None
 
+# --------------------- 页面配置: 这部分要放到最前面 ---------------------
+icon_base64 = image_to_base64("图片1.jpg")  # 确保路径正确
+if icon_base64:
+    st.set_page_config(
+        page_title="阻燃聚合物复合材料智能设计平台",
+        layout="wide",
+        page_icon=f"data:image/png;base64,{icon_base64}"
+    )
+
 # --------------------- 全局状态 ---------------------
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
@@ -107,56 +116,46 @@ st.markdown("""
 
 # --------------------- 认证页面 ---------------------
 if not st.session_state.logged_in:
-    icon_base64 = image_to_base64("图片1.jpg")  # 确保路径正确
-    if icon_base64:
-        st.set_page_config(
-            page_title="阻燃聚合物复合材料智能设计平台",
-            layout="wide",
-            page_icon=f"data:image/png;base64,{icon_base64}"
-        )
-
-        st.markdown(f"""
-        <div class="global-header">
-            <img src="data:image/png;base64,{icon_base64}" 
-                 class="header-logo"
-                 alt="Platform Logo">
-            <div>
-                <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
-                <p class="header-subtitle">Flame Retardant Polymer Composite Intelligent Platform</p>
-            </div>
+    st.markdown(f"""
+    <div class="global-header">
+        <img src="data:image/png;base64,{icon_base64}" 
+             class="header-logo"
+             alt="Platform Logo">
+        <div>
+            <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
+            <p class="header-subtitle">Flame Retardant Polymer Composite Intelligent Platform</p>
         </div>
-        """, unsafe_allow_html=True)
+    </div>
+    """, unsafe_allow_html=True)
 
-        with st.container():
-            with st.form("auth_form"):
-                auth_mode = st.radio("请选择操作", ["登录", "注册"], horizontal=True)
+    with st.container():
+        with st.form("auth_form"):
+            auth_mode = st.radio("请选择操作", ["登录", "注册"], horizontal=True)
 
-                username = st.text_input("用户名", max_chars=20, help="请输入用户名").strip()
+            username = st.text_input("用户名", max_chars=20, help="请输入用户名").strip()
 
-                if auth_mode == "注册":
-                    password = st.text_input("设置密码", type="password", help="至少6位字符")
-                elif auth_mode == "登录":
-                    password = st.text_input("密码", type="password")
+            if auth_mode == "注册":
+                password = st.text_input("设置密码", type="password", help="至少6位字符")
+            elif auth_mode == "登录":
+                password = st.text_input("密码", type="password")
 
-                if st.form_submit_button(auth_mode):
-                    if not all([username, password]):
-                        st.error("请填写所有字段")
-                    elif auth_mode == "注册":
-                        if save_user(username, password):
-                            st.session_state.logged_in = True
-                            st.session_state.user = username
-                            st.experimental_rerun()
-                        else:
-                            st.error("该用户名已注册")
+            if st.form_submit_button(auth_mode):
+                if not all([username, password]):
+                    st.error("请填写所有字段")
+                elif auth_mode == "注册":
+                    if save_user(username, password):
+                        st.session_state.logged_in = True
+                        st.session_state.user = username
+                        st.experimental_rerun()
                     else:
-                        if verify_user(username, password):
-                            st.session_state.logged_in = True
-                            st.session_state.user = username
-                            st.experimental_rerun()
-                        else:
-                            st.error("用户名或密码错误")
-    else:
-        st.error("图像加载失败，无法显示页面")
+                        st.error("该用户名已注册")
+                else:
+                    if verify_user(username, password):
+                        st.session_state.logged_in = True
+                        st.session_state.user = username
+                        st.experimental_rerun()
+                    else:
+                        st.error("用户名或密码错误")
     st.stop()
 
 
