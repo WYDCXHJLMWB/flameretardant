@@ -403,11 +403,11 @@ if st.session_state.logged_in:
         key="main_nav"
     )
     with st.sidebar:
-    if st.button("🚪 退出登录", use_container_width=True):
-        st.session_state.logged_in = False  # 设置登录状态为 False
-        st.session_state.user = None  # 清除用户信息
-        st.success("已成功退出登录")  # 显示成功消息
-        st.rerun()  # 重新加载页面
+        if st.button("🚪 退出登录", use_container_width=True):
+            st.session_state.logged_in = False  # 设置登录状态为 False
+            st.session_state.user = None  # 清除用户信息
+            st.success("已成功退出登录")  # 显示成功消息
+            st.rerun()  # 重新加载页面
     # 子功能选择（仅在配方建议时显示）
     sub_page = None
     if page == "配方建议":
