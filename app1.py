@@ -47,10 +47,14 @@ def verify_user(username, password):
     users = load_users()
     user = users[users['username'] == username]
     if not user.empty:
-        stored_hash = user.iloc[0]['password_hash'].encode()  # 确保从存储中读取到的是字节类型
+        stored_hash = user.iloc[0]['password_hash']
+        # 确保从存储的哈希值转换为字节类型
+        if isinstance(stored_hash, str):
+            stored_hash = stored_hash.encode()  # 如果是字符串类型，转换为字节类型
         if bcrypt.checkpw(password.encode(), stored_hash):
             return True
     return False
+
 
 def reset_password_by_email(email, new_password):
     users = load_users()
