@@ -9,3 +9,4 @@ openpyxl
 deap
 feature_engineering
 bcrypt
+hashlib
