@@ -637,15 +637,15 @@ if st.session_state.logged_in:
     elif page == "性能预测":
         st.subheader("🔮 性能预测：基于配方预测LOI和TS")
     
-        matrix_materials = ["聚丙烯", "聚酰胺", "聚碳酸酯/丙烯腈-丁二烯-苯乙烯", "聚甲醛", "聚对苯二甲酸丁二醇酯", "聚氯乙烯", "其他"]
+        matrix_materials = ["PP", "PA", "PC/ABS", "POM", "PBT", "PVC", "其他"]
         flame_retardants = [
-            "次磷酸铝", "八钼酸铵", "氢氧化铝", "成炭剂", "聚磷酸铵", "季戊四醇磷酸酯", "9,10-二氢-9-氧杂-10-磷杂菲-10-氧化物",
-            "EPFR-1100NT", "XS-FR-8310", "锡酸锌", "XiuCheng阻燃剂", "羟基锡酸锌", "硼酸锌", "三氧化二锑",
-            "氢氧化镁", "三嗪成炭剂", "三聚氰胺聚磷酸盐", "焦磷酸哌嗪", "其他"
+            "AHP", "ammonium octamolybdate", "Al(OH)3", "CFA", "APP", "Pentaerythritol", "DOPO",
+            "EPFR-1100NT", "XS-FR-8310", "ZS", "XiuCheng", "ZHS", "ZnB", "antimony oxides",
+            "Mg(OH)2", "TCA", "MPP", "PAPP", "其他"
         ]
         additives = [
-            "抗滴落剂", "硅灰石", "M-2200B", "ZBS-PV-OA", "FP-250S", "硅烷偶联剂", "抗氧化剂",
-            "二氧化硅", "其他"
+            "Anti-drip-agent", "wollastonite", "M-2200B", "ZBS-PV-OA", "FP-250S", "silane coupling agent", "antioxidant",
+            "SiO2", "其他"
         ]
     
         fraction_type = st.sidebar.selectbox("选择输入的单位", ["质量", "质量分数", "体积分数"])
@@ -822,16 +822,16 @@ if st.session_state.logged_in:
             )
             st.subheader("🧪 配方建议：根据目标LOI和TS优化配方")
         
-            matrix_materials = ["聚丙烯", "聚酰胺", "聚碳酸酯/丙烯腈-丁二烯-苯乙烯", "聚甲醛", "聚对苯二甲酸丁二醇酯", "聚氯乙烯", "其他"]
+            matrix_materials = ["PP", "PA", "PC/ABS", "POM", "PBT", "PVC", "其他"]
             flame_retardants = [
-                "次磷酸铝", "八钼酸铵", "氢氧化铝", "成炭剂", "聚磷酸铵", "季戊四醇磷酸酯", "9,10-二氢-9-氧杂-10-磷杂菲-10-氧化物",
-                "EPFR-1100NT", "XS-FR-8310", "锡酸锌", "XiuCheng阻燃剂", "羟基锡酸锌", "硼酸锌", "三氧化二锑",
-                "氢氧化镁", "三嗪成炭剂", "三聚氰胺聚磷酸盐", "焦磷酸哌嗪", "其他"
-            ]
+                    "AHP", "ammonium octamolybdate", "Al(OH)3", "CFA", "APP", "Pentaerythritol", "DOPO",
+                    "EPFR-1100NT", "XS-FR-8310", "ZS", "XiuCheng", "ZHS", "ZnB", "antimony oxides",
+                    "Mg(OH)2", "TCA", "MPP", "PAPP", "其他"
+                ]
             additives = [
-                "抗滴落剂", "硅灰石", "M-2200B", "ZBS-PV-OA", "FP-250S", "硅烷偶联剂", "抗氧化剂",
-                "二氧化硅", "其他"
-            ]
+                    "Anti-drip-agent", "wollastonite", "M-2200B", "ZBS-PV-OA", "FP-250S", "silane coupling agent", "antioxidant",
+                    "SiO2", "其他"
+                ]
         
             selected_matrix = st.selectbox("选择基体", matrix_materials, index=0)
             selected_flame_retardants = st.multiselect("选择阻燃剂", flame_retardants, default=["ZS"])
