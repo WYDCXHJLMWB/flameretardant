@@ -319,44 +319,6 @@ if st.session_state.logged_in:
         img.save(buffered, format="PNG", quality=quality, optimize=True)
         return base64.b64encode(buffered.getvalue()).decode()
     
-    # 页面配置
-    image_path = "图片1.jpg"
-    icon_base64 = image_to_base64(image_path)  # 质量参数设为95
-    
-    st.set_page_config(
-        page_title="阻燃聚合物复合材料智能设计平台",
-        layout="wide",
-        page_icon=f"data:image/png;base64,{icon_base64}"
-    )
-    
-    # 获取精确尺寸
-    img = Image.open(image_path)
-    target_width = 800
-    target_height = int(img.height * (target_width / img.width))
-    
-    # 图片显示样式
-    st.markdown(f"""
-    <style>
-        .fixed-width-img {{
-            width: {target_width}px !important;
-            height: {target_height}px !important;
-            object-fit: contain;
-            margin-left: 0;
-            padding: 0;
-            image-rendering: -webkit-optimize-contrast; /* Safari */
-            image-rendering: crisp-edges; /* Standard */
-        }}
-        
-        @media (max-width: 1050px) {{
-            .fixed-width-img {{
-                width: 95% !important;
-                height: auto !important;
-                max-width: 1000px;
-            }}
-        }}
-    </style>
-    """, unsafe_allow_html=True)
-    
     # 全局页眉样式
     st.markdown("""
     <style>
