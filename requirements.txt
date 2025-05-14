@@ -8,3 +8,4 @@ setuptools
 openpyxl
 deap
 feature_engineering
+bcrypt
