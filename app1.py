@@ -7,17 +7,190 @@ from sklearn.impute import SimpleImputer
 import joblib
 from deap import base, creator, tools, algorithms
 import streamlit as st
-import pandas as pd
-import numpy as np
-import joblib
 import base64
 import random
-
-# 页面配置
-# 页面配置
-import base64
+import hashlib
+import os
+from datetime import datetime, timedelta
 from PIL import Image
 import io
+
+# --------------------- 用户认证模块 ---------------------
+USERS_FILE = "users.csv"
+sent_codes = {}
+
+# 初始化用户数据
+if not os.path.exists(USERS_FILE):
+    pd.DataFrame(columns=["phone", "password_hash"]).to_csv(USERS_FILE, index=False)
+
+def load_users():
+    return pd.read_csv(USERS_FILE)
+
+def save_user(phone, password):
+    users = load_users()
+    if phone in users['phone'].values:
+        return False
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+    new_user = pd.DataFrame([[phone, password_hash]], columns=["phone", "password_hash"])
+    users = pd.concat([users, new_user], ignore_index=True)
+    users.to_csv(USERS_FILE, index=False)
+    return True
+
+def send_verification_code(phone):
+    """发送带有效期的验证码"""
+    code = str(random.randint(100000, 999999))  # 6位验证码
+    expire = datetime.now() + timedelta(minutes=5)
+    sent_codes[phone] = (code, expire)
+    return code
+
+def verify_code(phone, code):
+    """验证时检查有效期"""
+    record = sent_codes.get(phone)
+    if not record:
+        return False
+    if datetime.now() > record[1]:
+        del sent_codes[phone]
+        return False
+    return code == record[0]
+
+# --------------------- 页面配置 ---------------------
+def image_to_base64(image_path):
+    img = Image.open(image_path)
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode()
+
+# --------------------- 全局状态 ---------------------
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+if 'user' not in st.session_state:
+    st.session_state.user = None
+
+# --------------------- 样式配置 ---------------------
+st.markdown("""
+<style>
+    .global-header {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        margin: 0 0 2rem 0;
+        padding: 1rem 0;
+        border-bottom: 3px solid #1e3d59;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 1000;
+    }
+    
+    .header-logo {
+        width: 80px;
+        height: auto;
+        flex-shrink: 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    
+    .header-title {
+        font-size: 2.4rem !important;
+        color: #1e3d59;
+        margin: 0;
+        line-height: 1.2;
+        font-family: 'Microsoft YaHei', sans-serif;
+    }
+    
+    .header-subtitle {
+        font-size: 1.1rem;
+        color: #3f87a6;
+        margin: 0.3rem 0 0 0;
+    }
+
+    .auth-box {
+        max-width: 500px;
+        margin: 2rem auto;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background: white;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# --------------------- 认证页面 ---------------------
+if not st.session_state.logged_in:
+    icon_base64 = image_to_base64("图片1.jpg")
+    st.set_page_config(
+        page_title="阻燃聚合物复合材料智能设计平台",
+        layout="wide",
+        page_icon=f"data:image/png;base64,{icon_base64}"
+    )
+    
+    st.markdown(f"""
+    <div class="global-header">
+        <img src="data:image/png;base64,{icon_base64}" 
+             class="header-logo"
+             alt="Platform Logo">
+        <div>
+            <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
+            <p class="header-subtitle">Flame Retardant Polymer Composite Intelligent Platform</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    with st.container():
+        with st.form("auth_form"):
+            auth_mode = st.radio("请选择操作", ["登录", "注册"], horizontal=True)
+            
+            phone = st.text_input("手机号", max_chars=11, 
+                                help="请输入11位手机号码").strip()
+            
+            if auth_mode == "注册":
+                password = st.text_input("设置密码", type="password",
+                                       help="至少6位字符")
+            elif auth_mode == "登录":
+                password = st.text_input("密码", type="password")
+            
+            col1, col2 = st.columns([2, 1])
+            with col1:
+                code = st.text_input("验证码", max_chars=6)
+            with col2:
+                if st.form_submit_button("获取验证码"):
+                    if len(phone) == 11 and phone.isdigit():
+                        send_verification_code(phone)
+                        st.success("验证码已发送（演示码：123456）")
+                    else:
+                        st.error("无效的手机号格式")
+
+            if st.form_submit_button(auth_mode):
+                if not all([phone, code]):
+                    st.error("请填写所有字段")
+                elif len(phone) != 11 or not phone.isdigit():
+                    st.error("请输入有效的11位手机号")
+                elif not verify_code(phone, code):
+                    st.error("验证码错误或已过期")
+                else:
+                    if auth_mode == "注册":
+                        if len(password) < 6:
+                            st.error("密码至少需要6位")
+                        elif save_user(phone, password):
+                            st.session_state.logged_in = True
+                            st.session_state.user = phone
+                            st.experimental_rerun()
+                        else:
+                            st.error("该手机号已注册")
+                    else:
+                        users = load_users()
+                        user = users[users['phone'] == phone]
+                        if not user.empty:
+                            pw_hash = hashlib.sha256(password.encode()).hexdigest()
+                            if user.iloc[0]['password_hash'] == pw_hash:
+                                st.session_state.logged_in = True
+                                st.session_state.user = phone
+                                st.experimental_rerun()
+                            else:
+                                st.error("密码错误")
+                        else:
+                            st.error("该用户未注册")
+    st.stop()
 
 class Predictor:
     def __init__(self, scaler_path, svc_path):
@@ -102,44 +275,6 @@ class Predictor:
         
         X_scaled = self.scaler.transform(feature_df)
         return self.model.predict(X_scaled)[0]
-sent_codes = {}
-
-def send_verification_code(phone_number):
-    """模拟发送验证码"""
-    if not phone_number:
-        raise ValueError("手机号不能为空")
-    code = str(random.randint(1000, 9999))  # 生成一个四位数验证码
-    sent_codes[phone_number] = code  # 保存手机号与验证码的映射
-    return code
-
-def verify_code(phone_number, code):
-    """验证验证码"""
-    if phone_number in sent_codes and sent_codes[phone_number] == code:
-        return True
-    return False
-
-# Streamlit前端界面
-st.title("账号登录与预测")
-
-# 手机号和验证码输入
-phone_number = st.text_input("请输入您的手机号", "")
-code = st.text_input("请输入验证码", "")
-
-# 发送验证码按钮
-if st.button("发送验证码"):
-    if phone_number:
-        try:
-            sent_code = send_verification_code(phone_number)
-            st.success(f"验证码已发送：{sent_code}")
-        except ValueError as e:
-            st.error(str(e))  # 如果手机号为空，显示错误信息
-    else:
-        st.error("请先输入手机号")
-
-# 验证验证码按钮
-if st.button("验证验证码"):
-    if verify_code(phone_number, code):
-        st.success("验证码验证成功！")
 
 
 
