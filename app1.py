@@ -1,8 +1,8 @@
+import streamlit as st
 import pandas as pd
 import hashlib
 import os
 import bcrypt
-import streamlit as st
 from PIL import Image
 import io
 import base64
@@ -14,6 +14,7 @@ def image_to_base64(image_path):
     img.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode()
 
+# This should be the first Streamlit command
 icon_base64 = image_to_base64("图片1.jpg")  # 确保路径正确
 if icon_base64:
     st.set_page_config(
@@ -33,16 +34,11 @@ def load_users():
     users = pd.read_csv(USERS_FILE)
     return users
 
-# 修改保存用户的密码哈希为字节类型
-# 保存用户时的密码哈希（确保哈希是字节类型）
-# 修改保存用户时的密码哈希（确保哈希是字节类型）
 def save_user(username, password, email):
     users = load_users()
     if username in users['username'].values:
         return False  # 用户名已存在
-    # 生成密码哈希
     password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-    # 将字节类型的密码哈希转换为字符串并保存
     new_user = pd.DataFrame([[username, password_hash.decode(), email]], columns=["username", "password_hash", "email"])
     users = pd.concat([users, new_user], ignore_index=True)
     users.to_csv(USERS_FILE, index=False)
@@ -51,18 +47,11 @@ def save_user(username, password, email):
 def verify_user(username, password):
     users = load_users()
     user = users[users['username'] == username]
-    
     if user.empty:
         st.error("用户不存在")
         return False
-    
     stored_hash = user.iloc[0]['password_hash']
-    stored_hash_bytes = stored_hash.encode()  # 转换为字节类型
-
-    # 打印调试信息
-    st.write("存储的密码哈希：", stored_hash_bytes)
-    st.write("输入的密码：", password.encode())
-
+    stored_hash_bytes = stored_hash.encode()
     try:
         if bcrypt.checkpw(password.encode(), stored_hash_bytes):
             return True
@@ -77,7 +66,6 @@ def reset_password_by_email(email, new_password):
     users = load_users()
     user = users[users['email'] == email]
     if not user.empty:
-        # 生成新哈希并转换为字符串存储
         password_hash = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode('utf-8')
         users.loc[users['email'] == email, 'password_hash'] = password_hash
         users.to_csv(USERS_FILE, index=False)
@@ -225,7 +213,6 @@ if not st.session_state.logged_in:
                     st.error("该邮箱未注册，无法重置密码")
 
     st.stop()
-
 
 
 
