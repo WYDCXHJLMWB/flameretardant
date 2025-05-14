@@ -88,44 +88,53 @@ if 'user' not in st.session_state:
 # --------------------- 样式配置 ---------------------
     st.markdown("""
     <style>
-        /* 统一侧边栏与主内容区字体 */
-        .stSidebar {
-            font-size: 19px !important;  /* 与全局基础字号一致 */
+        /* 全局基础字体放大 */
+        html, body, .stTextInput>label, .stButton>button, .stSelectbox>label, .stSlider>label {
+            font-size: 19px !important;  # 基础字号从16px→19px
             line-height: 1.7 !important;
         }
     
-        /* 侧边栏交互组件适配 */
-        .stSidebar .stButton>button {
-            font-size: 1em !important;  /* 继承侧边栏基础字号 */
-            padding: 0.7em 1.2em !important;
+        /* 导航栏标题优化 */
+        .global-header {
+            gap: 2rem;  # 增大元素间距
+        }
+        
+        .header-title {
+            font-size: 2.8rem !important;  # 原2.4rem→2.8rem (提升16.6%)
+            line-height: 1.15 !important;
+            letter-spacing: -0.8px;  # 紧凑排版
+        }
+        
+        .header-subtitle {
+            font-size: 1.4rem !important;  # 原1.1rem→1.4rem (提升27%)
+            margin-top: 0.8rem;
+            opacity: 0.95;
         }
     
-        .stSidebar .stSelectbox label,
-        .stSidebar .stTextInput label,
-        .stSidebar .stSlider label {
-            font-size: 0.95em !important;  /* 标签稍小保持层次 */
-            margin-bottom: 0.4em !important;
+        /* 放大所有文本组件 */
+        .stMarkdown, .stText, .stAlert, .stSuccess {
+            font-size: 1.15em !important;  # 相对基础字号再放大15%
         }
     
-        /* 导航菜单项特别处理 */
-        .stSidebar .st-bb {
-            font-size: 1.02em !important;  /* 菜单项略大于基础字号 */
-            font-weight: 500 !important;
-            margin: 0.6em 0 !important;
+        /* 表单组件字体同步放大 */
+        .stTextInput input, .stSelectbox select, .stTextArea textarea {
+            font-size: 1.05em !important;
+            padding: 0.8em 1em !important;
         }
     
-        /* 保持图标与文字比例 */
-        .stSidebar .st-emotion-cache-1v7f65g {
-            font-size: 1.1em !important;  /* 侧边栏图标大小 */
+        /* 按钮放大 */
+        .stButton>button {
+            font-size: 1.1em !important;
+            padding: 0.7em 1.5em !important;
         }
     
-        /* 移动端适配 */
+        /* 响应式适配 */
         @media (max-width: 768px) {
-            .stSidebar {
-                font-size: 17px !important;
+            .header-title {
+                font-size: 2.2rem !important;
             }
-            .stSidebar .st-bb {
-                font-size: 1em !important;
+            .header-subtitle {
+                font-size: 1.2rem !important;
             }
         }
     </style>
