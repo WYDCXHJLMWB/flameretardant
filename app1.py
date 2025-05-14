@@ -33,27 +33,31 @@ def load_users():
     users = pd.read_csv(USERS_FILE)
     return users
 
-def save_user(username, password, email):
+# 修改保存用户的密码哈希为字节类型
+def save_user(username, password):
     users = load_users()
     if username in users['username'].values:
         return False  # 用户名已存在
-    # 生成哈希并转换为字符串存储
-    password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode('utf-8')
-    new_user = pd.DataFrame([[username, password_hash, email]], columns=["username", "password_hash", "email"])
+    # 生成密码哈希
+    password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    # 将字节类型的密码哈希转换为字符串并保存
+    new_user = pd.DataFrame([[username, password_hash.decode()]], columns=["username", "password_hash"])
     users = pd.concat([users, new_user], ignore_index=True)
     users.to_csv(USERS_FILE, index=False)
     return True
 
+# 修改验证密码时，确保密码哈希是字节类型
 def verify_user(username, password):
     users = load_users()
     user = users[users['username'] == username]
     if not user.empty:
         stored_hash = user.iloc[0]['password_hash']
-        # 将字符串哈希转换为字节类型
-        stored_hash_bytes = stored_hash.encode('utf-8')
+        # 确保从存储的哈希值转换为字节类型
+        stored_hash_bytes = stored_hash.encode()  # 如果是字符串类型，转换为字节类型
         if bcrypt.checkpw(password.encode(), stored_hash_bytes):
             return True
     return False
+
 
 def reset_password_by_email(email, new_password):
     users = load_users()
