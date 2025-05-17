@@ -78,12 +78,12 @@ def apply_global_styles():
     st.markdown(f"""
     <style>
         :root {{
-            --text-base: 5.0rem;  /* 增大基础字体 */
-            --text-lg: 5.0rem;    /* 增大大字体 */
-            --text-xl: 5.0rem;    /* 增大超大字体 */
-            --title-sm: 5.5rem;   /* 增大小标题 */
-            --title-md: 5.7rem;   /* 增大中标题 */
-            --title-lg: 6.0rem;   /* 增大大标题 */
+            --text-base: 1.5rem;   /* 增加基础字号 */
+            --text-lg: 1.7rem;     /* 增加较大字号 */
+            --text-xl: 1.9rem;     /* 增加超大字号 */
+            --title-sm: 2.2rem;    /* 调整标题字号 */
+            --title-md: 2.5rem;    /* 调整标题字号 */
+            --title-lg: 2.8rem;    /* 调整标题字号 */
             --primary: #1e3d59;
             --secondary: #3f87a6;
             --accent: #2c2c2c;
@@ -121,21 +121,19 @@ def apply_global_styles():
             color: var(--primary) !important;
         }}
 
-        /* 侧边栏字体样式 */
-        .css-1v3fvcr, .css-1lfo14i {{
-            font-size: var(--text-lg) !important;
-        }}
-
-        /* 侧边栏背景 */
-        .css-1lfo14i {{
-            background-image: url('data:image/png;base64,{icon_base64}');
+        /* 全局背景图 */
+        body {{
+            background-image: url("data:image/png;base64,{icon_base64}");
             background-size: cover;
-            background-repeat: no-repeat;
             background-position: center;
             background-attachment: fixed;
-            background-color: rgba(255, 255, 255, 0.9); /* 透明度为0% */
+            opacity: 0.9;
         }}
 
+        /* 侧边栏样式 */
+        .sidebar {{
+            background: rgba(255, 255, 255, 0.9);
+        }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -151,6 +149,7 @@ def render_global_header():
         </div>
     </div>
     """, unsafe_allow_html=True)
+
 
 
 def apply_custom_styles():
