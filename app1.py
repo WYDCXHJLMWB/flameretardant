@@ -76,74 +76,116 @@ if 'user' not in st.session_state:
 # --------------------- 样式配置 ---------------------
 st.markdown(f"""
 <style>
-    .global-header {{
-        display: flex;
-        align-items: center;
-        gap: 25px;
-        margin: 0 0 2rem 0;
-        padding: 1rem 0;
-        border-bottom: 3px solid #1e3d59;
-        position: sticky;
-        top: 0;
-        background: white;
-        z-index: 1000;
+    /* 基础字体设置 */
+    html {{
+        font-size: 20px;  /* 全局基础字号 */
     }}
     
-    .header-logo {{
-        width: 80px;
-        height: auto;
-        flex-shrink: 0;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    /* 通用文本 */
+    body {{
+        font-size: 1.2rem;  /* 正文基础字号 */
+        line-height: 1.8;    /* 增加行高 */
+        color: #1a1a1a;     /* 深色文字保证对比度 */
     }}
     
-    .header-title {{
-        font-size: 2.4rem !important;
-        color: #1e3d59;
-        margin: 0;
-        line-height: 1.2;
-        font-family: 'Microsoft YaHei', sans-serif;
+    /* 标题系统 */
+    h1 {{
+        font-size: 3rem !important;
+        margin: 1.5rem 0 !important;
+        color: #1e3d59 !important;
+        font-weight: 700 !important;
     }}
     
-    .header-subtitle {{
-        font-size: 1.1rem;
-        color: #3f87a6;
-        margin: 0.3rem 0 0 0;
-    }}
-
-    .auth-box {{
-        max-width: 500px;
-        margin: 2rem auto;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        background: white;
+    h2 {{
+        font-size: 2.5rem !important;
+        margin: 1.3rem 0 !important;
+        color: #2c527a !important;
     }}
     
-    .stApp {{
-        background-image: url('data:image/jpeg;base64,{background_base64}');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        opacity: 0.99;
+    h3 {{
+        font-size: 2rem !important;
+        margin: 1.1rem 0 !important;
     }}
-
-    .stApp h1 {{
-        text-align: center;
-        color: #1e3d59;
-        font-size: 3rem;
-        font-weight: bold;
-        margin-top: 2rem;
+    
+    /* 表单元素 */
+    .stTextInput label, 
+    .stNumberInput label, 
+    .stSelectbox label,
+    .stMultiselect label {{
+        font-size: 1.5rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.8rem !important;
     }}
-
+    
+    /* 输入框文字 */
+    .stTextInput input, 
+    .stNumberInput input,
+    .stSelectbox select,
+    .stMultiselect div {{
+        font-size: 1.4rem !important;
+        padding: 0.8rem !important;
+    }}
+    
+    /* 按钮文字 */
     .stButton button {{
-        font-size: 1.5rem;
-        padding: 1rem 2rem;
+        font-size: 1.6rem !important;
+        padding: 1rem 2.5rem !important;
+        border-radius: 8px !important;
     }}
-
-    .stApp h1 {{
-        visibility: visible !important;
+    
+    /* 数据表格 */
+    .stDataFrame {{
+        font-size: 1.3rem !important;
     }}
+    
+    /* 侧边栏 */
+    .css-1d391kg {{
+        font-size: 1.4rem !important;
+    }}
+    
+    /* 警告信息 */
+    .stAlert {{
+        font-size: 1.4rem !important;
+        padding: 1.2rem !important;
+        border-radius: 8px !important;
+    }}
+    
+    /* 指标显示 */
+    .stMetric {{
+        font-size: 1.8rem !important;
+        padding: 1.5rem !important;
+        background: #f8f9fa !important;
+        border-radius: 10px !important;
+    }}
+    
+    /* 展开面板 */
+    .stExpander .streamlit-expanderHeader {{
+        font-size: 1.6rem !important;
+        padding: 1.2rem 0 !important;
+    }}
+    
+    /* 选项卡 */
+    .stTabs [data-baseweb="tab-list"] {{
+        gap: 1rem !important;
+    }}
+    
+    .stTabs [data-baseweb="tab"] {{
+        font-size: 1.4rem !important;
+        padding: 1rem 2rem !important;
+    }}
+    
+    /* 页脚 */
+    footer {{
+        font-size: 1.2rem !important;
+        margin-top: 3rem !important;
+        padding: 1.5rem !important;
+        background: rgba(255,255,255,0.9) !important;
+        border-radius: 8px !important;
+    }}
+    
+    /* 高对比度调整 */
+    .st-bb {{ color: #000 !important; }}
+    .st-at {{ background-color: rgba(255,255,255,0.9) !important; }}
 </style>
 """, unsafe_allow_html=True)
 
