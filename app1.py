@@ -78,12 +78,12 @@ def apply_global_styles():
     st.markdown(f"""
     <style>
         :root {{
-            --text-base: 1.3rem;
-            --text-lg: 1.5rem;
-            --text-xl: 1.7rem;
-            --title-sm: 2.0rem;
-            --title-md: 2.3rem;
-            --title-lg: 2.6rem;
+            --text-base: 1.6rem;  /* 增大基础字体 */
+            --text-lg: 1.8rem;    /* 增大大字体 */
+            --text-xl: 2.0rem;    /* 增大超大字体 */
+            --title-sm: 2.4rem;   /* 增大小标题 */
+            --title-md: 2.7rem;   /* 增大中标题 */
+            --title-lg: 3.0rem;   /* 增大大标题 */
             --primary: #1e3d59;
             --secondary: #3f87a6;
             --accent: #2c2c2c;
@@ -105,7 +105,7 @@ def apply_global_styles():
         }}
 
         .header-title {{
-            font-size: 2.8rem !important;
+            font-size: var(--title-lg) !important;
             color: var(--primary) !important;
             margin: 0;
             line-height: 1.2;
@@ -120,6 +120,22 @@ def apply_global_styles():
         h1, h2, h3 {{
             color: var(--primary) !important;
         }}
+
+        /* 侧边栏字体样式 */
+        .sidebar .sidebar-content {{
+            font-size: var(--text-lg) !important;
+        }}
+
+        /* 侧边栏背景 */
+        .sidebar {{
+            background-image: url('data:image/png;base64,{icon_base64}');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            background-color: rgba(255, 255, 255, 0.9); /* 透明度为90% */
+        }}
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -135,6 +151,7 @@ def render_global_header():
         </div>
     </div>
     """, unsafe_allow_html=True)
+
 def apply_custom_styles():
     st.markdown(f"""
     <style>
