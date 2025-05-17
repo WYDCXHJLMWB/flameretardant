@@ -79,11 +79,11 @@ def apply_global_styles():
     <style>
         :root {{
             --text-base: 1.6rem;  /* 增大基础字体 */
-            --text-lg: 1.8rem;    /* 增大大字体 */
-            --text-xl: 2.0rem;    /* 增大超大字体 */
-            --title-sm: 2.4rem;   /* 增大小标题 */
-            --title-md: 2.7rem;   /* 增大中标题 */
-            --title-lg: 3.0rem;   /* 增大大标题 */
+            --text-lg: 2.0rem;    /* 增大大字体 */
+            --text-xl: 3.5rem;    /* 增大超大字体 */
+            --title-sm: 4.4rem;   /* 增大小标题 */
+            --title-md: 5.7rem;   /* 增大中标题 */
+            --title-lg: 6.0rem;   /* 增大大标题 */
             --primary: #1e3d59;
             --secondary: #3f87a6;
             --accent: #2c2c2c;
@@ -122,12 +122,12 @@ def apply_global_styles():
         }}
 
         /* 侧边栏字体样式 */
-        .sidebar .sidebar-content {{
+        .css-1v3fvcr, .css-1lfo14i {{
             font-size: var(--text-lg) !important;
         }}
 
         /* 侧边栏背景 */
-        .sidebar {{
+        .css-1lfo14i {{
             background-image: url('data:image/png;base64,{icon_base64}');
             background-size: cover;
             background-repeat: no-repeat;
@@ -151,6 +151,7 @@ def render_global_header():
         </div>
     </div>
     """, unsafe_allow_html=True)
+
 
 def apply_custom_styles():
     st.markdown(f"""
