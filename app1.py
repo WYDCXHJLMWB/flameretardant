@@ -533,142 +533,150 @@ if st.session_state.logged_in:
         return ["PP"] + sorted(features)
       
 
-    if page == "性能预测":
-        apply_custom_styles()
-        st.subheader("🔮 性能预测：基于配方预测LOI和TS")
-    
-        # 初始化 input_values
-        if 'input_values' not in st.session_state:
-            st.session_state.input_values = {}  # 使用会话状态保存输入值
-    
-        # 基体材料数据
-        matrix_materials = {
-            "PP": {"name": "Polypropylene", "range": (53.5, 99.5)},
-            "PA": {"name": "Polyamide", "range": (0, 100)},
-            "PC/ABS": {"name": "Polycarbonate/Acrylonitrile Butadiene Styrene Blend", "range": (0, 100)},
-            "POM": {"name": "Polyoxymethylene", "range": (0, 100)},
-            "PBT": {"name": "Polybutylene Terephthalate", "range": (0, 100)},
-            "PVC": {"name": "Polyvinyl Chloride", "range": (0, 100)},
-        }
-    
-        # 阻燃剂数据
-        flame_retardants = {
-            "AHP": {"name": "Aluminum Hyphosphite", "range": (0, 25)},
-            "CFA": {"name": "Carbon Forming agent", "range": (0, 10)},
-            "ammonium octamolybdate": {"name": "Ammonium Octamolybdate", "range": (0, 3.4)},
-            "Al(OH)3": {"name": "Aluminum Hydroxide", "range": (0, 10)},
-            "APP": {"name": "Ammonium Polyphosphate", "range": (0, 19.5)},
-            "Pentaerythritol": {"name": "Pentaerythritol", "range": (0, 1.3)},
-            "DOPO": {"name": "9,10-Dihydro-9-oxa-10-phosphaphenanthrene-10-oxide", "range": (0, 27)},
-            "XS-FR-8310": {"name": "XS-FR-8310", "range": (0, 35)},
-            "ZS": {"name": "Zinc Stannate", "range": (0, 34.5)},
-            "XiuCheng": {"name": "XiuCheng Flame Retardant", "range": (0, 35)},
-            "ZHS": {"name": "Hydroxy Zinc Stannate", "range": (0, 34.5)},
-            "ZnB": {"name": "Zinc Borate", "range": (0, 2)},
-            "antimony oxides": {"name": "Antimony Oxides", "range": (0, 2)},
-            "Mg(OH)2": {"name": "Magnesium Hydroxide", "range": (0, 34.5)},
-            "TCA": {"name": "Triazine Carbonization Agent", "range": (0, 17.4)},
-            "MPP": {"name": "Melamine Polyphosphate", "range": (0, 25)},
-            "PAPP": {"name": "Piperazine Pyrophosphate", "range": (0, 24.5)},
-            "其他": {"name": "Other", "range": (0, 100)},
-        }
-    
-        # 助剂数据
-        additives = {
-            "Flame Retardant additives": {
-                "Anti-drip-agent": {"name": "Polytetrafluoroethylene Anti-dripping Agent", "range": (0, 0.3)},
-                "ZBS-PV-OA": {"name": "Zinc Borate Stabilizer PV-OA Series", "range": (0, 35)},
-                "FP-250S": {"name": "Processing Aid FP-250S (Acrylic)", "range": (0, 35)},
-            },
-            "Fillers": {
-                "wollastonite": {"name": "Wollastonite (Calcium Metasilicate)", "range": (0, 5)},
-                "SiO2": {"name": "Silicon Dioxide", "range": (0, 6)},
-            },
-            "Coupling Agents": {
-                "silane coupling agent": {"name": "Amino Silane Coupling Agent", "range": (0.5, 3)},
-            },
-            "Antioxidants": {
-                "antioxidant": {"name": "Irganox 1010 Antioxidant", "range": (0.1, 0.5)},
-            },
-            "Lubricants": {
-                "M-2200B": {"name": "Lubricant M-2200B (Ester-based)", "range": (0.5, 3)},
-            },
-            "Functional Additives": {  # 替换Others为功能助剂
-                "Custom Additive": {"name": "Custom Additive", "range": (0, 5)},
-            },
-        }
-    
-        fraction_type = st.sidebar.selectbox("选择输入的单位", ["质量", "质量分数", "体积分数"])
-    
-        # 配方成分部分（基体和阻燃剂）
-        st.subheader("请选择配方成分")
-        col_matrix = st.columns([4, 3], gap="medium")  # 调整列宽比例
-        with col_matrix[0]:
-            selected_matrix = st.selectbox("选择基体材料", matrix_materials, index=0)
-            matrix_name = matrix_materials[selected_matrix]["name"]
-            matrix_range = matrix_materials[selected_matrix]["range"]
-            # 显示推荐范围
-            st.markdown(f"**推荐范围**: {matrix_range[0]} - {matrix_range[1]}%")
-    
-        with col_matrix[1]:
-            unit_matrix = "g" if fraction_type == "质量" else "%"
-            st.session_state.input_values[selected_matrix] = st.number_input(
-                f"{matrix_name} 含量 ({unit_matrix})", min_value=0.0, max_value=100.0, value=50.0, step=0.1
-            )
-    
-        # ========== 阻燃剂显示 ==========  
-        st.subheader("选择阻燃剂")
-        selected_flame_retardants = st.multiselect(
-            "选择阻燃剂（可多选，必选ZS和ZHS）", list(flame_retardants.keys()), default=[list(flame_retardants.keys())[0]]
+if page == "性能预测":
+    apply_custom_styles()
+    st.subheader("🔮 性能预测：基于配方预测LOI和TS")
+
+    # 初始化 input_values
+    if 'input_values' not in st.session_state:
+        st.session_state.input_values = {}  # 使用会话状态保存输入值
+
+    # 基体材料数据
+    matrix_materials = {
+        "PP": {"name": "Polypropylene", "range": (53.5, 99.5)},
+        "PA": {"name": "Polyamide", "range": (0, 100)},
+        "PC/ABS": {"name": "Polycarbonate/Acrylonitrile Butadiene Styrene Blend", "range": (0, 100)},
+        "POM": {"name": "Polyoxymethylene", "range": (0, 100)},
+        "PBT": {"name": "Polybutylene Terephthalate", "range": (0, 100)},
+        "PVC": {"name": "Polyvinyl Chloride", "range": (0, 100)},
+    }
+
+    # 阻燃剂数据
+    flame_retardants = {
+        "AHP": {"name": "Aluminum Hyphosphite", "range": (0, 25)},
+        "CFA": {"name": "Carbon Forming agent", "range": (0, 10)},
+        "ammonium octamolybdate": {"name": "Ammonium Octamolybdate", "range": (0, 3.4)},
+        "Al(OH)3": {"name": "Aluminum Hydroxide", "range": (0, 10)},
+        "APP": {"name": "Ammonium Polyphosphate", "range": (0, 19.5)},
+        "Pentaerythritol": {"name": "Pentaerythritol", "range": (0, 1.3)},
+        "DOPO": {"name": "9,10-Dihydro-9-oxa-10-phosphaphenanthrene-10-oxide", "range": (0, 27)},
+        "XS-FR-8310": {"name": "XS-FR-8310", "range": (0, 35)},
+        "ZS": {"name": "Zinc Stannate", "range": (0, 34.5)},
+        "XiuCheng": {"name": "XiuCheng Flame Retardant", "range": (0, 35)},
+        "ZHS": {"name": "Hydroxy Zinc Stannate", "range": (0, 34.5)},
+        "ZnB": {"name": "Zinc Borate", "range": (0, 2)},
+        "antimony oxides": {"name": "Antimony Oxides", "range": (0, 2)},
+        "Mg(OH)2": {"name": "Magnesium Hydroxide", "range": (0, 34.5)},
+        "TCA": {"name": "Triazine Carbonization Agent", "range": (0, 17.4)},
+        "MPP": {"name": "Melamine Polyphosphate", "range": (0, 25)},
+        "PAPP": {"name": "Piperazine Pyrophosphate", "range": (0, 24.5)},
+        "其他": {"name": "Other", "range": (0, 100)},
+    }
+
+    # 助剂数据
+    additives = {
+        "Flame Retardant additives": {
+            "Anti-drip-agent": {"name": "Polytetrafluoroethylene Anti-dripping Agent", "range": (0, 0.3)},
+            "ZBS-PV-OA": {"name": "Zinc Borate Stabilizer PV-OA Series", "range": (0, 35)},
+            "FP-250S": {"name": "Processing Aid FP-250S (Acrylic)", "range": (0, 35)},
+        },
+        "Fillers": {
+            "wollastonite": {"name": "Wollastonite (Calcium Metasilicate)", "range": (0, 5)},
+            "SiO2": {"name": "Silicon Dioxide", "range": (0, 6)},
+        },
+        "Coupling Agents": {
+            "silane coupling agent": {"name": "Amino Silane Coupling Agent", "range": (0.5, 3)},
+        },
+        "Antioxidants": {
+            "antioxidant": {"name": "Irganox 1010 Antioxidant", "range": (0.1, 0.5)},
+        },
+        "Lubricants": {
+            "M-2200B": {"name": "Lubricant M-2200B (Ester-based)", "range": (0.5, 3)},
+        },
+        "Functional Additives": {  # 替换Others为功能助剂
+            "Custom Additive": {"name": "Custom Additive", "range": (0, 5)},
+        },
+    }
+
+    fraction_type = st.sidebar.selectbox("选择输入的单位", ["质量", "质量分数", "体积分数"])
+
+    # 配方成分部分（基体和阻燃剂）
+    st.subheader("请选择配方成分")
+    col_matrix = st.columns([4, 3], gap="medium")  # 调整列宽比例
+    with col_matrix[0]:
+        selected_matrix = st.selectbox("选择基体材料", matrix_materials, index=0)
+        matrix_name = matrix_materials[selected_matrix]["name"]
+        matrix_range = matrix_materials[selected_matrix]["range"]
+        # 显示推荐范围
+        st.markdown(f"**推荐范围**: {matrix_range[0]} - {matrix_range[1]}%")
+
+    with col_matrix[1]:
+        unit_matrix = "g" if fraction_type == "质量" else "%"
+        st.session_state.input_values[selected_matrix] = st.number_input(
+            f"{matrix_name} 含量 ({unit_matrix})", min_value=0.0, max_value=100.0, value=50.0, step=0.1
         )
-        
-        for ad in selected_flame_retardants:
-            flame_info = flame_retardants[ad]
-            with st.expander(f"{flame_info['name']} 推荐范围"):
-                st.write(f"推荐范围：{flame_info['range'][0]} - {flame_info['range'][1]}%")  # 显示推荐范围
-                unit_add = "g" if fraction_type == "质量" else "%"
-                
-                # 设置默认值，确保它不小于最小值
-                min_val = float(flame_info['range'][0])
-                max_val = float(flame_info['range'][1])
-                default_value = max(min_val, 0.0)
+
+    # ========== 阻燃剂显示 ==========  
+    st.subheader("选择阻燃剂")
     
-                # 使用 number_input 输入框
-                st.session_state.input_values[ad] = st.number_input(
-                    f"{flame_info['name']} 含量 ({unit_add})", 
-                    min_value=min_val, 
-                    max_value=max_val, 
-                    value=default_value, 
-                    step=0.1,
-                    key=f"fr_{ad}"
-                )
+    # 显示完整名称的下拉框
+    selected_flame_retardants = st.multiselect(
+        "选择阻燃剂（可多选）", 
+        [flame_retardants[key]["name"] for key in flame_retardants],
+        default=[flame_retardants[list(flame_retardants.keys())[0]]["name"]]
+    )
     
-        # ========== 助剂显示 ==========  
-        st.subheader("选择助剂")
-        selected_additives = st.multiselect(
-            "选择助剂（可多选）", list(additives.keys()), default=[list(additives.keys())[0]]
-        )
-        
-        for category in selected_additives:
-            for ad, additive_info in additives[category].items():
-                with st.expander(f"{additive_info['name']} 推荐范围"):
-                    st.write(f"推荐范围：{additive_info['range'][0]} - {additive_info['range'][1]}%")  # 显示推荐范围
+    # 根据选择的完整名称，设置输入框
+    for flame_name in selected_flame_retardants:
+        # 获取对应的阻燃剂缩写
+        for key, value in flame_retardants.items():
+            if value["name"] == flame_name:
+                flame_info = value
+                with st.expander(f"{flame_info['name']} 推荐范围"):
+                    st.write(f"推荐范围：{flame_info['range'][0]} - {flame_info['range'][1]}%")  # 显示推荐范围
                     unit_add = "g" if fraction_type == "质量" else "%"
                     
                     # 设置默认值，确保它不小于最小值
-                    min_val = float(additive_info['range'][0])
-                    max_val = float(additive_info['range'][1])
+                    min_val = float(flame_info['range'][0])
+                    max_val = float(flame_info['range'][1])
                     default_value = max(min_val, 0.0)
-    
+
                     # 使用 number_input 输入框
-                    st.session_state.input_values[ad] = st.number_input(
-                        f"{additive_info['name']} 含量 ({unit_add})", 
+                    st.session_state.input_values[key] = st.number_input(
+                        f"{flame_info['name']} 含量 ({unit_add})", 
                         min_value=min_val, 
                         max_value=max_val, 
                         value=default_value, 
                         step=0.1,
-                        key=f"add_{ad}"
+                        key=f"fr_{key}"
                     )
+
+    # ========== 助剂显示 ==========  
+    st.subheader("选择助剂")
+    selected_additives = st.multiselect(
+        "选择助剂（可多选）", list(additives.keys()), default=[list(additives.keys())[0]]
+    )
+    
+    for category in selected_additives:
+        for ad, additive_info in additives[category].items():
+            with st.expander(f"{additive_info['name']} 推荐范围"):
+                st.write(f"推荐范围：{additive_info['range'][0]} - {additive_info['range'][1]}%")  # 显示推荐范围
+                unit_add = "g" if fraction_type == "质量" else "%"
+
+                # 设置默认值，确保它不小于最小值
+                min_val = float(additive_info['range'][0])
+                max_val = float(additive_info['range'][1])
+                default_value = max(min_val, 0.0)
+
+                # 使用 number_input 输入框
+                st.session_state.input_values[ad] = st.number_input(
+                    f"{additive_info['name']} 含量 ({unit_add})", 
+                    min_value=min_val, 
+                    max_value=max_val, 
+                    value=default_value, 
+                    step=0.1,
+                    key=f"add_{ad}"
+                )
     
         # 校验和预测
         total = sum(st.session_state.input_values.values())  # 总和计算
