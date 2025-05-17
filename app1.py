@@ -123,7 +123,7 @@ def apply_global_styles():
 
         /* 全局背景图 */
         body {{
-            background-image: url("images/图片1.jpg"); /* 修改为你的图片路径 */
+            background-image: url("data:image/png;base64,{icon_base64}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -136,6 +136,20 @@ def apply_global_styles():
         }}
     </style>
     """, unsafe_allow_html=True)
+
+def render_global_header():
+    """渲染全局头部"""
+    st.markdown(f"""
+    <div class="global-header">
+        <div class="header-container">
+            <img src="data:image/png;base64,{icon_base64}" 
+                 style="width:120px; height:auto; border-radius:12px; box-shadow:{'var(--shadow)'}"
+                 alt="平台标志">
+            <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
 
 
 
