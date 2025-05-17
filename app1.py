@@ -201,7 +201,7 @@ def apply_custom_styles():
             background-image: url("图片1.png");
             background-size: cover;
             background-position: center;
-            opacity: 0.001;
+            opacity: 0.1;
             z-index: -1;
         }}
     </style>
