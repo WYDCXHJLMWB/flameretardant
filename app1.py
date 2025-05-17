@@ -682,23 +682,23 @@ if st.session_state.logged_in:
             total = sum(st.session_state.input_values.values())  # 总和计算
             is_only_pp = all(v == 0 for k, v in st.session_state.input_values.items() if k != "PP")  # 仅PP配方检查
         
-        with st.expander("✅ 输入验证"):
-            if fraction_type in ["体积分数", "质量分数"]:
-                if abs(total - 100.0) > 1e-6:
-                    st.error(f"❗ {fraction_type}的总和必须为100%（当前：{total:.2f}%）")
-                else:
-                    st.success(f"{fraction_type}总和验证通过")
+    with st.expander("✅ 输入验证"):
+        if fraction_type in ["体积分数", "质量分数"]:
+            if abs(total - 100.0) > 1e-6:
+                st.error(f"❗ {fraction_type}的总和必须为100%（当前：{total:.2f}%）")
             else:
-                st.success("成分总和验证通过")
-                if is_only_pp:
-                    st.info("检测到纯PP配方")
-        
-            # 验证配方是否包含锡酸锌或羟基锡酸锌
-            selected_flame_keys = [key for key in flame_retardants if flame_retardants[key]["name"] in selected_flame_retardants]
-            if "Zinc Stannate" not in selected_flame_keys and "Hydroxy Zinc Stannate" not in selected_flame_keys:
-                st.error("❗ 配方必须包含锡酸锌（Zinc Stannate）或羟基锡酸锌（Hydroxy Zinc Stannate）。")
-            else:
-                st.success("配方验证通过，包含锡酸锌或羟基锡酸锌。")
+                st.success(f"{fraction_type}总和验证通过")
+        else:
+            st.success("成分总和验证通过")
+            if is_only_pp:
+                st.info("检测到纯PP配方")
+    
+        # 验证配方是否包含锡酸锌或羟基锡酸锌
+        selected_flame_keys = [key for key in flame_retardants if flame_retardants[key]["name"] in selected_flame_retardants]
+        if not any("Zinc Stannate" in flame_retardants[key]["name"] or "Hydroxy Zinc Stannate" in flame_retardants[key]["name"] for key in selected_flame_keys):
+            st.error("❗ 配方必须包含锡酸锌（Zinc Stannate）或羟基锡酸锌（Hydroxy Zinc Stannate）。")
+        else:
+            st.success("配方验证通过，包含锡酸锌或羟基锡酸锌。")
         
             # 验证并点击“开始预测”按钮
             if st.button("🚀 开始预测", type="primary"):
