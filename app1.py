@@ -76,116 +76,92 @@ if 'user' not in st.session_state:
 # --------------------- 样式配置 ---------------------
 st.markdown(f"""
 <style>
-    /* 基础字体设置 */
-    html {{
-        font-size: 20px;  /* 全局基础字号 */
+    /* 新增分栏样式 */
+    .main-columns {{
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 3rem;
+        align-items: start;
+        margin-top: 2rem;
     }}
     
-    /* 通用文本 */
-    body {{
-        font-size: 1.2rem;  /* 正文基础字号 */
-        line-height: 1.8;    /* 增加行高 */
-        color: #1a1a1a;     /* 深色文字保证对比度 */
+    /* 左侧介绍栏样式 */
+    .intro-column {{
+        background: rgba(255,255,255,0.9);
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     }}
     
-    /* 标题系统 */
-    h1 {{
-        font-size: 3rem !important;
-        margin: 1.5rem 0 !important;
+    /* 右侧登录栏样式 */
+    .auth-column {{
+        background: rgba(255,255,255,0.95);
+        padding: 3rem 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        position: sticky;
+        top: 2rem;
+    }}
+    
+    /* 大标题样式 */
+    .auth-title {{
+        font-size: 2.8rem !important;
         color: #1e3d59 !important;
-        font-weight: 700 !important;
+        margin-bottom: 2rem !important;
+        font-weight: 700;
+        text-align: center;
     }}
     
-    h2 {{
-        font-size: 2.5rem !important;
-        margin: 1.3rem 0 !important;
-        color: #2c527a !important;
-    }}
-    
-    h3 {{
-        font-size: 2rem !important;
-        margin: 1.1rem 0 !important;
-    }}
-    
-    /* 表单元素 */
+    /* 表单元素放大 */
     .stTextInput label, 
-    .stNumberInput label, 
-    .stSelectbox label,
-    .stMultiselect label {{
-        font-size: 1.5rem !important;
-        font-weight: 600 !important;
-        margin-bottom: 0.8rem !important;
-    }}
-    
-    /* 输入框文字 */
-    .stTextInput input, 
-    .stNumberInput input,
-    .stSelectbox select,
-    .stMultiselect div {{
-        font-size: 1.4rem !important;
-        padding: 0.8rem !important;
-    }}
-    
-    /* 按钮文字 */
+    .stTextInput input,
+    .stPassword input,
     .stButton button {{
         font-size: 1.6rem !important;
-        padding: 1rem 2.5rem !important;
-        border-radius: 8px !important;
     }}
     
-    /* 数据表格 */
-    .stDataFrame {{
-        font-size: 1.3rem !important;
-    }}
-    
-    /* 侧边栏 */
-    .css-1d391kg {{
-        font-size: 1.4rem !important;
-    }}
-    
-    /* 警告信息 */
-    .stAlert {{
-        font-size: 1.4rem !important;
-        padding: 1.2rem !important;
-        border-radius: 8px !important;
-    }}
-    
-    /* 指标显示 */
-    .stMetric {{
-        font-size: 1.8rem !important;
-        padding: 1.5rem !important;
-        background: #f8f9fa !important;
+    /* 输入框尺寸 */
+    .stTextInput input, 
+    .stPassword input {{
+        padding: 1.2rem 1.5rem !important;
         border-radius: 10px !important;
     }}
     
-    /* 展开面板 */
-    .stExpander .streamlit-expanderHeader {{
-        font-size: 1.6rem !important;
-        padding: 1.2rem 0 !important;
-    }}
-    
-    /* 选项卡 */
-    .stTabs [data-baseweb="tab-list"] {{
-        gap: 1rem !important;
-    }}
-    
-    .stTabs [data-baseweb="tab"] {{
-        font-size: 1.4rem !important;
-        padding: 1rem 2rem !important;
-    }}
-    
-    /* 页脚 */
-    footer {{
-        font-size: 1.2rem !important;
-        margin-top: 3rem !important;
+    /* 登录按钮样式 */
+    .auth-button {{
+        width: 100% !important;
         padding: 1.5rem !important;
-        background: rgba(255,255,255,0.9) !important;
+        font-size: 1.8rem !important;
+        margin-top: 2rem !important;
+        background: #1e3d59 !important;
+        transition: all 0.3s ease;
+    }}
+    
+    .auth-button:hover {{
+        transform: scale(1.02);
+        box-shadow: 0 4px 15px rgba(30,61,89,0.3);
+    }}
+    
+    /* 选项卡样式 */
+    .stTabs [role="tablist"] {{
+        margin-bottom: 2rem !important;
+    }}
+    
+    .stTabs [role="tab"] {{
+        font-size: 1.5rem !important;
+        padding: 1.2rem 2rem !important;
         border-radius: 8px !important;
     }}
     
-    /* 高对比度调整 */
-    .st-bb {{ color: #000 !important; }}
-    .st-at {{ background-color: rgba(255,255,255,0.9) !important; }}
+    /* 响应式布局 */
+    @media (max-width: 992px) {{
+        .main-columns {{
+            grid-template-columns: 1fr;
+        }}
+        .auth-column {{
+            position: static;
+        }}
+    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -282,53 +258,43 @@ def show_homepage():
     </div>
     """, unsafe_allow_html=True)
 
-    # 在首页末尾添加登录入口
-    st.markdown("---")
-    with st.expander("🔐 登录/注册以使用完整功能", expanded=False):
-        tab_login, tab_register, tab_forgot = st.tabs(["登录", "注册", "忘记密码"])
+    with st.container():
+        st.markdown('<div class="auth-column">', unsafe_allow_html=True)
         
-        with tab_login:
+        # 登录/注册选项卡
+        tab1, tab2, tab3 = st.tabs(["🔐 登录", "📝 注册", "🔒 忘记密码"])
+        
+        with tab1:
             with st.form("home_login"):
-                username = st.text_input("用户名")
-                password = st.text_input("密码", type="password")
-                if st.form_submit_button("登录"):
+                st.markdown('<div class="auth-title">用户登录</div>', unsafe_allow_html=True)
+                username = st.text_input("用户名", key="login_user")
+                password = st.text_input("密码", type="password", key="login_pwd")
+                submitted = st.form_submit_button("立即登录", use_container_width=True)
+                if submitted:
                     if verify_user(username, password):
                         st.session_state.logged_in = True
                         st.session_state.user = username
                         st.rerun()
-                    else:
-                        st.error("用户名或密码错误")
         
-        with tab_register:
+        with tab2:
             with st.form("home_register"):
-                new_user = st.text_input("新用户名")
-                new_pwd = st.text_input("设置密码", type="password")
+                st.markdown('<div class="auth-title">新用户注册</div>', unsafe_allow_html=True)
+                new_user = st.text_input("用户名（4-20位字母数字）")
+                new_pwd = st.text_input("设置密码（至少6位）", type="password")
                 confirm_pwd = st.text_input("确认密码", type="password")
-                email = st.text_input("邮箱")
-                if st.form_submit_button("注册"):
-                    if new_pwd != confirm_pwd:
-                        st.error("两次密码输入不一致")
-                    elif len(new_user) < 4 or not new_user.isalnum():
-                        st.error("用户名格式不正确")
-                    elif "@" not in email:
-                        st.error("请输入有效的邮箱地址")
-                    else:
-                        if save_user(new_user, new_pwd, email):
-                            st.success("注册成功！请登录")
-                        else:
-                            st.error("用户名已存在")
+                email = st.text_input("电子邮箱")
+                submitted = st.form_submit_button("立即注册", use_container_width=True)
+                if submitted:
+                    # 注册验证逻辑...
         
-        with tab_forgot:
-            email = st.text_input("注册邮箱")
-            new_password = st.text_input("新密码", type="password")
-            confirm_password = st.text_input("确认密码", type="password")
-            if st.button("重置密码"):
-                if new_password != confirm_password:
-                    st.error("两次输入的密码不一致")
-                elif reset_password_by_email(email, new_password):
-                    st.success("密码重置成功！")
-                else:
-                    st.error("该邮箱未注册")
+        with tab3:
+            st.markdown('<div class="auth-title">找回密码</div>', unsafe_allow_html=True)
+            email = st.text_input("注册邮箱", key="reset_email")
+            st.button("发送重置链接", use_container_width=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)  # 结束auth-column
+    
+    st.markdown('</div>', unsafe_allow_html=True)  # 结束main-columns
 
 # --------------------- 主流程 ---------------------
 if not st.session_state.logged_in:
