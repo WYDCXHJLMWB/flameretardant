@@ -73,87 +73,6 @@ if 'user' not in st.session_state:
     st.session_state.user = None
 
 # --------------------- 样式配置 ---------------------
-def apply_global_styles():
-    """应用全局样式"""
-    st.markdown(f"""
-    <style>
-        :root {{
-            --text-base: 1.5rem;   /* 增加基础字号 */
-            --text-lg: 1.7rem;     /* 增加较大字号 */
-            --text-xl: 1.9rem;     /* 增加超大字号 */
-            --title-sm: 2.2rem;    /* 调整标题字号 */
-            --title-md: 2.5rem;    /* 调整标题字号 */
-            --title-lg: 2.8rem;    /* 调整标题字号 */
-            --primary: #1e3d59;
-            --secondary: #3f87a6;
-            --accent: #2c2c2c;
-            --shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }}
-
-        /* 统一字体设置 */
-        body {{
-            font-size: var(--text-base) !important;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        }}
-
-        /* 全局头部 */
-        .global-header {{
-            background: rgba(255,255,255,0.98);
-            padding: 2rem 5%;
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-        }}
-
-        .header-title {{
-            font-size: var(--title-lg) !important;
-            color: var(--primary) !important;
-            margin: 0;
-            line-height: 1.2;
-            font-weight: 600;
-        }}
-
-        /* 统一组件样式 */
-        .stNumberInput, .stTextInput, .stSelectbox {{
-            font-size: var(--text-lg) !important;
-        }}
-
-        h1, h2, h3 {{
-            color: var(--primary) !important;
-        }}
-
-        /* 全局背景图 */
-        body {{
-            background-image: url("data:image/png;base64,{icon_base64}");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            opacity: 0.9;
-        }}
-
-        /* 侧边栏样式 */
-        .sidebar {{
-            background: rgba(255, 255, 255, 0.9);
-        }}
-    </style>
-    """, unsafe_allow_html=True)
-
-def render_global_header():
-    """渲染全局头部"""
-    st.markdown(f"""
-    <div class="global-header">
-        <div class="header-container">
-            <img src="data:image/png;base64,{icon_base64}" 
-                 style="width:120px; height:auto; border-radius:12px; box-shadow:{'var(--shadow)'}"
-                 alt="平台标志">
-            <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-
-
-
 def apply_custom_styles():
     st.markdown(f"""
     <style>
@@ -332,7 +251,7 @@ def show_homepage():
                 • 支持LOI（极限氧指数）预测<br>
                 • TS（拉伸强度）预测<br>
                 
-         
+            </p>
         </div>
 
         <div class="feature-card">
@@ -615,8 +534,7 @@ if st.session_state.logged_in:
       
 
     if page == "性能预测":
-        apply_global_styles()
-        render_global_header()
+        apply_custom_styles()
         st.subheader("🔮 性能预测：基于配方预测LOI和TS")
     
         # 初始化 input_values
@@ -832,8 +750,7 @@ if st.session_state.logged_in:
 
     
     elif page == "配方建议":
-        apply_global_styles()
-        render_global_header()
+        apply_custom_styles()
         if sub_page == "配方优化":
             fraction_type = st.sidebar.radio(
                 "📐 单位类型",
