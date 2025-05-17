@@ -78,10 +78,10 @@ def apply_global_styles():
     st.markdown(f"""
     <style>
         :root {{
-            --text-base: 3.0rem;  /* 增大基础字体 */
-            --text-lg: 3.5rem;    /* 增大大字体 */
-            --text-xl: 4.0rem;    /* 增大超大字体 */
-            --title-sm: 4.4rem;   /* 增大小标题 */
+            --text-base: 5.0rem;  /* 增大基础字体 */
+            --text-lg: 5.0rem;    /* 增大大字体 */
+            --text-xl: 5.0rem;    /* 增大超大字体 */
+            --title-sm: 5.5rem;   /* 增大小标题 */
             --title-md: 5.7rem;   /* 增大中标题 */
             --title-lg: 6.0rem;   /* 增大大标题 */
             --primary: #1e3d59;
@@ -133,7 +133,7 @@ def apply_global_styles():
             background-repeat: no-repeat;
             background-position: center;
             background-attachment: fixed;
-            background-color: rgba(255, 255, 255, 0.9); /* 透明度为90% */
+            background-color: rgba(255, 255, 255, 0.9); /* 透明度为0% */
         }}
 
     </style>
