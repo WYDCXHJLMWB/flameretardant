@@ -78,9 +78,9 @@ def apply_global_styles():
     st.markdown(f"""
     <style>
         :root {{
-            --text-base: 1.6rem;  /* 增大基础字体 */
-            --text-lg: 2.0rem;    /* 增大大字体 */
-            --text-xl: 3.5rem;    /* 增大超大字体 */
+            --text-base: 3.0rem;  /* 增大基础字体 */
+            --text-lg: 3.5rem;    /* 增大大字体 */
+            --text-xl: 4.0rem;    /* 增大超大字体 */
             --title-sm: 4.4rem;   /* 增大小标题 */
             --title-md: 5.7rem;   /* 增大中标题 */
             --title-lg: 6.0rem;   /* 增大大标题 */
