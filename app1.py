@@ -532,6 +532,7 @@ if st.session_state.logged_in:
             features.remove("PP")
         return ["PP"] + sorted(features)
       
+
     if page == "性能预测":
         apply_custom_styles()
         st.subheader("🔮 性能预测：基于配方预测LOI和TS")
@@ -608,54 +609,66 @@ if st.session_state.logged_in:
             matrix_range = matrix_materials[selected_matrix]["range"]
             # 显示推荐范围
             st.markdown(f"**推荐范围**: {matrix_range[0]} - {matrix_range[1]}%")
-        
+    
         with col_matrix[1]:
             unit_matrix = "g" if fraction_type == "质量" else "%"
             st.session_state.input_values[selected_matrix] = st.number_input(
                 f"{matrix_name} 含量 ({unit_matrix})", min_value=0.0, max_value=100.0, value=50.0, step=0.1
             )
     
-        # ========== 助剂显示按类别 ==========  
-        st.subheader("助剂选择")
-        for category, additive_dict in additives.items():
-            st.markdown(f"### {category}")  # 分类标题
+        # ========== 阻燃剂显示 ==========  
+        st.subheader("选择阻燃剂")
+        selected_flame_retardants = st.multiselect(
+            "选择阻燃剂（可多选，必选ZS和ZHS）", list(flame_retardants.keys()), default=[list(flame_retardants.keys())[0]]
+        )
+        
+        for ad in selected_flame_retardants:
+            flame_info = flame_retardants[ad]
+            with st.expander(f"{flame_info['name']} 推荐范围"):
+                st.write(f"推荐范围：{flame_info['range'][0]} - {flame_info['range'][1]}%")  # 显示推荐范围
+                unit_add = "g" if fraction_type == "质量" else "%"
+                
+                # 设置默认值，确保它不小于最小值
+                min_val = float(flame_info['range'][0])
+                max_val = float(flame_info['range'][1])
+                default_value = max(min_val, 0.0)
     
-            selected_additives = st.multiselect(
-                f"选择{category}（可多选）",
-                list(additive_dict.keys()) + list(flame_retardants.keys()),  # 包含阻燃剂
-                default=[list(additive_dict.keys())[0]],  # 默认选中第一个
-                label_visibility="collapsed", key=f"additive_{category}"
-            )
+                # 使用 number_input 输入框
+                st.session_state.input_values[ad] = st.number_input(
+                    f"{flame_info['name']} 含量 ({unit_add})", 
+                    min_value=min_val, 
+                    max_value=max_val, 
+                    value=default_value, 
+                    step=0.1,
+                    key=f"fr_{ad}"
+                )
     
-            if selected_additives:
-                for ad in selected_additives:
-                    if ad in additive_dict:
-                        additive_info = additive_dict[ad]
-                    else:  # 阻燃剂
-                        additive_info = flame_retardants[ad]
+        # ========== 助剂显示 ==========  
+        st.subheader("选择助剂")
+        selected_additives = st.multiselect(
+            "选择助剂（可多选）", list(additives.keys()), default=[list(additives.keys())[0]]
+        )
+        
+        for category in selected_additives:
+            for ad, additive_info in additives[category].items():
+                with st.expander(f"{additive_info['name']} 推荐范围"):
+                    st.write(f"推荐范围：{additive_info['range'][0]} - {additive_info['range'][1]}%")  # 显示推荐范围
+                    unit_add = "g" if fraction_type == "质量" else "%"
+                    
+                    # 设置默认值，确保它不小于最小值
+                    min_val = float(additive_info['range'][0])
+                    max_val = float(additive_info['range'][1])
+                    default_value = max(min_val, 0.0)
     
-                    with st.expander(f"{additive_info['name']} 推荐范围"):
-                        st.write(f"推荐范围：{additive_info['range'][0]} - {additive_info['range'][1]}")  # 显示推荐范围
-                        unit_add = "g" if fraction_type == "质量" else "%"
-    
-                        # 强制转换为浮动类型，确保是数值
-                        min_val = float(additive_info['range'][0])
-                        max_val = float(additive_info['range'][1])
-    
-                        # 设置默认值，确保它不小于最小值
-                        default_value = max(min_val, 0.0)  # 设置合理的默认值
-    
-                        # 使用 number_input 输入框
-                        st.session_state.input_values[ad] = st.number_input(
-                            f"{additive_info['name']} 含量 ({unit_add})", 
-                            min_value=min_val, 
-                            max_value=max_val, 
-                            value=default_value, 
-                            step=0.1,
-                            key=f"ad_{ad}"
-                        )
-            else:
-                st.info(f"⚠️ 未选择任何{category}助剂")
+                    # 使用 number_input 输入框
+                    st.session_state.input_values[ad] = st.number_input(
+                        f"{additive_info['name']} 含量 ({unit_add})", 
+                        min_value=min_val, 
+                        max_value=max_val, 
+                        value=default_value, 
+                        step=0.1,
+                        key=f"add_{ad}"
+                    )
     
         # 校验和预测
         total = sum(st.session_state.input_values.values())  # 总和计算
