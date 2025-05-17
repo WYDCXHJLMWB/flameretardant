@@ -575,7 +575,7 @@ if page == "性能预测":
 
     # 助剂数据
     additives = {
-        "Flame Retardant additives": {
+        "processing additives": {
             "Anti-drip-agent": {"name": "Polytetrafluoroethylene Anti-dripping Agent", "range": (0, 0.3)},
             "ZBS-PV-OA": {"name": "Zinc Borate Stabilizer PV-OA Series", "range": (0, 35)},
             "FP-250S": {"name": "Processing Aid FP-250S (Acrylic)", "range": (0, 35)},
@@ -617,7 +617,7 @@ if page == "性能预测":
         )
 
     # ========== 阻燃剂显示 ==========  
-    st.subheader("选择阻燃剂")
+    st.subheader("请选择阻燃剂")
     
     # 显示完整名称的下拉框
     selected_flame_retardants = st.multiselect(
