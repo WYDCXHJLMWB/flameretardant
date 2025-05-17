@@ -695,8 +695,8 @@ if st.session_state.logged_in:
         
             # 验证配方是否包含锡酸锌或羟基锡酸锌
             selected_flame_keys = [key for key in flame_retardants if flame_retardants[key]["name"] in selected_flame_retardants]
-            if "ZS" not in selected_flame_keys and "ZHS" not in selected_flame_keys:
-                st.error("❗ 配方必须包含锡酸锌（ZS）或羟基锡酸锌（ZHS）。")
+            if "Zinc Stannate" not in selected_flame_keys and "Hydroxy Zinc Stannate" not in selected_flame_keys:
+                st.error("❗ 配方必须包含锡酸锌（Zinc Stannate）或羟基锡酸锌（Hydroxy Zinc Stannate）。")
             else:
                 st.success("配方验证通过，包含锡酸锌或羟基锡酸锌。")
         
