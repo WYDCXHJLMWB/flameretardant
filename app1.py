@@ -78,12 +78,12 @@ def apply_global_styles():
     st.markdown(f"""
     <style>
         :root {{
-            --text-base: 1.5rem;   /* 增加基础字号 */
-            --text-lg: 1.7rem;     /* 增加较大字号 */
-            --text-xl: 1.9rem;     /* 增加超大字号 */
-            --title-sm: 2.2rem;    /* 调整标题字号 */
-            --title-md: 2.5rem;    /* 调整标题字号 */
-            --title-lg: 2.8rem;    /* 调整标题字号 */
+            --text-base: 1.6rem;   /* 增大基础字号 */
+            --text-lg: 1.8rem;     /* 增大较大字号 */
+            --text-xl: 2rem;       /* 增大超大字号 */
+            --title-sm: 2.4rem;    /* 增大标题字号 */
+            --title-md: 2.8rem;    /* 增大标题字号 */
+            --title-lg: 3.2rem;    /* 增大标题字号 */
             --primary: #1e3d59;
             --secondary: #3f87a6;
             --accent: #2c2c2c;
@@ -123,7 +123,7 @@ def apply_global_styles():
 
         /* 全局背景图 */
         body {{
-            background-image: url("data:image/png;base64,{icon_base64}");
+            background-image: url("images/图片1.jpg"); /* 修改为你的图片路径 */
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -134,6 +134,9 @@ def apply_global_styles():
         .sidebar {{
             background: rgba(255, 255, 255, 0.9);
         }}
+    </style>
+    """, unsafe_allow_html=True)
+
     </style>
     """, unsafe_allow_html=True)
 
