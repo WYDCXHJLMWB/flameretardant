@@ -190,7 +190,8 @@ def apply_custom_styles():
             padding-bottom: 0.5rem;
             margin-bottom: 2rem;
         }}
-            /* 页面背景图设置为图片1.png，透明度为99.9% */
+
+        /* 页面背景图设置为图片1.png，透明度为99.9% */
         body::before {{
             content: "";
             position: fixed;
@@ -204,9 +205,8 @@ def apply_custom_styles():
             z-index: -1;
         }}
     </style>
-""", unsafe_allow_html=True
-    </style>
     """, unsafe_allow_html=True)
+
 
 # --------------------- 首页内容 ---------------------
 def show_homepage():
@@ -248,7 +248,7 @@ def show_homepage():
             </h3>
             <p style="font-size:1.5rem;">
                 • 支持LOI（极限氧指数）预测<br>
-                • TS（拉伸强度）预测精<br>
+                • TS（拉伸强度）预测<br>
                 
             </p>
         </div>
