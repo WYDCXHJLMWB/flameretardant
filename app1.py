@@ -543,12 +543,12 @@ if st.session_state.logged_in:
     
         # 基体材料数据
         matrix_materials = {
-            "PP": {"name": "Polypropylene", "range": (53.5, 99.5)},
-            "PA": {"name": "Polyamide", "range": (0, 100)},
-            "PC/ABS": {"name": "Polycarbonate/Acrylonitrile Butadiene Styrene Blend", "range": (0, 100)},
-            "POM": {"name": "Polyoxymethylene", "range": (0, 100)},
-            "PBT": {"name": "Polybutylene Terephthalate", "range": (0, 100)},
-            "PVC": {"name": "Polyvinyl Chloride", "range": (0, 100)},
+            "PP": {"name": "Polypropylene", "full_name": "Polypropylene (PP)", "range": (53.5, 99.5)},
+            "PA": {"name": "Polyamide", "full_name": "Polyamide (PA)", "range": (0, 100)},
+            "PC/ABS": {"name": "Polycarbonate/Acrylonitrile Butadiene Styrene Blend", "full_name": "Polycarbonate/Acrylonitrile Butadiene Styrene Blend (PC/ABS)", "range": (0, 100)},
+            "POM": {"name": "Polyoxymethylene", "full_name": "Polyoxymethylene (POM)", "range": (0, 100)},
+            "PBT": {"name": "Polybutylene Terephthalate", "full_name": "Polybutylene Terephthalate (PBT)", "range": (0, 100)},
+            "PVC": {"name": "Polyvinyl Chloride", "full_name": "Polyvinyl Chloride (PVC)", "range": (0, 100)},
         }
     
         # 阻燃剂数据
@@ -604,15 +604,17 @@ if st.session_state.logged_in:
         st.subheader("请选择配方成分")
         col_matrix = st.columns([4, 3], gap="medium")  # 调整列宽比例
         with col_matrix[0]:
-            selected_matrix = st.selectbox("选择基体材料", matrix_materials, index=0)
-            matrix_name = matrix_materials[selected_matrix]["name"]
-            matrix_range = matrix_materials[selected_matrix]["range"]
-            # 显示推荐范围
-            st.markdown(f"**推荐范围**: {matrix_range[0]} - {matrix_range[1]}%")
+            selected_matrix = st.selectbox("选择基体材料", [matrix_materials[key]["full_name"] for key in matrix_materials], index=0)
+            # 获取选中基体的缩写
+            matrix_key = [key for key in matrix_materials if matrix_materials[key]["full_name"] == selected_matrix][0]
+            matrix_name = matrix_materials[matrix_key]["name"]
+            matrix_range = matrix_materials[matrix_key]["range"]
+            # 显示推荐范围，不带单位
+            st.markdown(f"**推荐范围**: {matrix_range[0]} - {matrix_range[1]}")
     
         with col_matrix[1]:
-            unit_matrix = "g" if fraction_type == "质量" else "%"
-            st.session_state.input_values[selected_matrix] = st.number_input(
+            unit_matrix = "g" if fraction_type == "质量" else ("%" if fraction_type == "质量分数" else "vol%")
+            st.session_state.input_values[matrix_key] = st.number_input(
                 f"{matrix_name} 含量 ({unit_matrix})", min_value=0.0, max_value=100.0, value=50.0, step=0.1
             )
     
@@ -621,7 +623,7 @@ if st.session_state.logged_in:
         
         # 显示完整名称的下拉框
         selected_flame_retardants = st.multiselect(
-            "选择阻燃剂（可多选）", 
+            "选择阻燃剂（必选锡酸锌和羟基锡酸锌）", 
             [flame_retardants[key]["name"] for key in flame_retardants],
             default=[flame_retardants[list(flame_retardants.keys())[0]]["name"]]
         )
@@ -633,8 +635,8 @@ if st.session_state.logged_in:
                 if value["name"] == flame_name:
                     flame_info = value
                     with st.expander(f"{flame_info['name']} 推荐范围"):
-                        st.write(f"推荐范围：{flame_info['range'][0]} - {flame_info['range'][1]}%")  # 显示推荐范围
-                        unit_add = "g" if fraction_type == "质量" else "%"
+                        st.write(f"推荐范围：{flame_info['range'][0]} - {flame_info['range'][1]}")  # 不带单位
+                        unit_add = "g" if fraction_type == "质量" else ("%" if fraction_type == "质量分数" else "vol%")
                         
                         # 设置默认值，确保它不小于最小值
                         min_val = float(flame_info['range'][0])
@@ -660,24 +662,22 @@ if st.session_state.logged_in:
         for category in selected_additives:
             for ad, additive_info in additives[category].items():
                 with st.expander(f"{additive_info['name']} 推荐范围"):
-                    st.write(f"推荐范围：{additive_info['range'][0]} - {additive_info['range'][1]}%")  # 显示推荐范围
-                    unit_add = "g" if fraction_type == "质量" else "%"
+                    st.write(f"推荐范围：{additive_info['range'][0]} - {additive_info['range'][1]}")  # 不带单位
+                    unit_additive = "g" if fraction_type == "质量" else ("%" if fraction_type == "质量分数" else "vol%")
+                    min_additive = float(additive_info["range"][0])
+                    max_additive = float(additive_info["range"][1])
+                    default_additive = max(min_additive, 0.0)
     
-                    # 设置默认值，确保它不小于最小值
-                    min_val = float(additive_info['range'][0])
-                    max_val = float(additive_info['range'][1])
-                    default_value = max(min_val, 0.0)
-    
-                    # 使用 number_input 输入框
+                    # 设置助剂输入框
                     st.session_state.input_values[ad] = st.number_input(
-                        f"{additive_info['name']} 含量 ({unit_add})", 
-                        min_value=min_val, 
-                        max_value=max_val, 
-                        value=default_value, 
+                        f"{additive_info['name']} 含量 ({unit_additive})", 
+                        min_value=min_additive, 
+                        max_value=max_additive, 
+                        value=default_additive, 
                         step=0.1,
-                        key=f"add_{ad}"
+                        key=f"additive_{ad}"
                     )
-        
+            
             # 校验和预测
             total = sum(st.session_state.input_values.values())  # 总和计算
             is_only_pp = all(v == 0 for k, v in st.session_state.input_values.items() if k != "PP")  # 仅PP配方检查
