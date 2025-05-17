@@ -78,12 +78,12 @@ def apply_global_styles():
     st.markdown(f"""
     <style>
         :root {{
-            --text-base: 1.6rem;   /* 增大基础字号 */
-            --text-lg: 1.8rem;     /* 增大较大字号 */
-            --text-xl: 2rem;       /* 增大超大字号 */
-            --title-sm: 2.4rem;    /* 增大标题字号 */
-            --title-md: 2.8rem;    /* 增大标题字号 */
-            --title-lg: 3.2rem;    /* 增大标题字号 */
+            --text-base: 1.5rem;   /* 增加基础字号 */
+            --text-lg: 1.7rem;     /* 增加较大字号 */
+            --text-xl: 1.9rem;     /* 增加超大字号 */
+            --title-sm: 2.2rem;    /* 调整标题字号 */
+            --title-md: 2.5rem;    /* 调整标题字号 */
+            --title-lg: 2.8rem;    /* 调整标题字号 */
             --primary: #1e3d59;
             --secondary: #3f87a6;
             --accent: #2c2c2c;
@@ -137,21 +137,6 @@ def apply_global_styles():
     </style>
     """, unsafe_allow_html=True)
 
-    </style>
-    """, unsafe_allow_html=True)
-
-def render_global_header():
-    """渲染全局头部"""
-    st.markdown(f"""
-    <div class="global-header">
-        <div class="header-container">
-            <img src="data:image/png;base64,{icon_base64}" 
-                 style="width:120px; height:auto; border-radius:12px; box-shadow:{'var(--shadow)'}"
-                 alt="平台标志">
-            <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
 
 
 
@@ -333,7 +318,7 @@ def show_homepage():
                 • 支持LOI（极限氧指数）预测<br>
                 • TS（拉伸强度）预测<br>
                 
-            </p>
+         
         </div>
 
         <div class="feature-card">
