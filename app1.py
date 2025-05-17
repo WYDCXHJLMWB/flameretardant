@@ -544,16 +544,57 @@ if page == "性能预测":
     if 'input_values' not in st.session_state:
         st.session_state.input_values = {}  # 使用会话状态保存输入值
 
-    matrix_materials = ["PP", "PA", "PC/ABS", "POM", "PBT", "PVC", "其他"]
-    flame_retardants = [
-        "AHP", "ammonium octamolybdate", "Al(OH)3", "CFA", "APP", "Pentaerythritol", "DOPO",
-        "EPFR-1100NT", "XS-FR-8310", "ZS", "XiuCheng", "ZHS", "ZnB", "antimony oxides",
-        "Mg(OH)2", "TCA", "MPP", "PAPP", "其他"
-    ]
-    additives = [
-        "Anti-drip-agent", "wollastonite", "M-2200B", "ZBS-PV-OA", "FP-250S", "silane coupling agent", "antioxidant",
-        "SiO2", "其他"
-    ]
+    matrix_materials = {
+        "PP": {"name": "Polypropylene", "range": (53.5, 99.5)},
+        "PA": {"name": "Polyamide", "range": (0, 100)},
+        "PC/ABS": {"name": "Polycarbonate/Acrylonitrile Butadiene Styrene Blend", "range": (0, 100)},
+        "POM": {"name": "Polyoxymethylene", "range": (0, 100)},
+        "PBT": {"name": "Polybutylene Terephthalate", "range": (0, 100)},
+        "PVC": {"name": "Polyvinyl Chloride", "range": (0, 100)},
+    flame_retardants = {
+        "AHP": {"name": "Aluminum Hyphosphite", "range": (0, 25)},
+        "CFA": {"name": "Carbon Forming agent", "range": (0, 10)},
+        "ammonium octamolybdate": {"name": "Ammonium Octamolybdate", "range": (0, 3.4)},
+        "Al(OH)3": {"name": "Aluminum Hydroxide", "range": (0, 10)},
+        "APP": {"name": "Ammonium Polyphosphate", "range": (0, 19.5)},
+        "Pentaerythritol": {"name": "Pentaerythritol", "range": (0, 1.3)},
+        "DOPO": {"name": "9,10-Dihydro-9-oxa-10-phosphaphenanthrene-10-oxide", "range": (0, 27)},
+        "XS-FR-8310": {"name": "XS-FR-8310", "range": (0, 35)},
+        "ZS": {"name": "Zinc Stannate", "range": (0, 34.5)},
+        "XiuCheng": {"name": "XiuCheng Flame Retardant", "range": (0, 35},
+        "ZHS": {"name": "Hydroxy Zinc Stannate", "range": (0, 34.5)},
+        "ZnB": {"name": "Zinc Borate", "range": (0, 2)},
+        "antimony oxides": {"name": "Antimony Oxides", "range": (0, 2)},
+        "Mg(OH)2": {"name": "Magnesium Hydroxide", "range": (0, 34.5)},
+        "TCA": {"name": "Triazine Carbonization Agent", "range": (0, 17.4)},
+        "MPP": {"name": "Melamine Polyphosphate", "range": (0, 25)},
+        "PAPP": {"name": "Piperazine Pyrophosphate", "range": (0, 24.5)},
+        "其他": {"name": "Other", "range": (0, 100)},
+    }
+
+    additives = {
+        "Flame Retardants": {
+            "Anti-drip-agent": {"name": "Polytetrafluoroethylene Anti-dripping Agent", "range": (0, 0.3)},
+            "ZBS-PV-OA": {"name": "Zinc Borate Stabilizer PV-OA Series", "range": (0, 35)},
+            "FP-250S": {"name": "Processing Aid FP-250S (Acrylic)", "range": (0, 35)},
+        },
+        "Fillers": {
+            "wollastonite": {"name": "Wollastonite (Calcium Metasilicate)", "range": (0, 5)},
+            "SiO2": {"name": " Silicon Dioxide", "range": (0, 6)},
+        },
+        "Coupling Agents": {
+            "silane coupling agent": {"name": "Amino Silane Coupling Agent", "range": (0.5, 3)},
+        },
+        "Antioxidants": {
+            "antioxidant": {"name": "Irganox 1010 Antioxidant", "range": (0.1, 0.5)},
+        },
+        "Lubricants": {
+            "M-2200B": {"name": "Lubricant M-2200B (Ester-based)", "range": (0.5, 3)},
+        },
+        "Functional Additives": {  # 替换Others为功能助剂
+            "Custom Additive": {"name": "Custom Additive", "range": (0, 5)},
+        },
+    }
 
     fraction_type = st.sidebar.selectbox("选择输入的单位", ["质量", "质量分数", "体积分数"])
 
