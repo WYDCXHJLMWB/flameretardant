@@ -291,8 +291,8 @@ def show_homepage():
             <div class="feature-card">
                 <h2 class="section-title">👨💻 开发团队</h2>
                 <p style="font-size:1.5rem;">
-                    上海大学高分子材料研究所<br>
-                    PolyDesign 创新团队<br>
+                    上海大学功能高分子<br>
+                    PolyDesign <br>
                     马维宾 | 李凌 | 张瑜<br>
                     宋娜 | 丁鹏
                 </p>
