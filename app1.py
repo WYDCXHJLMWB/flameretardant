@@ -191,21 +191,22 @@ def apply_custom_styles():
             margin-bottom: 2rem;
         }}
 
-        /* 页面背景图设置为图片1.png，透明度为99.9% */
+        /* 页面背景图设置为base64图片，透明度为99.9% */
         body::before {{
             content: "";
             position: fixed;
             top: 0; left: 0;
             width: 100vw;
             height: 100vh;
-            background-image: url("图片1.png");
+            background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA..."); /* 这里替换成实际的base64图片 */
             background-size: cover;
             background-position: center;
-            opacity: 0.1;
+            opacity: 0.001;
             z-index: -1;
         }}
     </style>
     """, unsafe_allow_html=True)
+
 
 
 # --------------------- 首页内容 ---------------------
@@ -488,6 +489,7 @@ if st.session_state.logged_in:
     # 子功能选择（仅在配方建议时显示）
     sub_page = None
     if page == "配方建议":
+        apply_custom_styles()
         sub_page = st.sidebar.selectbox(
             "🔧 子功能选择",
             ["配方优化", "添加剂推荐"],
@@ -536,6 +538,7 @@ if st.session_state.logged_in:
     
     # 性能预测页面
     if page == "性能预测":
+        apply_custom_styles()
         st.subheader("🔮 性能预测：基于配方预测LOI和TS")
     
         matrix_materials = ["PP", "PA", "PC/ABS", "POM", "PBT", "PVC", "其他"]
@@ -715,6 +718,7 @@ if st.session_state.logged_in:
     
     
     elif page == "配方建议":
+        apply_custom_styles()
         if sub_page == "配方优化":
             fraction_type = st.sidebar.radio(
                 "📐 单位类型",
