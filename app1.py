@@ -610,7 +610,7 @@ if page == "性能预测":
                 # 通过检查确保添加剂的名称存在
                 additive_name = additive_dict[ad].get('name', None)
                 if additive_name:  # 如果名称存在
-                    with st.expander(f"{additive_name} 推荐范围"):
+                    with st.expander(f"{additive_name} 推荐范围"):  # 移除 key 参数
                         st.write(f"推荐范围：{additive_dict[ad]['range'][0]} - {additive_dict[ad]['range'][1]}")  # 显示推荐范围
                         unit_add = "g" if fraction_type == "质量" else "%"
 
@@ -690,6 +690,7 @@ if page == "性能预测":
                 st.metric(label="LOI预测值", value=f"{loi_pred:.2f}%")
             with col2:
                 st.metric(label="TS预测值", value=f"{ts_pred:.2f} MPa")
+
 
 
     
