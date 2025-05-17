@@ -190,6 +190,21 @@ def apply_custom_styles():
             padding-bottom: 0.5rem;
             margin-bottom: 2rem;
         }}
+            /* 页面背景图设置为图片1.png，透明度为99.9% */
+        body::before {{
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url("图片1.png");
+            background-size: cover;
+            background-position: center;
+            opacity: 0.001;
+            z-index: -1;
+        }}
+    </style>
+""", unsafe_allow_html=True
     </style>
     """, unsafe_allow_html=True)
 
