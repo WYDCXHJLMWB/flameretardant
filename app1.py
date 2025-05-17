@@ -551,6 +551,8 @@ if page == "性能预测":
         "POM": {"name": "Polyoxymethylene", "range": (0, 100)},
         "PBT": {"name": "Polybutylene Terephthalate", "range": (0, 100)},
         "PVC": {"name": "Polyvinyl Chloride", "range": (0, 100)},
+    }
+
     flame_retardants = {
         "AHP": {"name": "Aluminum Hyphosphite", "range": (0, 25)},
         "CFA": {"name": "Carbon Forming agent", "range": (0, 10)},
@@ -561,7 +563,7 @@ if page == "性能预测":
         "DOPO": {"name": "9,10-Dihydro-9-oxa-10-phosphaphenanthrene-10-oxide", "range": (0, 27)},
         "XS-FR-8310": {"name": "XS-FR-8310", "range": (0, 35)},
         "ZS": {"name": "Zinc Stannate", "range": (0, 34.5)},
-        "XiuCheng": {"name": "XiuCheng Flame Retardant", "range": (0, 35},
+        "XiuCheng": {"name": "XiuCheng Flame Retardant", "range": (0, 35)},
         "ZHS": {"name": "Hydroxy Zinc Stannate", "range": (0, 34.5)},
         "ZnB": {"name": "Zinc Borate", "range": (0, 2)},
         "antimony oxides": {"name": "Antimony Oxides", "range": (0, 2)},
@@ -646,31 +648,34 @@ if page == "性能预测":
 
     # ========== 助剂布局优化（与阻燃剂相同）==========
     st.subheader("助剂选择")
-    selected_additives = st.multiselect(
-        "选择助剂（可多选）", 
-        additives, 
-        default=["wollastonite"],
-        label_visibility="collapsed"
-    )
+    for category, additive_dict in additives.items():
+        st.markdown(f"### {category}")  # 添加分类标题
+        selected_additives = st.multiselect(
+            f"选择{category}（可多选）", 
+            list(additive_dict.keys()), 
+            default=[list(additive_dict.keys())[0]],  # 默认选中第一个
+            label_visibility="collapsed"
+        )
+        
+        if selected_additives:
+            cols_per_row = 3
+            for i in range(0, len(selected_additives), cols_per_row):
+                cols = st.columns(cols_per_row)
+                current_group = selected_additives[i:i+cols_per_row]
+                for idx, ad in enumerate(current_group):
+                    with cols[idx]:
+                        unit_add = get_unit(fraction_type)
+                        st.session_state.input_values[ad] = st.number_input(
+                            f"{additive_dict[ad]['name']} 含量 ({unit_add})",  # 显示助剂名称和单位
+                            min_value=0.0,
+                            max_value=additive_dict[ad]['range'][1],
+                            value=0.0,
+                            step=0.1,
+                            key=f"ad_{ad}"
+                        )
+        else:
+            st.info("⚠️ 未选择任何助剂")
     
-    if selected_additives:
-        cols_per_row = 3
-        for i in range(0, len(selected_additives), cols_per_row):
-            cols = st.columns(cols_per_row)
-            current_group = selected_additives[i:i+cols_per_row]
-            for idx, ad in enumerate(current_group):
-                with cols[idx]:
-                    unit_add = get_unit(fraction_type)
-                    st.session_state.input_values[ad] = st.number_input(
-                        f"{ad} 含量 ({unit_add})",  # 添加"含量"
-                        min_value=0.0,
-                        max_value=100.0,
-                        value=10.0,
-                        step=0.1,
-                        key=f"ad_{ad}"
-                    )
-    else:
-        st.info("⚠️ 未选择任何助剂")
     # 验证和预测部分保持不变
     total = sum(st.session_state.input_values.values())  # 修改处
     is_only_pp = all(v == 0 for k, v in st.session_state.input_values.items() if k != "PP")  # 修改处
@@ -686,8 +691,6 @@ if page == "性能预测":
             if is_only_pp:
                 st.info("检测到纯PP配方")
 
-   
-    
     if st.button("🚀 开始预测", type="primary"):
         if fraction_type in ["体积分数", "质量分数"] and abs(total - 100.0) > 1e-6:
             st.error(f"预测中止：{fraction_type}的总和必须为100%")
@@ -726,6 +729,7 @@ if page == "性能预测":
             st.metric(label="LOI预测值", value=f"{loi_pred:.2f}%")
         with col2:
             st.metric(label="TS预测值", value=f"{ts_pred:.2f} MPa")
+
     
     
     
