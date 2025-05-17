@@ -76,119 +76,65 @@ if 'user' not in st.session_state:
 def apply_custom_styles():
     st.markdown(f"""
     <style>
-        :root {{
-            --text-base: 1.3rem;
-            --text-lg: 1.5rem;
-            --text-xl: 1.7rem;
-            --title-sm: 2.0rem;
-            --title-md: 2.3rem;
-            --title-lg: 2.6rem;
-            --primary: #1e3d59;
-            --secondary: #3f87a6;
-            --accent: #2c2c2c;
-            --shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }}
-
-        /* 全局头部 */
-        .global-header {{
-            background: rgba(255,255,255,0.98);
-            padding: 2rem 5%;
-            box-shadow: var(--shadow);
-            margin-bottom: 3rem;
-        }}
-
-        .header-container {{
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }}
-
-        .header-logo {{
-            width: 120px;
-            height: auto;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-        }}
-
-        .header-title {{
-            font-size: 2.8rem !important;
-            color: var(--primary) !important;
-            margin: 0;
-            line-height: 1.2;
-        }}
-
-        /* 主内容布局 */
-        .main-container {{
+        /* 新增布局系统 */
+        .main-layout {{
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 5%;
+            position: relative;
+        }}
+
+        .content-wrapper {{
             display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 4rem;
+            grid-template-columns: minmax(0, 1fr) 400px;
+            gap: 40px;
+            align-items: start;
         }}
 
-        /* 核心内容区 */
-        .content-section {{
-            background: rgba(255,255,255,0.95);
-            padding: 3rem;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-        }}
-
-        /* 登录侧边栏 */
-        .auth-sidebar {{
+        /* 右侧登录容器 */
+        .auth-container {{
             position: sticky;
-            top: 2rem;
+            top: 100px;
+            height: calc(100vh - 140px);
+            overflow-y: auto;
+            padding-bottom: 40px;
+        }}
+
+        .auth-wrapper {{
             background: rgba(255,255,255,0.98);
-            padding: 3rem;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            height: fit-content;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+        }}
+
+        /* 滚动条优化 */
+        .auth-container::-webkit-scrollbar {{
+            width: 6px;
+        }}
+
+        .auth-container::-webkit-scrollbar-track {{
+            background: rgba(0,0,0,0.05);
+            border-radius: 3px;
+        }}
+
+        .auth-container::-webkit-scrollbar-thumb {{
+            background: rgba(0,0,0,0.2);
+            border-radius: 3px;
         }}
 
         /* 响应式布局 */
         @media (max-width: 1200px) {{
-            .main-container {{
+            .content-wrapper {{
                 grid-template-columns: 1fr;
-                gap: 2rem;
             }}
-            .auth-sidebar {{
-                order: -1;
+            
+            .auth-container {{
                 position: static;
-                max-width: 600px;
-                margin: 0 auto;
+                height: auto;
+                order: -1;
+                margin-bottom: 40px;
             }}
-        }}
-
-        /* 登录表单样式 */
-        .auth-form input {{
-            font-size: 1.6rem !important;
-            padding: 1rem 1.2rem !important;
-        }}
-
-        .auth-form button {{
-            font-size: 1.8rem !important;
-            padding: 1.2rem !important;
-            width: 100% !important;
-        }}
-
-        /* 内容区块样式 */
-        .feature-card {{
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            border-left: 4px solid var(--secondary);
-        }}
-
-        .section-title {{
-            font-size: var(--title-md);
-            color: var(--primary);
-            border-bottom: 3px solid var(--secondary);
-            padding-bottom: 0.5rem;
-            margin-bottom: 2rem;
         }}
     </style>
     """, unsafe_allow_html=True)
@@ -287,7 +233,6 @@ def show_homepage():
                 <p style="font-size:1.5rem;">
                     云南省科技重点计划<br>
                     项目编号：202302AB080022<br>
-                    国家重点研发计划资助
                 </p>
             </div>
             """, unsafe_allow_html=True)
