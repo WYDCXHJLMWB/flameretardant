@@ -802,7 +802,6 @@ if page == "性能预测":
 
 
     
-    
     elif page == "配方建议":
         apply_custom_styles()
         if sub_page == "配方优化":
