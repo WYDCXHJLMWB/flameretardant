@@ -614,11 +614,23 @@ if page == "性能预测":
                 with st.expander(f"{additive_dict[ad]['name']} 推荐范围"):
                     st.write(f"推荐范围：{additive_dict[ad]['range'][0]} - {additive_dict[ad]['range'][1]}")  # 显示推荐范围
                     unit_add = "g" if fraction_type == "质量" else "%"
+                    
+                    # 强制转换为浮动类型，确保是数值
+                    min_val = float(additive_dict[ad]['range'][0])
+                    max_val = float(additive_dict[ad]['range'][1])
+
+                    # 打印调试信息，查看传递的类型
+                    st.write(f"Debug: {ad} - min: {min_val}, max: {max_val}")
+
+                    # 设置默认值
+                    default_value = 0.0  # 可以设置一个合理的默认值
+
+                    # 使用 number_input 输入框
                     st.session_state.input_values[ad] = st.number_input(
                         f"{additive_dict[ad]['name']} 含量 ({unit_add})", 
-                        min_value=0.0, 
-                        max_value=additive_dict[ad]['range'][1], 
-                        value=0.0, 
+                        min_value=min_val, 
+                        max_value=max_val, 
+                        value=default_value, 
                         step=0.1,
                         key=f"ad_{ad}"
                     )
@@ -658,6 +670,7 @@ if page == "性能预测":
             st.metric(label="LOI预测值", value=f"{loi_pred:.2f}%")
         with col2:
             st.metric(label="TS预测值", value=f"{ts_pred:.2f} MPa")
+
 
     
     
