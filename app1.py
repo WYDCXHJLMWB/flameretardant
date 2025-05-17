@@ -14,16 +14,14 @@ from deap import base, creator, tools, algorithms
 import random  
 
 # --------------------- 页面配置 ---------------------
-# Ensure this is the first Streamlit function executed
 def image_to_base64(image_path):
     img = Image.open(image_path)
     buffered = io.BytesIO()
     img.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode()
 
-
 icon_base64 = image_to_base64("图片1.jpg")  
-background_base64 = image_to_base64("图片1.png")  # 设置背景图片
+background_base64 = image_to_base64("图片1.png") 
 
 if icon_base64:
     st.set_page_config(
@@ -35,18 +33,16 @@ if icon_base64:
 # --------------------- 用户认证模块 ---------------------
 USERS_FILE = "users.csv"
 
-# Initialize user data
 if not os.path.exists(USERS_FILE):
     pd.DataFrame(columns=["username", "password_hash", "email"]).to_csv(USERS_FILE, index=False)
 
 def load_users():
-    users = pd.read_csv(USERS_FILE)
-    return users
+    return pd.read_csv(USERS_FILE)
 
 def save_user(username, password, email):
     users = load_users()
     if username in users['username'].values:
-        return False  # 用户名已存在
+        return False
     password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
     new_user = pd.DataFrame([[username, password_hash.decode(), email]], columns=["username", "password_hash", "email"])
     users = pd.concat([users, new_user], ignore_index=True)
@@ -57,19 +53,9 @@ def verify_user(username, password):
     users = load_users()
     user = users[users['username'] == username]
     if user.empty:
-        st.error("用户不存在")
         return False
     stored_hash = user.iloc[0]['password_hash']
-    stored_hash_bytes = stored_hash.encode()
-    try:
-        if bcrypt.checkpw(password.encode(), stored_hash_bytes):
-            return True
-        else:
-            st.error("密码错误")
-            return False
-    except ValueError as e:
-        st.error(f"密码验证错误: {e}")
-        return False
+    return bcrypt.checkpw(password.encode(), stored_hash.encode())
 
 def reset_password_by_email(email, new_password):
     users = load_users()
@@ -90,12 +76,6 @@ if 'user' not in st.session_state:
 # --------------------- 样式配置 ---------------------
 st.markdown(f"""
 <style>
-    /* 页面字体大小调整 */
-    body {{
-        font-size: 18px;  /* 增大字体 */
-        font-family: 'Microsoft YaHei', sans-serif;
-    }}
-    
     .global-header {{
         display: flex;
         align-items: center;
@@ -140,16 +120,14 @@ st.markdown(f"""
         background: white;
     }}
     
-    /* 登录界面背景 */
     .stApp {{
         background-image: url('data:image/jpeg;base64,{background_base64}');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        opacity: 0.99; /* 透明度设置为90% */
+        opacity: 0.99;
     }}
 
-    /* 登录界面标题 */
     .stApp h1 {{
         text-align: center;
         color: #1e3d59;
@@ -158,95 +136,163 @@ st.markdown(f"""
         margin-top: 2rem;
     }}
 
-    /* 修改按钮样式 */
     .stButton button {{
         font-size: 1.5rem;
         padding: 1rem 2rem;
     }}
 
-    /* 修复标题显示问题 */
     .stApp h1 {{
         visibility: visible !important;
     }}
 </style>
 """, unsafe_allow_html=True)
 
-# --------------------- 登录验证 ---------------------
-if not st.session_state.logged_in:  # 仅当未登录时显示登录界面
-    tab_login, tab_register, tab_forgot_password = st.tabs(["🔐 登录", "📝 注册", "忘记密码"])
+# --------------------- 首页内容 ---------------------
+def show_homepage():
+    st.markdown(f"""
+    <div class="global-header">
+        <img src="data:image/png;base64,{icon_base64}" 
+             class="header-logo"
+             alt="Platform Logo">
+        <div>
+            <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
+            <p class="header-subtitle">Flame Retardant Polymer Composite Intelligent Platform</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # 登录界面
-    with tab_login:
-        with st.container():
-            # 显示登录界面标题和图标
-            st.image("图片1.jpg", width=200, caption="阻燃聚合物复合材料智能设计平台")  # 显示图标
-            st.markdown("<h1>阻燃聚合物复合材料智能设计平台</h1>", unsafe_allow_html=True)  # 显示大标题
-            with st.form("login_form"):
-                st.subheader("用户登录")
-                login_user = st.text_input("用户名", key="login_user").strip()
-                login_pwd = st.text_input("密码", type="password", key="login_pwd")
-                
-                if st.form_submit_button("登录", use_container_width=True):
-                    if not all([login_user, login_pwd]):
-                        st.error("请输入用户名和密码")
-                    elif verify_user(login_user, login_pwd):
+    st.markdown("""
+    <style>
+        :root {{
+            --text-base: 1.15rem;
+            --text-lg: 1.3rem;
+            --text-xl: 1.5rem;
+            --title-sm: 1.75rem;
+            --title-md: 2rem;
+            --title-lg: 2.25rem;
+            --primary: #1e3d59;
+            --secondary: #3f87a6;
+            --accent: #2c2c2c;
+        }}
+
+        .feature-section {{
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }}
+
+        .feature-list li {{
+            font-size: var(--text-lg);
+            padding-left: 2rem;
+            margin: 1rem 0;
+            position: relative;
+        }}
+
+        .feature-list li:before {{
+            content: "•";
+            color: var(--secondary);
+            font-size: 1.5em;
+            position: absolute;
+            left: 0;
+            top: -0.1em;
+        }}
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="feature-section">
+        <p style="font-size: 1.2rem;">
+            本平台融合AI与材料科学技术，用于可持续高分子复合材料智能设计，重点关注材料阻燃、力学和耐热等性能的优化与调控。
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div style="font-size: 1.5rem; color: #1e3d59; margin: 2rem 0 1rem;">核心功能</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="feature-section">
+        <ul class="feature-list">
+            <li><strong>性能预测</strong> - 基于材料配方预测LOI和TS值</li>
+            <li><strong>配方优化</strong> - 根据目标性能自动生成优化配方</li>
+            <li><strong>添加剂推荐</strong> - 智能推荐最佳添加剂组合</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="feature-section">
+        <div style="font-size: 1.5rem; color: #1e3d59; margin-bottom: 1rem;">研究成果</div>
+        <div style="background: #f8f9fa; padding: 1.2rem; border-radius: 8px;">
+            Ma Weibin, Li Ling, Zhang Yu, Li Minjie, Song Na, Ding Peng.<br>
+            <em>Active learning-based generative design of halogen-free flame-retardant polymeric composites.</em><br>
+            <strong>J Mater Inf</strong> 2025;5:09. DOI: <a href="http://dx.doi.org/10.20517/jmi.2025.09" target="_blank">10.20517/jmi.2025.09</a>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="feature-section">
+        <div style="font-size: 1.5rem; color: #1e3d59; margin-bottom: 1rem;">致谢</div>
+        <p style="font-size: 1.2rem;">
+            本研究获得云南省科技重点计划项目(202302AB080022)支持
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 在首页末尾添加登录入口
+    st.markdown("---")
+    with st.expander("🔐 登录/注册以使用完整功能", expanded=False):
+        tab_login, tab_register, tab_forgot = st.tabs(["登录", "注册", "忘记密码"])
+        
+        with tab_login:
+            with st.form("home_login"):
+                username = st.text_input("用户名")
+                password = st.text_input("密码", type="password")
+                if st.form_submit_button("登录"):
+                    if verify_user(username, password):
                         st.session_state.logged_in = True
-                        st.session_state.user = login_user
-                        st.success("登录成功！")
+                        st.session_state.user = username
                         st.rerun()
                     else:
                         st.error("用户名或密码错误")
-
-    # 注册界面
-    with tab_register:
-        with st.container():
-            with st.form("register_form"):
-                st.subheader("新用户注册")
-                reg_user = st.text_input("用户名（4-20位字母数字）", 
-                                        key="reg_user",
-                                        help="用户名需唯一且不能包含特殊字符").strip()
-                reg_pwd = st.text_input("设置密码（至少6位字符）", 
-                                      type="password",
-                                      key="reg_pwd")
-                reg_email = st.text_input("电子邮件", key="reg_email")
-                reg_pwd_confirm = st.text_input("确认密码", 
-                                               type="password", 
-                                               key="reg_pwd_confirm")
-
-                if st.form_submit_button("注册", use_container_width=True):
-                    if reg_pwd != reg_pwd_confirm:
+        
+        with tab_register:
+            with st.form("home_register"):
+                new_user = st.text_input("新用户名")
+                new_pwd = st.text_input("设置密码", type="password")
+                confirm_pwd = st.text_input("确认密码", type="password")
+                email = st.text_input("邮箱")
+                if st.form_submit_button("注册"):
+                    if new_pwd != confirm_pwd:
                         st.error("两次密码输入不一致")
-                    elif len(reg_user) < 4 or not reg_user.isalnum():
+                    elif len(new_user) < 4 or not new_user.isalnum():
                         st.error("用户名格式不正确")
-                    elif len(reg_pwd) < 6:
-                        st.error("密码长度至少为6个字符")
-                    elif "@" not in reg_email:
+                    elif "@" not in email:
                         st.error("请输入有效的邮箱地址")
                     else:
-                        if save_user(reg_user, reg_pwd, reg_email):
+                        if save_user(new_user, new_pwd, email):
                             st.success("注册成功！请登录")
                         else:
                             st.error("用户名已存在")
-
-    # 忘记密码界面
-    with tab_forgot_password:
-        with st.container():
-            st.subheader("找回密码")
-            email_input = st.text_input("请输入您的邮箱", key="email_input")
-            new_password = st.text_input("请输入新密码", type="password", key="new_password")
-            confirm_new_password = st.text_input("确认新密码", type="password", key="confirm_new_password")
-
+        
+        with tab_forgot:
+            email = st.text_input("注册邮箱")
+            new_password = st.text_input("新密码", type="password")
+            confirm_password = st.text_input("确认密码", type="password")
             if st.button("重置密码"):
-                if not email_input or not new_password or not confirm_new_password:
-                    st.error("请输入所有字段")
-                elif new_password != confirm_new_password:
+                if new_password != confirm_password:
                     st.error("两次输入的密码不一致")
-                elif reset_password_by_email(email_input, new_password):
-                    st.success("密码重置成功！请返回登录")
+                elif reset_password_by_email(email, new_password):
+                    st.success("密码重置成功！")
                 else:
-                    st.error("该邮箱未注册，无法重置密码")
+                    st.error("该邮箱未注册")
 
-    st.stop() 
+# --------------------- 主流程 ---------------------
+if not st.session_state.logged_in:
+    show_homepage()
+    st.stop()
+
 
 
 
@@ -340,94 +386,11 @@ if st.session_state.logged_in:
             
             X_scaled = self.scaler.transform(feature_df)
             return self.model.predict(X_scaled)[0]
-    def image_to_base64(image_path, quality=95):
-        """高质量图片转base64"""
-        img = Image.open(image_path)
-        
-        # 保持原始分辨率进行缩放
-        if img.width != 1000:
-            img = img.resize((1000, int(img.height * (1000 / img.width))), 
-                            resample=Image.LANCZOS)
-        
-        buffered = io.BytesIO()
-        img.save(buffered, format="PNG", quality=quality, optimize=True)
-        return base64.b64encode(buffered.getvalue()).decode()
-    
-    # 全局页眉样式
-    st.markdown("""
-    <style>
-        .global-header {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            margin: 0 0 2rem 0;
-            padding: 1rem 0;
-            border-bottom: 3px solid #1e3d59;
-            position: sticky;
-            top: 0;
-            background: white;
-            z-index: 1000;
-        }
-        
-        .header-logo {
-            width: 80px;
-            height: auto;
-            flex-shrink: 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        
-        .header-title {
-            font-size: 4.4rem !important;
-            color: #1e3d59;
-            margin: 0;
-            line-height: 1.2;
-            font-family: 'Microsoft YaHei', sans-serif;
-        }
-        
-        .header-subtitle {
-            font-size: 1.1rem;
-            color: #3f87a6;
-            margin: 0.3rem 0 0 0;
-        }
-    
-        @media (max-width: 768px) {
-            .global-header {
-                gap: 15px;
-                padding: 0.5rem 0;
-            }
-            
-            .header-logo {
-                width: 60px;
-            }
-            
-            .header-title {
-                font-size: 1.8rem !important;
-            }
-            
-            .header-subtitle {
-                font-size: 0.9rem;
-            }
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # 全局页眉HTML
-    st.markdown(f"""
-    <div class="global-header">
-        <img src="data:image/png;base64,{icon_base64}" 
-             class="header-logo"
-             alt="Platform Logo">
-        <div>
-            <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
-            <p class="header-subtitle">Flame Retardant Polymer Composite Intelligent Platform</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+
     # 侧边栏主导航
     page = st.sidebar.selectbox(
         "🔧 主功能选择",
-        ["首页","性能预测", "配方建议"],
+        ["性能预测", "配方建议"],
         key="main_nav"
     )
 
@@ -478,191 +441,10 @@ if st.session_state.logged_in:
         return ["PP"] + sorted(features)
     
     
-    # 首页
-    if page == "首页":
-        st.markdown("""
-        <style>
-            :root {
-                /* 字号系统 */
-                --text-base: 1.15rem;
-                --text-lg: 1.3rem;
-                --text-xl: 1.5rem;
-                --title-sm: 1.75rem;
-                --title-md: 2rem;
-                --title-lg: 2.25rem;
-                
-                /* 颜色系统 */
-                --primary: #1e3d59;
-                --secondary: #3f87a6;
-                --accent: #2c2c2c;
-            }
-    
-            body {
-                /* 中文字体优先使用微软雅黑，英文使用Times New Roman */
-                font-family: "Times New Roman", "微软雅黑", SimSun, serif;
-                font-size: var(--text-base);
-                line-height: 1.7;
-                color: var(--accent);
-            }
-    
-            /* 标题系统 */
-            .platform-title {
-                font-family: "Times New Roman", "微软雅黑", SimSun, serif;
-                font-size: var(--title-lg);
-                font-weight: 600;
-                color: var(--primary);
-                margin: 0 0 1.2rem 1.5rem;
-                line-height: 1.3;
-            }
-    
-            .section-title {
-                font-family: "Times New Roman", "微软雅黑", SimSun, serif;
-                font-size: var(--title-md);
-                font-weight: 600;
-                color: var(--primary);
-                margin: 2rem 0 1.5rem;
-                padding-bottom: 0.5rem;
-                border-bottom: 2px solid var(--secondary);
-            }
-    
-            /* 内容区块 */
-            .feature-section {
-                background: white;
-                border-radius: 12px;
-                padding: 1.5rem;
-                margin: 1.5rem 0;
-                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            }
-    
-            .feature-section p {
-                font-size: var(--text-lg);
-                line-height: 1.8;
-                margin: 0.8rem 0;
-            }
-    
-            /* 功能列表 */
-            .feature-list li {
-                font-size: var(--text-lg);
-                padding-left: 2rem;
-                margin: 1rem 0;
-                position: relative;
-            }
-    
-            .feature-list li:before {
-                content: "•";
-                color: var(--secondary);
-                font-size: 1.5em;
-                position: absolute;
-                left: 0;
-                top: -0.1em;
-            }
-    
-            /* 引用区块 */
-            .quote-section {
-                font-size: var(--text-lg);
-                background: #f8f9fa;
-                border-left: 3px solid var(--secondary);
-                padding: 1.2rem;
-                margin: 1.5rem 0;
-                border-radius: 0 8px 8px 0;
-            }
-    
-            /* 响应式调整 */
-            @media (min-width: 768px) {
-                :root {
-                    --text-base: 1.2rem;
-                    --text-lg: 1.35rem;
-                    --text-xl: 1.6rem;
-                    --title-sm: 1.9rem;
-                    --title-md: 2.2rem;
-                    --title-lg: 2.5rem;
-                }
-                
-                .section-title {
-                    margin: 2.5rem 0 2rem;
-                }
-            }
-    
-            @media (max-width: 480px) {
-                :root {
-                    --text-base: 1.1rem;
-                    --title-lg: 2rem;
-                }
-            }
-        </style>
-        """, unsafe_allow_html=True)
-    
-        # 平台简介
-        st.markdown("""
-        <div class="feature-section">
-            <p>
-                本平台融合AI与材料科学技术，用于可持续高分子复合材料智能设计，重点关注材料阻燃、力学和耐热等性能的优化与调控。
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        st.markdown("""
-        <style>
-            .feature-list {
-                list-style: none; /* 移除默认列表符号 */
-                padding-left: 0;  /* 移除默认左内边距 */
-            }
-            .feature-list li:before {
-                content: "•";
-                color: var(--secondary);
-                font-size: 1.5em;
-                position: relative;
-                left: -0.8em;    /* 微调定位 */
-                vertical-align: middle;
-            }
-            .feature-list li {
-                margin-left: 1.2em;  /* 给符号留出空间 */
-                text-indent: -1em;   /* 文本缩进对齐 */
-            }
-        </style>
-        
-        <div class="section-title">核心功能</div>
-        <div class="feature-section">
-            <ul class="feature-list">
-                <li><strong>性能预测</strong></li>
-                <li><strong>配方建议</strong></li>
-                <li><strong>添加剂推荐</strong></li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        # 研究成果
-        st.markdown('<div class="section-title">研究成果</div>', unsafe_allow_html=True)
-        st.markdown("""
-        <div class="quote-section">
-            Ma Weibin, Li Ling, Zhang Yu, Li Minjie, Song Na, Ding Peng. <br>
-            <em>Active learning-based generative design of halogen-free flame-retardant polymeric composites.</em> <br>
-            <strong>J Mater Inf</strong> 2025;5:09. DOI: <a href="http://dx.doi.org/10.20517/jmi.2025.09" target="_blank">10.20517/jmi.2025.09</a>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        # 致谢部分
-        st.markdown('<div class="section-title">致谢</div>', unsafe_allow_html=True)
-        st.markdown("""
-        <div class="feature-section">
-            <p style="font-size: var(--text-lg);">
-                本研究获得云南省科技重点计划项目(202302AB080022)支持
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        # 开发者信息
-        st.markdown('<div class="section-title">开发者</div>', unsafe_allow_html=True)
-        st.markdown("""
-        <div class="feature-section">
-            <p style="font-size: var(--text-lg);">
-                上海大学功能高分子团队-PolyDesign：马维宾，李凌，张瑜，宋娜，丁鹏
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+
     
     # 性能预测页面
-    elif page == "性能预测":
+    if page == "性能预测":
         st.subheader("🔮 性能预测：基于配方预测LOI和TS")
     
         matrix_materials = ["PP", "PA", "PC/ABS", "POM", "PBT", "PVC", "其他"]
