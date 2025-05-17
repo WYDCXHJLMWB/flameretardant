@@ -682,67 +682,67 @@ if st.session_state.logged_in:
             total = sum(st.session_state.input_values.values())  # 总和计算
             is_only_pp = all(v == 0 for k, v in st.session_state.input_values.items() if k != "PP")  # 仅PP配方检查
         
-    with st.expander("✅ 输入验证"):
-        if fraction_type in ["体积分数", "质量分数"]:
-            if abs(total - 100.0) > 1e-6:
-                st.error(f"❗ {fraction_type}的总和必须为100%（当前：{total:.2f}%）")
+        with st.expander("✅ 输入验证"):
+            if fraction_type in ["体积分数", "质量分数"]:
+                if abs(total - 100.0) > 1e-6:
+                    st.error(f"❗ {fraction_type}的总和必须为100%（当前：{total:.2f}%）")
+                else:
+                    st.success(f"{fraction_type}总和验证通过")
             else:
-                st.success(f"{fraction_type}总和验证通过")
-        else:
-            st.success("成分总和验证通过")
-            if is_only_pp:
-                st.info("检测到纯PP配方")
-    
-        # 验证配方是否包含锡酸锌或羟基锡酸锌
-        selected_flame_keys = [key for key in flame_retardants if flame_retardants[key]["name"] in selected_flame_retardants]
-        if "ZS" not in selected_flame_keys and "ZHS" not in selected_flame_keys:
-            st.error("❗ 配方必须包含锡酸锌（ZS）或羟基锡酸锌（ZHS）。")
-        else:
-            st.success("配方验证通过，包含锡酸锌或羟基锡酸锌。")
-    
-        # 验证并点击“开始预测”按钮
-        if st.button("🚀 开始预测", type="primary"):
-            # 检查输入总和是否为100%，如果不是则停止
-            if fraction_type in ["体积分数", "质量分数"] and abs(total - 100.0) > 1e-6:
-                st.error(f"预测中止：{fraction_type}的总和必须为100%")
-                st.stop()
-    
-            # 如果是纯PP配方，直接给出模拟值
-            if is_only_pp:
-                loi_pred = 17.5
-                ts_pred = 35.0
+                st.success("成分总和验证通过")
+                if is_only_pp:
+                    st.info("检测到纯PP配方")
+        
+            # 验证配方是否包含锡酸锌或羟基锡酸锌
+            selected_flame_keys = [key for key in flame_retardants if flame_retardants[key]["name"] in selected_flame_retardants]
+            if "ZS" not in selected_flame_keys and "ZHS" not in selected_flame_keys:
+                st.error("❗ 配方必须包含锡酸锌（ZS）或羟基锡酸锌（ZHS）。")
             else:
-                # 体积分数转换为质量分数
-                if fraction_type == "体积分数":
-                    vol_values = np.array(list(st.session_state.input_values.values()))
-                    total_mass = vol_values.sum()
-                    mass_values = vol_values * total_mass  # 按比例转换
-                    st.session_state.input_values = {k: (v / total_mass * 100) for k, v in zip(st.session_state.input_values.keys(), mass_values)}
-    
-                # 填充缺失的特征值
-                for feature in models["loi_features"]:
-                    if feature not in st.session_state.input_values:
-                        st.session_state.input_values[feature] = 0.0
-    
-                loi_input = np.array([[st.session_state.input_values[f] for f in models["loi_features"]]])
-                loi_scaled = models["loi_scaler"].transform(loi_input)
-                loi_pred = models["loi_model"].predict(loi_scaled)[0]
-    
-                # 处理TS预测
-                for feature in models["ts_features"]:
-                    if feature not in st.session_state.input_values:
-                        st.session_state.input_values[feature] = 0.0
-    
-                ts_input = np.array([[st.session_state.input_values[f] for f in models["ts_features"]]])
-                ts_scaled = models["ts_scaler"].transform(ts_input)
-                ts_pred = models["ts_model"].predict(ts_scaled)[0]
-    
-            # 显示预测结果
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric(label="LOI预测值", value=f"{loi_pred:.2f}%")
-            with col2:
-                st.metric(label="TS预测值", value=f"{ts_pred:.2f} MPa")
+                st.success("配方验证通过，包含锡酸锌或羟基锡酸锌。")
+        
+            # 验证并点击“开始预测”按钮
+            if st.button("🚀 开始预测", type="primary"):
+                # 检查输入总和是否为100%，如果不是则停止
+                if fraction_type in ["体积分数", "质量分数"] and abs(total - 100.0) > 1e-6:
+                    st.error(f"预测中止：{fraction_type}的总和必须为100%")
+                    st.stop()
+        
+                # 如果是纯PP配方，直接给出模拟值
+                if is_only_pp:
+                    loi_pred = 17.5
+                    ts_pred = 35.0
+                else:
+                    # 体积分数转换为质量分数
+                    if fraction_type == "体积分数":
+                        vol_values = np.array(list(st.session_state.input_values.values()))
+                        total_mass = vol_values.sum()
+                        mass_values = vol_values * total_mass  # 按比例转换
+                        st.session_state.input_values = {k: (v / total_mass * 100) for k, v in zip(st.session_state.input_values.keys(), mass_values)}
+        
+                    # 填充缺失的特征值
+                    for feature in models["loi_features"]:
+                        if feature not in st.session_state.input_values:
+                            st.session_state.input_values[feature] = 0.0
+        
+                    loi_input = np.array([[st.session_state.input_values[f] for f in models["loi_features"]]])
+                    loi_scaled = models["loi_scaler"].transform(loi_input)
+                    loi_pred = models["loi_model"].predict(loi_scaled)[0]
+        
+                    # 处理TS预测
+                    for feature in models["ts_features"]:
+                        if feature not in st.session_state.input_values:
+                            st.session_state.input_values[feature] = 0.0
+        
+                    ts_input = np.array([[st.session_state.input_values[f] for f in models["ts_features"]]])
+                    ts_scaled = models["ts_scaler"].transform(ts_input)
+                    ts_pred = models["ts_model"].predict(ts_scaled)[0]
+        
+                # 显示预测结果
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.metric(label="LOI预测值", value=f"{loi_pred:.2f}%")
+                with col2:
+                    st.metric(label="TS预测值", value=f"{ts_pred:.2f} MPa")
 
     
 
