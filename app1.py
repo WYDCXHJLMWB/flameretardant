@@ -489,7 +489,6 @@ if st.session_state.logged_in:
     # 子功能选择（仅在配方建议时显示）
     sub_page = None
     if page == "配方建议":
-        apply_custom_styles()
         sub_page = st.sidebar.selectbox(
             "🔧 子功能选择",
             ["配方优化", "添加剂推荐"],
@@ -552,28 +551,62 @@ if st.session_state.logged_in:
             "SiO2", "其他"
         ]
     
-        fraction_type = st.sidebar.selectbox("选择输入的单位", ["质量", "质量分数", "体积分数"])
+     fraction_type = st.sidebar.selectbox("选择输入的单位", ["质量", "质量分数", "体积分数"])
+
+    st.subheader("请选择配方成分")
     
-        st.subheader("请选择配方中的基体、阻燃剂和助剂")
-        selected_matrix = st.selectbox("选择基体", matrix_materials, index=0)
-        selected_flame_retardants = st.multiselect("选择阻燃剂", flame_retardants, default=["ZS"])
-        selected_additives = st.multiselect("选择助剂", additives, default=["wollastonite"])
-    
-        input_values = {}
+    # 基体选择与输入框并排布局
+    col_matrix = st.columns([3, 2])
+    with col_matrix[0]:
+        selected_matrix = st.selectbox("选择基体材料", matrix_materials, index=0)
+    with col_matrix[1]:
         unit_matrix = get_unit(fraction_type)
-        unit_flame_retardant = get_unit(fraction_type)
-        unit_additive = get_unit(fraction_type)
+        input_values[selected_matrix] = st.number_input(
+            f"{selected_matrix} ({unit_matrix})", 
+            min_value=0.0, 
+            max_value=100.0, 
+            value=50.0, 
+            step=0.1,
+            label_visibility="collapsed"
+        )
+
+    # 阻燃剂选择与输入
+    st.subheader("阻燃剂选择")
+    selected_flame_retardants = st.multiselect("选择阻燃剂（可多选）", flame_retardants, default=["ZS"])
     
-        input_values[selected_matrix] = st.number_input(f"选择 {selected_matrix} ({unit_matrix})", min_value=0.0, max_value=100.0, value=50.0, step=0.1)
+    cols_flame = st.columns(len(selected_flame_retardants) or 1)
+    for idx, fr in enumerate(selected_flame_retardants):
+        with cols_flame[idx]:
+            unit_flame = get_unit(fraction_type)
+            input_values[fr] = st.number_input(
+                f"{fr} ({unit_flame})", 
+                min_value=0.0, 
+                max_value=100.0, 
+                value=10.0, 
+                step=0.1,
+                key=f"fr_{fr}"
+            )
+
+    # 助剂选择与输入
+    st.subheader("助剂选择")
+    selected_additives = st.multiselect("选择助剂（可多选）", additives, default=["wollastonite"])
     
-        for fr in selected_flame_retardants:
-            input_values[fr] = st.number_input(f"选择 {fr}({unit_flame_retardant})", min_value=0.0, max_value=100.0, value=10.0, step=0.1)
-    
-        for ad in selected_additives:
-            input_values[ad] = st.number_input(f"选择 {ad} ({unit_additive})", min_value=0.0, max_value=100.0, value=10.0, step=0.1)
-    
-        total = sum(input_values.values())
-        is_only_pp = all(v == 0 for k, v in input_values.items() if k != "PP")
+    cols_additive = st.columns(len(selected_additives) or 1)
+    for idx, ad in enumerate(selected_additives):
+        with cols_additive[idx]:
+            unit_add = get_unit(fraction_type)
+            input_values[ad] = st.number_input(
+                f"{ad} ({unit_add})", 
+                min_value=0.0, 
+                max_value=100.0, 
+                value=10.0, 
+                step=0.1,
+                key=f"ad_{ad}"
+            )
+
+    # 验证和预测部分保持不变
+    total = sum(input_values.values())
+    is_only_pp = all(v == 0 for k, v in input_values.items() if k != "PP")
     
         with st.expander("✅ 输入验证"):
             if fraction_type in ["体积分数", "质量分数"]:
