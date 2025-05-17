@@ -619,11 +619,8 @@ if page == "性能预测":
                     min_val = float(additive_dict[ad]['range'][0])
                     max_val = float(additive_dict[ad]['range'][1])
 
-                    # 打印调试信息，查看传递的类型
-                    st.write(f"Debug: {ad} - min: {min_val}, max: {max_val}")
-
-                    # 设置默认值
-                    default_value = 0.0  # 可以设置一个合理的默认值
+                    # 设置默认值，确保它不小于最小值
+                    default_value = max(min_val, 0.0)  # 设置合理的默认值
 
                     # 使用 number_input 输入框
                     st.session_state.input_values[ad] = st.number_input(
