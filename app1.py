@@ -74,23 +74,39 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """应用全局样式（包含响应式布局）"""
+    """应用全局样式（包含背景图和字体修正）"""
     st.markdown(f"""
     <style>
         :root {{
-            /* 统一字体体系（基于移动优先原则） */
-            --text-base: 1.8rem;  /* 基础字体 */
-            --text-lg: 2.2rem;    /* 大号文本 */
-            --text-xl: 2.6rem;    /* 超大文本 */
-            --title-sm: 3.0rem;   /* 小标题 */
-            --title-md: 3.4rem;   /* 中标题 */
-            --title-lg: 3.8rem;   /* 大标题 */
+            /* 字体体系（桌面端优先） */
+            --text-base: 2.2rem;  /* 基础字体 */
+            --text-lg: 2.6rem;    /* 大号文本 */
+            --text-xl: 3.0rem;    /* 超大文本 */
+            --title-sm: 3.4rem;   /* 小标题 */
+            --title-md: 3.8rem;   /* 中标题 */
+            --title-lg: 4.2rem;   /* 大标题 */
             
             /* 色系配置 */
             --primary: #1e3d59;
             --secondary: #3f87a6;
             --accent: #2c2c2c;
             --shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }}
+
+        /* 全局背景图 */
+        body {{
+            background-image: url("data:image/png;base64,{background_base64}");
+            background-size: cover;
+            background-attachment: fixed;
+        }}
+
+        /* 内容区域半透明遮罩 */
+        .main-content {{
+            background: rgba(255,255,255,0.92) !important;
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1rem;
         }}
 
         /* 基础字体设置 */
@@ -100,70 +116,56 @@ def apply_global_styles():
             line-height: 1.6;
         }}
 
-        /* 流式组件样式覆盖 */
-        .stTextInput input, 
-        .stNumberInput input,
-        .stSelectbox select,
-        .stMultiSelect div,
-        .stSlider div,
-        .stDateInput input,
-        .stFileUploader label,
-        .stTextArea textarea {{
+        /* 选择框字体修正 */
+        .stSelectbox div {{
             font-size: var(--text-base) !important;
-            min-height: 3.5em !important;
-            padding: 1em !important;
-            border-radius: 8px !important;
+        }}
+
+        /* 下拉选项字体 */
+        .st-ae {{
+            font-size: var(--text-base) !important;
         }}
 
         /* 侧边栏统一样式 */
         .sidebar .stTextInput input,
         .sidebar .stNumberInput input,
-        .sidebar .stSelectbox select {{
+        .sidebar .stSelectbox select,
+        .sidebar .stButton button {{
             font-size: var(--text-base) !important;
+            padding: 1.2em !important;
+        }}
+
+        /* 按钮样式增强 */
+        button {{
+            font-size: var(--text-lg) !important;
+            padding: 1em 2em !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
         }}
 
         /* 标题体系 */
         h1 {{ font-size: var(--title-lg) !important; }}
         h2 {{ font-size: var(--title-md) !important; }}
         h3 {{ font-size: var(--title-sm) !important; }}
-        .section-title {{
-            font-size: var(--text-xl) !important;
-            font-weight: 600;
-        }}
 
-        /* 按钮样式 */
-        button {{
-            font-size: var(--text-lg) !important;
-            padding: 1em 2em !important;
-            border-radius: 8px !important;
-            transition: all 0.3s ease;
-        }}
-
-        /* 全局头部 */
+        /* 全局头部样式 */
         .global-header {{
-            background: rgba(255,255,255,0.98);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(6px);
             padding: 2rem 5%;
             box-shadow: var(--shadow);
             margin-bottom: 3rem;
         }}
 
-        .header-container {{
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }}
-
-        /* 响应式设计 */
-        @media (min-width: 1200px) {{
+        /* 响应式调整 */
+        @media (max-width: 768px) {{
             :root {{
-                --text-base: 2.0rem;
-                --text-lg: 2.4rem;
-                --text-xl: 2.8rem;
-                --title-sm: 3.2rem;
-                --title-md: 3.6rem;
-                --title-lg: 4.0rem;
+                --text-base: 1.8rem;
+                --text-lg: 2.0rem;
+                --text-xl: 2.2rem;
+            }}
+            .global-header {{
+                padding: 1rem 5%;
             }}
         }}
     </style>
@@ -173,13 +175,15 @@ def render_global_header():
     """渲染全局头部组件"""
     st.markdown(f"""
     <div class="global-header">
-        <div class="header-container">
+        <div style="max-width:1400px; margin:0 auto; display:flex; align-items:center; gap:2rem;">
             <img src="data:image/png;base64,{icon_base64}" 
-                 style="width:120px; height:auto; border-radius:12px;"
+                 style="width:120px; height:auto; border-radius:12px; box-shadow:{'var(--shadow)'}"
                  alt="平台标志">
             <div>
-                <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
-                <p style="font-size: var(--text-lg); margin:0; color:var(--accent)">
+                <h1 style="margin:0; font-size:var(--title-lg)!important; color:var(--primary)!important;">
+                    阻燃聚合物复合材料智能设计平台
+                </h1>
+                <p style="font-size:var(--text-lg)!important; margin:0.5rem 0 0; color:var(--accent)!important;">
                     Flame Retardant Composites AI Platform
                 </p>
             </div>
