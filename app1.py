@@ -159,7 +159,25 @@ def apply_global_styles():
         }}
     </style>
     """, unsafe_allow_html=True)
-
+def render_global_header():
+    """渲染全局头部组件"""
+    st.markdown(f"""
+    <div class="global-header">
+        <div style="max-width:1400px; margin:0 auto; display:flex; align-items:center; gap:2rem;">
+            <img src="data:image/png;base64,{ICON_BASE64}" 
+                 style="width:120px; height:auto; border-radius:12px; box-shadow:{'var(--shadow)'}"
+                 alt="平台标志">
+            <div>
+                <h1 style="margin:0; font-size:var(--title-lg)!important; color:var(--primary)!important;">
+                    阻燃聚合物复合材料智能设计平台
+                </h1>
+                <p style="font-size:var(--text-lg)!important; margin:0.5rem 0 0; color:var(--accent)!important;">
+                    Flame Retardant Composites AI Platform
+                </p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 def render_input_group():
     """渲染统一风格的表单组"""
     st.markdown("""
