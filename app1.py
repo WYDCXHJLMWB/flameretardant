@@ -74,77 +74,99 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """精准显示修复方案"""
+    """文字完整显示终极解决方案"""
     st.markdown(f"""
     <style>
-        /* 侧边栏外科手术式修复 */
-        [data-testid="stSidebar"] {{
-            min-width: 400px !important;
-            max-width: 35vw !important;
-            font-size: 18px !important;
+        /* 核级样式重置 */
+        * {{
+            all: initial !important;
+            box-sizing: border-box !important;
+            min-width: auto !important;
+            max-width: none !important;
+            text-overflow: clip !important;
             line-height: 1.8 !important;
         }}
 
-        /* 基体选择器显示修复 */
+        /* 侧边栏显示修复 */
+        [data-testid="stSidebar"] {{
+            min-width: 450px !important;
+            max-width: 40vw !important;
+            overflow: visible !important;
+            z-index: 10000 !important;
+        }}
+
+        /* 基体选择器革命性改造 */
         #base-material-select {{
+            --option-min-height: 80px;
             position: relative;
-            z-index: 9999 !important;  /* 确保顶层显示 */
+            container-type: size;
         }}
         #base-material-select [data-baseweb="select"] {{
-            min-height: 65px !important;
-            padding: 15px 20px !important;
-            font-size: 19px !important;
-            background: white !important;
+            min-height: var(--option-min-height) !important;
+            padding: 20px 28px !important;
+            font-size: 20px !important;
+            white-space: normal !important;
+            line-height: 1.8 !important;
+            display: grid !important;
+            align-content: center !important;
         }}
         #base-material-select [role="listbox"] {{
-            width: 380px !important;
-            max-height: 60vh !important;
-            overflow-y: auto !important;
-            transform: translateY(-5px) !important;  /* 微调显示位置 */
+            width: 100% !important;
+            min-width: 420px !important;
+            max-height: 80vh !important;
+            overflow: visible !important;
+            position: absolute !important;
+            z-index: 10001 !important;
         }}
         #base-material-select [role="option"] {{
-            font-size: 17px !important;
-            padding: 14px 18px !important;
-            line-height: 1.7 !important;
+            min-height: var(--option-min-height) !important;
+            padding: 20px 28px !important;
+            font-size: 18px !important;
+            display: grid !important;
+            align-items: center !important;
             white-space: normal !important;
             word-break: break-word !important;
-            display: grid !important;  /* 网格布局保证对齐 */
-            align-items: center !important;
-            min-height: 60px !important;
-        }}
-
-        /* 输入组件显示优化 */
-        [data-baseweb="input"] > div,
-        [data-baseweb="select"] > div {{
-            min-height: 65px !important;
-            padding: 16px 22px !important;
-            font-size: 18px !important;
-            background: rgba(255,255,255,0.95) !important;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
-        }}
-
-        /* 文字显示终极保障 */
-        * {{
-            text-wrap: balance !important;  /* 现代文字平衡特性 */
-            overflow-wrap: anywhere !important;
+            overflow: visible !important;
+            text-wrap: pretty !important;
             hyphens: auto !important;
+            line-height-step: 4px !important;
+            container-type: inline-size;
         }}
 
-        /* 动态高度调整 */
+        /* 响应式文字调整 */
+        @container (width < 480px) {{
+            #base-material-select [role="option"] {{
+                font-size: 16px !important;
+                padding: 16px 20px !important;
+            }}
+        }}
+
+        /* 动态尺寸保险机制 */
         <script>
-        document.addEventListener('DOMContentLoaded', () => {{
-            const observer = new ResizeObserver(entries => {{
-                entries.forEach(entry => {{
-                    entry.target.style.minHeight = 
-                        Math.max(entry.contentRect.height + 20, 60) + 'px';
-                }});
-            }});
+        (function() {{
+            const SAFETY_MARGIN = 20;  // 安全边距
             
-            document.querySelectorAll('[data-baseweb="select"]').forEach(el => {{
-                observer.observe(el);
-                el.style.transition = 'all 0.3s ease';
-            }});
-        }});
+            function enforceMinHeight() {{
+                document.querySelectorAll('[role="option"]').forEach(option => {{
+                    const contentHeight = option.scrollHeight;
+                    const currentHeight = option.offsetHeight;
+                    const requiredHeight = contentHeight + SAFETY_MARGIN;
+                    
+                    if(currentHeight < requiredHeight) {{
+                        option.style.minHeight = `${{requiredHeight}}px`;
+                        option.style.height = `auto`;
+                        console.log('元素高度已强制调整:', requiredHeight);
+                    }}
+                }});
+            }}
+
+            new ResizeObserver(entries => {{
+                requestAnimationFrame(enforceMinHeight);
+            }}).observe(document.documentElement);
+
+            document.addEventListener('click', enforceMinHeight);
+            window.addEventListener('load', enforceMinHeight);
+        }})();
         </script>
     </style>
     """, unsafe_allow_html=True)
