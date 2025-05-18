@@ -74,64 +74,85 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """稳定可靠样式解决方案"""
+    """稳定样式优化方案（大字体版）"""
     st.markdown(f"""
     <style>
         /* 安全样式重置 */
-        .stSelectbox, .stMultiSelect, .stRadio {{
+        .stSelectbox, .stMultiSelect, .stRadio, .stNumberInput {{
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            width: 100% !important;
         }}
 
-        /* 侧边栏可靠布局 */
+        /* 侧边栏布局优化 */
         [data-testid="stSidebar"] {{
-            width: 380px !important;
-            min-width: 380px !important;
-            font-size: 16px;
+            width: 420px !important;  /* 增大侧边栏宽度 */
+            min-width: 420px !important;
+            font-size: 18px;  /* 增大基础字号 */
             z-index: 1000;
         }}
 
-        /* 基体选择器经典布局 */
+        /* 基体选择器增强样式 */
         #base-material-select {{
             position: relative;
-            margin: 15px 0;
+            margin: 20px 0;  /* 增大间距 */
         }}
         #base-material-select [data-baseweb="select"] {{
-            min-height: 60px;
-            padding: 12px 16px;
-            font-size: 16px;
-            line-height: 1.5;
+            min-height: 72px !important;  /* 增大高度 */
+            padding: 20px 24px !important;  /* 增大内边距 */
+            font-size: 18px !important;  /* 增大字体 */
+            line-height: 1.6 !important;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
+            display: flex !important;
+            align-items: center !important;  /* 垂直居中 */
         }}
+
+        /* 含量输入框统一样式 */
+        div[data-baseweb="input"] > div {{
+            min-height: 72px !important;  /* 与选择器同高 */
+            padding: 20px 24px !important;
+            font-size: 18px !important;
+            display: flex !important;
+            align-items: center !important;
+        }}
+
+        /* 下拉菜单优化 */
         #base-material-select [role="listbox"] {{
             width: 100% !important;
             max-height: 60vh;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
-            margin-top: 5px;
+            margin-top: 8px;
         }}
         #base-material-select [role="option"] {{
-            padding: 12px 16px;
-            font-size: 14px;
-            line-height: 1.6;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
+            padding: 16px 24px !important;  /* 增大内边距 */
+            font-size: 16px !important;  /* 增大选项字体 */
+            line-height: 1.8 !important;  /* 增大行高 */
+            min-height: 64px !important;  /* 增大选项高度 */
+            display: flex !important;
+            align-items: center !important;
             border-bottom: 1px solid #eee;
-        }}
-        #base-material-select [role="option"]:last-child {{
-            border-bottom: none;
+            white-space: normal !important;  /* 允许换行 */
+            word-break: break-word !important;  /* 强制断词 */
         }}
 
-        /* 保证可见性 */
+        /* 标签统一样式 */
+        label {{
+            font-size: 18px !important;
+            margin-bottom: 15px !important;
+            font-weight: 600 !important;
+            color: #1a1a1a !important;
+        }}
+
+        /* 可见性优化 */
         [data-baseweb="popover"] {{
             z-index: 1001 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
         }}
     </style>
     """, unsafe_allow_html=True)
-
 def render_global_header():
     """渲染全局头部组件"""
     st.markdown(f"""
