@@ -74,106 +74,71 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """原子级样式重构（强制解决所有显示问题）"""
+    """精准样式优化方案（解决文字折叠问题）"""
     st.markdown(f"""
     <style>
-        /* 核级样式重置 */
-        * {{
-            all: unset;
-            box-sizing: border-box !important;
-            max-width: none !important;
-            min-width: auto !important;
+        /* 智能重置策略 */
+        div, span, input, select, option {{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Microsoft YaHei", sans-serif;
         }}
 
-        /* 侧边栏手术式改造 */
+        /* 侧边栏精准调控 */
         [data-testid="stSidebar"] {{
-            min-width: 380px !important;
-            max-width: 40vw !important;
-            font-size: 20px !important;
-            line-height: 1.8 !important;
+            min-width: 360px !important;
+            max-width: 30vw !important;
+            font-size: 18px !important;
+            line-height: 1.6 !important;
         }}
 
-        /* 基体选择器基因改造 */
+        /* 基体选择器专项优化 */
         #base-material-select {{
-            display: grid !important;
-            grid-template-columns: 1fr !important;
-            gap: 8px !important;
+            font-size: 20px !important;
         }}
         #base-material-select [data-baseweb="select"] {{
-            min-height: 60px !important;
+            min-height: 56px !important;
             padding: 12px 16px !important;
-            font-size: 20px !important;
         }}
         #base-material-select [role="listbox"] {{
-            width: 360px !important;
+            width: 340px !important;
             max-height: 50vh !important;
-            overflow-y: scroll !important;
         }}
         #base-material-select [role="option"] {{
+            font-size: 16px !important;
+            padding: 10px 14px !important;
+            line-height: 1.5 !important;
+        }}
+
+        /* 输入组件自适应方案 */
+        [data-baseweb="input"] > div,
+        [data-baseweb="select"] > div {{
+            min-height: 60px !important;
+            padding: 14px 20px !important;
             font-size: 18px !important;
-            padding: 12px 16px !important;
+        }}
+
+        /* 文字显示保险策略 */
+        .stSelectbox > label,
+        .stMultiSelect > label,
+        .stRadio > label {{
             white-space: normal !important;
             word-break: break-word !important;
-            line-height: 1.6 !important;
-            display: -webkit-box !important;
-            -webkit-line-clamp: 3 !important;
-            -webkit-box-orient: vertical !important;
+            max-width: 320px !important;
         }}
 
-        /* 输入组件纳米级重构 */
-        [data-baseweb="input"], 
-        [data-baseweb="select"] {{
-            container-type: inline-size !important;
-        }}
-        @container (max-width: 400px) {{
-            .stSelectbox, .stMultiSelect {{
-                font-size: 0.9em !important;
+        /* 响应式黄金比例 */
+        @media screen and (max-width: 1440px) {{
+            [data-testid="stSidebar"] {{
+                min-width: 320px !important;
+                font-size: 16px !important;
+            }}
+            #base-material-select [role="listbox"] {{
+                width: 300px !important;
             }}
         }}
-
-        /* 文字显示终极方案 */
-        * {{
-            text-wrap: wrap !important;
-            overflow-wrap: anywhere !important;
-            hyphens: auto !important;
-        }}
-
-        /* 动态注入修复脚本 */
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {{
-            const mutationObserver = new MutationObserver((mutations) => {{
-                document.querySelectorAll('[data-baseweb="select"]').forEach(el => {{
-                    el.style.setProperty('white-space', 'normal', 'important');
-                    el.style.setProperty('max-height', 'none', 'important');
-                }});
-            }});
-            mutationObserver.observe(document.body, {{ 
-                childList: true, 
-                subtree: true 
-            }});
-        }});
-        </script>
     </style>
-    """, unsafe_allow_html=True)
-
-    # 强制清除浏览器缓存
-    st.markdown("""
-    <script>
-    if('serviceWorker' in navigator) {{
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {{
-            for(let registration of registrations) {{
-                registration.unregister();
-            }}
-        }});
-        caches.keys().then(function(names) {{
-            for(let name of names) {{
-                caches.delete(name);
-            }}
-        }});
-    }}
-    localStorage.clear();
-    sessionStorage.clear();
-    </script>
     """, unsafe_allow_html=True)
 
 def render_global_header():
@@ -195,6 +160,7 @@ def render_global_header():
         </div>
     </div>
     """, unsafe_allow_html=True)
+    
 def render_auth_sidebar():
     """增强版登录侧边栏"""
     with st.container():
