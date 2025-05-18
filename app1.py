@@ -74,26 +74,69 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """应用全局样式"""
+    """应用全局样式（包含响应式布局）"""
     st.markdown(f"""
     <style>
         :root {{
-            --text-base: 2.6rem;
-            --text-lg: 3.0rem;
-            --text-xl: 3.4rem;
-            --title-sm: 4.0rem;
-            --title-md: 4.6rem;
-            --title-lg: 5.2rem;
+            /* 统一字体体系（基于移动优先原则） */
+            --text-base: 1.8rem;  /* 基础字体 */
+            --text-lg: 2.2rem;    /* 大号文本 */
+            --text-xl: 2.6rem;    /* 超大文本 */
+            --title-sm: 3.0rem;   /* 小标题 */
+            --title-md: 3.4rem;   /* 中标题 */
+            --title-lg: 3.8rem;   /* 大标题 */
+            
+            /* 色系配置 */
             --primary: #1e3d59;
             --secondary: #3f87a6;
             --accent: #2c2c2c;
             --shadow: 0 4px 20px rgba(0,0,0,0.1);
         }}
 
-        /* 统一字体设置 */
-        body {{
+        /* 基础字体设置 */
+        body, button, input, select, textarea {{
             font-size: var(--text-base) !important;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+            line-height: 1.6;
+        }}
+
+        /* 流式组件样式覆盖 */
+        .stTextInput input, 
+        .stNumberInput input,
+        .stSelectbox select,
+        .stMultiSelect div,
+        .stSlider div,
+        .stDateInput input,
+        .stFileUploader label,
+        .stTextArea textarea {{
+            font-size: var(--text-base) !important;
+            min-height: 3.5em !important;
+            padding: 1em !important;
+            border-radius: 8px !important;
+        }}
+
+        /* 侧边栏统一样式 */
+        .sidebar .stTextInput input,
+        .sidebar .stNumberInput input,
+        .sidebar .stSelectbox select {{
+            font-size: var(--text-base) !important;
+        }}
+
+        /* 标题体系 */
+        h1 {{ font-size: var(--title-lg) !important; }}
+        h2 {{ font-size: var(--title-md) !important; }}
+        h3 {{ font-size: var(--title-sm) !important; }}
+        .section-title {{
+            font-size: var(--text-xl) !important;
+            font-weight: 600;
+        }}
+
+        /* 按钮样式 */
+        button {{
+            font-size: var(--text-lg) !important;
+            padding: 1em 2em !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease;
         }}
 
         /* 全局头部 */
@@ -101,37 +144,45 @@ def apply_global_styles():
             background: rgba(255,255,255,0.98);
             padding: 2rem 5%;
             box-shadow: var(--shadow);
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
         }}
 
-        .header-title {{
-            font-size: 2.8rem !important;
-            color: var(--primary) !important;
-            margin: 0;
-            line-height: 1.2;
-            font-weight: 600;
+        .header-container {{
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
         }}
 
-        /* 统一组件样式 */
-        .stNumberInput, .stTextInput, .stSelectbox {{
-            font-size: var(--text-lg) !important;
-        }}
-
-        h1, h2, h3 {{
-            color: var(--primary) !important;
+        /* 响应式设计 */
+        @media (min-width: 1200px) {{
+            :root {{
+                --text-base: 2.0rem;
+                --text-lg: 2.4rem;
+                --text-xl: 2.8rem;
+                --title-sm: 3.2rem;
+                --title-md: 3.6rem;
+                --title-lg: 4.0rem;
+            }}
         }}
     </style>
     """, unsafe_allow_html=True)
 
 def render_global_header():
-    """渲染全局头部"""
+    """渲染全局头部组件"""
     st.markdown(f"""
     <div class="global-header">
         <div class="header-container">
-            <img src="data:image/png;base64,{icon_base64}" 
-                 style="width:120px; height:auto; border-radius:12px; box-shadow:{'var(--shadow)'}"
+            <img src="data:image/png;base64,{ICON_BASE64}" 
+                 style="width:120px; height:auto; border-radius:12px;"
                  alt="平台标志">
-            <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
+            <div>
+                <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
+                <p style="font-size: var(--text-lg); margin:0; color:var(--accent)">
+                    Flame Retardant Composites AI Platform
+                </p>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
