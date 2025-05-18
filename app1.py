@@ -22,7 +22,7 @@ def image_to_base64(image_path):
 
 # --------------------- 全局配置 ---------------------
 icon_base64 = image_to_base64("图片1.jpg")
-background_base64 = image_to_base64("图片1.png")
+background_base64 = image_to_base64("BG.png")
 
 st.set_page_config(
     page_title="阻燃聚合物复合材料智能设计平台",
