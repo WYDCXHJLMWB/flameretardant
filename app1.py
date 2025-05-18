@@ -75,7 +75,7 @@ if 'user' not in st.session_state:
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
     """精准对齐样式方案+背景图"""
-    background_base64 = image_to_base64("图片1.png")
+    background_base64 = image_to_base64("BG.png")
     
     st.markdown(f"""
     <style>
