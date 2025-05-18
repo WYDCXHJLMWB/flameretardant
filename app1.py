@@ -74,97 +74,117 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """最终样式优化方案"""
+    """终极样式优化方案"""
     st.markdown(f"""
     <style>
-        /* 全局字体增强 */
-        :root {{
-            --mega-font: 28px;  /* 基础字体 */
-            --control-height: 72px; /* 组件高度 */
-            --select-width: 360px; /* 选择框宽度 */
+        /* 基础重置 */
+        * {{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }}
+
+        /* 全局字体设置 */
+        html, body, .stApp, .stMarkdown, .stAlert, .stTextInput, .stNumberInput, .stSelectbox, .stMultiSelect {{
+            font-family: "Microsoft YaHei", sans-serif;
+            font-size: 28px !important;
+            line-height: 1.6;
         }}
 
         /* 侧边栏全局设置 */
         [data-testid="stSidebar"] {{
-            font-size: var(--mega-font) !important;
-            min-width: 420px !important;
+            min-width: 450px !important;
+            padding: 2rem !important;
+        }}
+        [data-testid="stSidebar"] .stSelectbox, 
+        [data-testid="stSidebar"] .stMultiSelect,
+        [data-testid="stSidebar"] .stRadio {{
+            margin: 1.5rem 0;
         }}
 
-        /* 侧边栏组件强化 */
-        .stSidebar .stSelectbox > label,
-        .stSidebar .stMultiSelect > label,
-        .stSidebar .stRadio > label,
-        .stSidebar .stNumberInput > label {{
-            font-size: 26px !important;
-            padding: 8px 0 !important;
-        }}
-
-        /* 选择框优化 */
-        div[data-baseweb="select"] {{
-            width: var(--select-width) !important;
-            font-size: var(--mega-font) !important;
-        }}
+        /* 输入组件强化 */
+        div[data-baseweb="input"] > div,
         div[data-baseweb="select"] > div {{
-            padding: 20px 28px !important;
-            min-height: var(--control-height);
+            min-height: 80px !important;
+            padding: 24px 32px !important;
+            font-size: 28px !important;
         }}
-        div[role="listbox"] {{
-            width: var(--select-width) !important;
-            font-size: calc(var(--mega-font) - 2px) !important;
+        div[data-baseweb="input"] input,
+        div[data-baseweb="select"] [role="button"] {{
+            font-size: 28px !important;
+            padding: 12px 16px !important;
         }}
 
-        /* 登录界面强化 */
-        .stTabs [role="tablist"] button {{
-            font-size: 32px !important;
-            padding: 24px 40px !important;
-        }}
-        .stForm label {{
-            font-size: 28px !important;
-            margin-bottom: 20px !important;
-        }}
-        .stTextInput input,
-        .stTextInput input:focus {{
-            font-size: 28px !important;
-            height: 80px !important;
-            padding: 20px 24px !important;
+        /* 多级选择器覆盖默认样式 */
+        div[data-baseweb="select"] [role="listbox"] div,
+        div[data-baseweb="select"] [role="option"] {{
+            font-size: 26px !important;
+            padding: 24px 32px !important;
+            line-height: 1.5 !important;
         }}
 
-        /* 按钮强化 */
-        button {{
-            font-size: 28px !important;
-            height: 80px !important;
-            padding: 0 40px !important;
-        }}
-
-        /* 提示信息强化 */
+        /* 错误提示强化 */
         .stAlert {{
             font-size: 24px !important;
-            line-height: 1.5 !important;
+            padding: 24px !important;
+            border-radius: 12px;
         }}
         .stAlert p {{
             margin: 12px 0 !important;
+            font-size: 1.1em !important;
         }}
 
-        /* 数值输入框强化 */
-        .stNumberInput input {{
+        /* 按钮组件优化 */
+        button {{
+            min-height: 80px !important;
+            padding: 0 48px !important;
             font-size: 28px !important;
-            height: 72px !important;
-            padding: 16px 20px !important;
+            border-radius: 12px !important;
+        }}
+        button:hover {{
+            transform: scale(1.02);
         }}
 
-        /* 多选组件优化 */
-        [data-baseweb="select"] [role="button"] {{
-            min-height: var(--control-height);
+        /* 表格特殊处理 */
+        .stDataFrame {{
+            font-size: 24px !important;
+        }}
+        .stDataFrame th {{
+            font-size: 26px !important;
             padding: 20px !important;
         }}
-        [role="option"] {{
-            font-size: 24px !important;
-            padding: 16px 24px !important;
+        .stDataFrame td {{
+            padding: 18px !important;
         }}
 
-        /* 表格字体优化 */
-        .stDataFrame {{
-            font-size: 20px !important;
+        /* 强制覆盖Streamlit默认样式 */
+        .stTextInput label,
+        .stNumberInput label,
+        .stSelectbox label,
+        .stMultiSelect label,
+        .stRadio label {{
+            font-size: 28px !important;
+            margin-bottom: 16px !important;
+            font-weight: 600 !important;
+            color: #1e3d59 !important;
+        }}
+
+        /* 时间序列输入特殊布局 */
+        [data-testid="stExpander"] .stNumberInput {{
+            margin: 12px 0;
+        }}
+        [data-testid="stExpander"] label {{
+            font-size: 24px !important;
+        }}
+
+        /* 响应式调整 */
+        @media screen and (max-width: 1600px) {{
+            [data-testid="stSidebar"] {{
+                min-width: 400px !important;
+            }}
+            div[data-baseweb="select"] > div {{
+                padding: 20px 28px !important;
+            }}
         }}
     </style>
     """, unsafe_allow_html=True)
