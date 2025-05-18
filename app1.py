@@ -79,15 +79,24 @@ def apply_global_styles():
     <style>
         /* 全局字体增强 */
         :root {{
-            --mega-font: 26px;  /* 基础字体 */
-            --control-height: 64px; /* 组件高度 */
-            --select-width: 320px; /* 选择框宽度 */
+            --mega-font: 28px;  /* 基础字体 */
+            --control-height: 72px; /* 组件高度 */
+            --select-width: 360px; /* 选择框宽度 */
         }}
 
         /* 侧边栏全局设置 */
         [data-testid="stSidebar"] {{
             font-size: var(--mega-font) !important;
-            min-width: 400px !important;
+            min-width: 420px !important;
+        }}
+
+        /* 侧边栏组件强化 */
+        .stSidebar .stSelectbox > label,
+        .stSidebar .stMultiSelect > label,
+        .stSidebar .stRadio > label,
+        .stSidebar .stNumberInput > label {{
+            font-size: 26px !important;
+            padding: 8px 0 !important;
         }}
 
         /* 选择框优化 */
@@ -96,7 +105,8 @@ def apply_global_styles():
             font-size: var(--mega-font) !important;
         }}
         div[data-baseweb="select"] > div {{
-            padding: 16px 24px !important;
+            padding: 20px 28px !important;
+            min-height: var(--control-height);
         }}
         div[role="listbox"] {{
             width: var(--select-width) !important;
@@ -105,30 +115,56 @@ def apply_global_styles():
 
         /* 登录界面强化 */
         .stTabs [role="tablist"] button {{
-            font-size: 28px !important;
-            padding: 20px 32px !important;
+            font-size: 32px !important;
+            padding: 24px 40px !important;
         }}
         .stForm label {{
-            font-size: 24px !important;
-            margin-bottom: 16px !important;
-        }}
-
-        /* 注释文字增强 */
-        .stTooltip, .stHelp {{
-            font-size: 20px !important;
-            line-height: 1.6 !important;
-        }}
-
-        /* 基体选择特殊处理 */
-        #base-material-select .stSelectbox > div {{
-            min-width: 360px !important;
             font-size: 28px !important;
+            margin-bottom: 20px !important;
+        }}
+        .stTextInput input,
+        .stTextInput input:focus {{
+            font-size: 28px !important;
+            height: 80px !important;
+            padding: 20px 24px !important;
         }}
 
-        /* 防止文字截断 */
-        .st-ae {{
-            white-space: normal !important;
-            line-height: 1.4 !important;
+        /* 按钮强化 */
+        button {{
+            font-size: 28px !important;
+            height: 80px !important;
+            padding: 0 40px !important;
+        }}
+
+        /* 提示信息强化 */
+        .stAlert {{
+            font-size: 24px !important;
+            line-height: 1.5 !important;
+        }}
+        .stAlert p {{
+            margin: 12px 0 !important;
+        }}
+
+        /* 数值输入框强化 */
+        .stNumberInput input {{
+            font-size: 28px !important;
+            height: 72px !important;
+            padding: 16px 20px !important;
+        }}
+
+        /* 多选组件优化 */
+        [data-baseweb="select"] [role="button"] {{
+            min-height: var(--control-height);
+            padding: 20px !important;
+        }}
+        [role="option"] {{
+            font-size: 24px !important;
+            padding: 16px 24px !important;
+        }}
+
+        /* 表格字体优化 */
+        .stDataFrame {{
+            font-size: 20px !important;
         }}
     </style>
     """, unsafe_allow_html=True)
