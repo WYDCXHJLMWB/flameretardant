@@ -74,70 +74,78 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """精准样式优化方案（解决文字折叠问题）"""
+    """精准显示修复方案"""
     st.markdown(f"""
     <style>
-        /* 智能重置策略 */
-        div, span, input, select, option {{
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: "Microsoft YaHei", sans-serif;
-        }}
-
-        /* 侧边栏精准调控 */
+        /* 侧边栏外科手术式修复 */
         [data-testid="stSidebar"] {{
-            min-width: 360px !important;
-            max-width: 30vw !important;
+            min-width: 400px !important;
+            max-width: 35vw !important;
             font-size: 18px !important;
-            line-height: 1.6 !important;
+            line-height: 1.8 !important;
         }}
 
-        /* 基体选择器专项优化 */
+        /* 基体选择器显示修复 */
         #base-material-select {{
-            font-size: 20px !important;
+            position: relative;
+            z-index: 9999 !important;  /* 确保顶层显示 */
         }}
         #base-material-select [data-baseweb="select"] {{
-            min-height: 56px !important;
-            padding: 12px 16px !important;
+            min-height: 65px !important;
+            padding: 15px 20px !important;
+            font-size: 19px !important;
+            background: white !important;
         }}
         #base-material-select [role="listbox"] {{
-            width: 340px !important;
-            max-height: 50vh !important;
+            width: 380px !important;
+            max-height: 60vh !important;
+            overflow-y: auto !important;
+            transform: translateY(-5px) !important;  /* 微调显示位置 */
         }}
         #base-material-select [role="option"] {{
-            font-size: 16px !important;
-            padding: 10px 14px !important;
-            line-height: 1.5 !important;
-        }}
-
-        /* 输入组件自适应方案 */
-        [data-baseweb="input"] > div,
-        [data-baseweb="select"] > div {{
-            min-height: 60px !important;
-            padding: 14px 20px !important;
-            font-size: 18px !important;
-        }}
-
-        /* 文字显示保险策略 */
-        .stSelectbox > label,
-        .stMultiSelect > label,
-        .stRadio > label {{
+            font-size: 17px !important;
+            padding: 14px 18px !important;
+            line-height: 1.7 !important;
             white-space: normal !important;
             word-break: break-word !important;
-            max-width: 320px !important;
+            display: grid !important;  /* 网格布局保证对齐 */
+            align-items: center !important;
+            min-height: 60px !important;
         }}
 
-        /* 响应式黄金比例 */
-        @media screen and (max-width: 1440px) {{
-            [data-testid="stSidebar"] {{
-                min-width: 320px !important;
-                font-size: 16px !important;
-            }}
-            #base-material-select [role="listbox"] {{
-                width: 300px !important;
-            }}
+        /* 输入组件显示优化 */
+        [data-baseweb="input"] > div,
+        [data-baseweb="select"] > div {{
+            min-height: 65px !important;
+            padding: 16px 22px !important;
+            font-size: 18px !important;
+            background: rgba(255,255,255,0.95) !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
         }}
+
+        /* 文字显示终极保障 */
+        * {{
+            text-wrap: balance !important;  /* 现代文字平衡特性 */
+            overflow-wrap: anywhere !important;
+            hyphens: auto !important;
+        }}
+
+        /* 动态高度调整 */
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {{
+            const observer = new ResizeObserver(entries => {{
+                entries.forEach(entry => {{
+                    entry.target.style.minHeight = 
+                        Math.max(entry.contentRect.height + 20, 60) + 'px';
+                }});
+            }});
+            
+            document.querySelectorAll('[data-baseweb="select"]').forEach(el => {{
+                observer.observe(el);
+                el.style.transition = 'all 0.3s ease';
+            }});
+        }});
+        </script>
     </style>
     """, unsafe_allow_html=True)
 
