@@ -74,74 +74,88 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """应用修复对齐问题的全局样式"""
+    """最终修复方案：精确控制组件样式"""
     st.markdown(f"""
     <style>
+        /* 基础重置 */
+        * {{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }}
+
+        /* 全局尺寸体系 */
         :root {{
-            /* 统一尺寸体系 */
-            --text-base: 2.0rem;
-            --control-height: 4.8rem;
-            --control-padding: 1.2rem;
-            
-            /* 色系保持不变 */
-            --primary: #1e3d59;
-            --secondary: #3f87a6;
-            --accent: #2c2c2c;
+            --control-font: 20px;  /* 统一字体大小 */
+            --control-height: 48px; /* 统一高度 */
+            --control-radius: 8px; /* 圆角统一 */
         }}
 
-        /* 全局布局修正 */
-        body {{
-            background: url("data:image/png;base64,{background_base64}") fixed;
-            background-size: cover;
+        /* 强制所有输入组件样式 */
+        div[data-testid] {{
+            font-size: var(--control-font) !important;
         }}
 
-        /* 表单组件容器统一 */
-        .stTextInput, 
-        .stNumberInput,
-        .stSelectbox,
-        .stButton {{
-            margin: 1.2rem 0 !important;
-            width: 100% !important;
-        }}
-
-        /* 输入控件统一样式 */
+        /* 文本输入框 */
         .stTextInput input,
         .stNumberInput input,
-        .stSelectbox select {{
-            font-size: var(--text-base) !important;
+        .stTextArea textarea {{
+            font-size: var(--control-font) !important;
             height: var(--control-height) !important;
-            padding: var(--control-padding) !important;
-            line-height: 1.2 !important;
-            border-radius: 8px !important;
+            padding: 12px 16px !important;
+            line-height: 1.5 !important;
+            border-radius: var(--control-radius) !important;
         }}
 
-        /* 下拉选项对齐修正 */
-        .st-ae [role="listbox"] {{
-            min-width: 300px !important;
-            max-width: 100% !important;
-            transform: translateX(-12%) !important;
+        /* 选择框特殊处理 */
+        div[data-baseweb="select"] {{
+            min-width: 240px !important;
+        }}
+        div[data-baseweb="select"] > div {{
+            height: var(--control-height) !important;
+            padding: 12px 16px !important;
+            font-size: var(--control-font) !important;
+        }}
+        div[role="listbox"] div {{
+            font-size: var(--control-font) !important;
+            padding: 12px 16px !important;
         }}
 
-        /* 按钮高度对齐 */
-        .stButton button {{
+        /* 按钮精确控制 */
+        button {{
             height: var(--control-height) !important;
-            font-size: var(--text-base) !important;
-            display: flex !important;
+            font-size: var(--control-font) !important;
+            padding: 0 24px !important;
+            display: inline-flex !important;
             align-items: center !important;
-            justify-content: center !important;
+            border-radius: var(--control-radius) !important;
         }}
 
-        /* 侧边栏对齐修正 */
-        .sidebar .stSelectbox [data-baseweb="select"] {{
+        /* 布局容器 */
+        .uniform-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            align-items: start;
+        }}
+        .uniform-grid > * {{
+            margin: 0 !important;
             width: 100% !important;
         }}
 
-        /* 网格布局容器 */
-        .form-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            align-items: center;
+        /* 侧边栏修复 */
+        .sidebar .stSelectbox > div {{
+            width: 100% !important;
+        }}
+        .sidebar .stButton button {{
+            width: 100% !important;
+        }}
+
+        /* 浮动元素定位修正 */
+        div[data-baseweb="popover"] {{
+            transform: translateX(0) !important;
+            left: 0 !important;
+            min-width: 100% !important;
         }}
     </style>
     """, unsafe_allow_html=True)
