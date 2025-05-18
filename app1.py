@@ -74,34 +74,36 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """稳定样式优化方案（大字体版）"""
+    """精准对齐与大字体显示方案"""
     st.markdown(f"""
     <style>
-        /* 安全样式重置 */
+        /* 全局重置 */
         .stSelectbox, .stMultiSelect, .stRadio, .stNumberInput {{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-sizing: border-box !important;
             width: 100% !important;
         }}
 
-        /* 侧边栏布局优化 */
+        /* 侧边栏基础设置 */
         [data-testid="stSidebar"] {{
-            width: 420px !important;  /* 增大侧边栏宽度 */
+            width: 420px !important;
             min-width: 420px !important;
-            font-size: 18px;  /* 增大基础字号 */
+            font-size: 18px !important;
             z-index: 1000;
         }}
 
         /* 基体选择器增强样式 */
         #base-material-select {{
             position: relative;
-            margin: 20px 0;  /* 增大间距 */
+            margin: 20px 0;
+            display: grid !important;
+            gap: 8px !important;
         }}
         #base-material-select [data-baseweb="select"] {{
-            min-height: 72px !important;  /* 增大高度 */
-            padding: 20px 24px !important;  /* 增大内边距 */
-            font-size: 18px !important;  /* 增大字体 */
+            min-height: 72px !important;  /* 统一高度 */
+            padding: 20px 24px !important;  /* 统一内边距 */
+            font-size: 18px !important;  /* 主字体 */
             line-height: 1.6 !important;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
@@ -109,44 +111,54 @@ def apply_global_styles():
             align-items: center !important;  /* 垂直居中 */
         }}
 
-        /* 含量输入框统一样式 */
+        /* 含量输入框精准对齐 */
+        div[data-testid="stVerticalBlock"] > div[data-testid="stHorizontalBlock"]:last-child {{
+            margin-top: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            height: 72px !important;  /* 精确匹配高度 */
+        }}
         div[data-baseweb="input"] > div {{
-            min-height: 72px !important;  /* 与选择器同高 */
+            min-height: 72px !important;
             padding: 20px 24px !important;
             font-size: 18px !important;
             display: flex !important;
             align-items: center !important;
         }}
 
-        /* 下拉菜单优化 */
+        /* 下拉菜单终极优化 */
         #base-material-select [role="listbox"] {{
-            width: 100% !important;
+            width: calc(100% + 8px) !important;  /* 对齐修正 */
             max-height: 60vh;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             margin-top: 8px;
+            left: -4px !important;  /* 位置微调 */
         }}
         #base-material-select [role="option"] {{
-            padding: 16px 24px !important;  /* 增大内边距 */
-            font-size: 16px !important;  /* 增大选项字体 */
-            line-height: 1.8 !important;  /* 增大行高 */
-            min-height: 64px !important;  /* 增大选项高度 */
+            padding: 16px 24px !important;
+            font-size: 16px !important;
+            line-height: 1.8 !important;
+            min-height: 64px !important;
             display: flex !important;
             align-items: center !important;
             border-bottom: 1px solid #eee;
-            white-space: normal !important;  /* 允许换行 */
-            word-break: break-word !important;  /* 强制断词 */
+            white-space: normal !important;
+            word-break: break-word !important;
+            hyphens: auto !important;
         }}
 
-        /* 标签统一样式 */
+        /* 标签精准对齐 */
         label {{
-            font-size: 18px !important;
-            margin-bottom: 15px !important;
+            font-size: 20px !important;  /* 增大标签字体 */
+            margin-bottom: 18px !important;
             font-weight: 600 !important;
             color: #1a1a1a !important;
+            display: block !important;
+            line-height: 1.4 !important;
         }}
 
-        /* 可见性优化 */
+        /* 可视性增强 */
         [data-baseweb="popover"] {{
             z-index: 1001 !important;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
