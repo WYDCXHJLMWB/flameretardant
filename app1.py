@@ -75,8 +75,8 @@ if 'user' not in st.session_state:
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
     """精准对齐样式方案+背景图"""
-    background_base64 = image_to_base64("BG.png")
-    
+    background_base64 = image_to_base64("BG.png")  # 修改文件名保持一致
+
     st.markdown(f"""
     <style>
         /* 新增背景图设置 */
@@ -98,7 +98,7 @@ def apply_global_styles():
             z-index: -1;
         }}
         .stApp > div {{
-            background-color: rgba(255, 255, 255, 0.85);
+            background-color: rgba(255, 255, 255, 0.65);  /* 降低透明度为0.65 */
             min-height: 100vh;
         }}
 
