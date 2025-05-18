@@ -164,7 +164,7 @@ def render_global_header():
     st.markdown(f"""
     <div class="global-header">
         <div style="max-width:1400px; margin:0 auto; display:flex; align-items:center; gap:2rem;">
-            <img src="data:image/png;base64,{ICON_BASE64}" 
+            <img src="data:image/png;base64,{icon_base64}" 
                  style="width:120px; height:auto; border-radius:12px; box-shadow:{'var(--shadow)'}"
                  alt="平台标志">
             <div>
