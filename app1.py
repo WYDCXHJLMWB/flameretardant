@@ -236,10 +236,9 @@ def render_material_selector():
 
 # --------------------- 首页内容 ---------------------
 def show_homepage():
-    st.write("背景图Base64长度:", len(background_base64))
-    st.write("图标Base64长度:", len(icon_base64))
     apply_global_styles()
     render_global_header()
+    render_auth_sidebar()
     # 主内容容器
     st.markdown("""
     <style>
