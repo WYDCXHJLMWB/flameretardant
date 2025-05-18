@@ -84,258 +84,109 @@ def apply_global_styles():
             padding: 0;
         }}
 
-        /* 全局尺寸体系 */
+        /* 全局背景图 */
+        body {{
+            background-image: url("data:image/png;base64,{background_base64}");
+            background-size: cover;
+            background-attachment: fixed;
+        }}
+
+        /* 内容区域半透明遮罩 */
+        .main-container, .auth-sidebar {{
+            background: rgba(255,255,255,0.96) !important;
+            backdrop-filter: blur(12px);
+        }}
+
+        /* 超大尺寸体系 */
         :root {{
-            --control-font: 20px;  /* 统一字体大小 */
-            --control-height: 48px; /* 统一高度 */
-            --control-radius: 8px; /* 圆角统一 */
+            --control-font: 24px;  /* 统一字体大小 */
+            --control-height: 60px; /* 统一高度 */
+            --control-padding: 16px;
+            --control-radius: 12px;
         }}
 
         /* 强制所有输入组件样式 */
-        div[data-testid] {{
-            font-size: var(--control-font) !important;
-        }}
-
-        /* 文本输入框 */
         .stTextInput input,
         .stNumberInput input,
-        .stTextArea textarea {{
+        .stTextArea textarea,
+        .stSelectbox select {{
             font-size: var(--control-font) !important;
             height: var(--control-height) !important;
-            padding: 12px 16px !important;
-            line-height: 1.5 !important;
+            padding: var(--control-padding) !important;
             border-radius: var(--control-radius) !important;
         }}
 
-        /* 选择框特殊处理 */
-        div[data-baseweb="select"] {{
-            min-width: 240px !important;
-        }}
+        /* 下拉菜单特殊处理 */
         div[data-baseweb="select"] > div {{
-            height: var(--control-height) !important;
-            padding: 12px 16px !important;
-            font-size: var(--control-font) !important;
+            padding: var(--control-padding) !important;
         }}
         div[role="listbox"] div {{
             font-size: var(--control-font) !important;
-            padding: 12px 16px !important;
+            padding: var(--control-padding) !important;
+            min-height: var(--control-height) !important;
         }}
 
-        /* 按钮精确控制 */
+        /* 按钮增强 */
         button {{
             height: var(--control-height) !important;
             font-size: var(--control-font) !important;
-            padding: 0 24px !important;
-            display: inline-flex !important;
-            align-items: center !important;
+            padding: 0 32px !important;
             border-radius: var(--control-radius) !important;
         }}
 
-        /* 布局容器 */
-        .uniform-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            align-items: start;
-        }}
-        .uniform-grid > * {{
-            margin: 0 !important;
-            width: 100% !important;
+        /* 侧边栏统一样式 */
+        .sidebar .stTextInput input,
+        .sidebar .stSelectbox select,
+        .sidebar button {{
+            font-size: var(--control-font) !important;
+            height: var(--control-height) !important;
         }}
 
-        /* 侧边栏修复 */
-        .sidebar .stSelectbox > div {{
-            width: 100% !important;
+        /* 登录表单特殊处理 */
+        .auth-form input {{
+            font-size: calc(var(--control-font) + 4px) !important;
+            height: calc(var(--control-height) + 10px) !important;
         }}
-        .sidebar .stButton button {{
-            width: 100% !important;
+        .auth-form button {{
+            font-size: calc(var(--control-font) + 4px) !important;
+            height: calc(var(--control-height) + 10px) !important;
         }}
 
-        /* 浮动元素定位修正 */
-        div[data-baseweb="popover"] {{
-            transform: translateX(0) !important;
-            left: 0 !important;
-            min-width: 100% !important;
+        /* 响应式调整 */
+        @media (max-width: 768px) {{
+            :root {{
+                --control-font: 28px;
+                --control-height: 70px;
+            }}
         }}
     </style>
     """, unsafe_allow_html=True)
+
 def render_global_header():
     """渲染全局头部组件"""
     st.markdown(f"""
     <div class="global-header">
-        <div style="max-width:1400px; margin:0 auto; display:flex; align-items:center; gap:2rem;">
+        <div style="max-width:1400px; margin:0 auto; display:flex; align-items:center; gap:3rem;">
             <img src="data:image/png;base64,{icon_base64}" 
-                 style="width:120px; height:auto; border-radius:12px; box-shadow:{'var(--shadow)'}"
+                 style="width:160px; height:auto; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,0.2)"
                  alt="平台标志">
             <div>
-                <h1 style="margin:0; font-size:var(--title-lg)!important; color:var(--primary)!important;">
+                <h1 style="margin:0; font-size:4.8rem!important; color:#1e3d59!important;">
                     阻燃聚合物复合材料智能设计平台
                 </h1>
-                <p style="font-size:var(--text-lg)!important; margin:0.5rem 0 0; color:var(--accent)!important;">
+                <p style="font-size:2.8rem!important; margin:1rem 0 0; color:#2c2c2c!important;">
                     Flame Retardant Composites AI Platform
                 </p>
             </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
-def render_input_group():
-    """渲染统一风格的表单组"""
-    st.markdown("""
-    <style>
-        /* 表单标签样式 */
-        .stForm label {{
-            font-size: var(--text-base) !important;
-            margin-bottom: 0.8rem !important;
-            display: block !important;
-        }}
-
-        /* 输入框聚焦效果 */
-        .stTextInput input:focus, 
-        .stSelectbox select:focus {{
-            border-color: var(--secondary) !important;
-            box-shadow: 0 0 0 3px rgba(63,135,166,0.2) !important;
-        }}
-    </style>
-    """, unsafe_allow_html=True)
-def apply_custom_styles():
-    st.markdown(f"""
-    <style>
-        :root {{
-            --text-base: 1.3rem;
-            --text-lg: 1.5rem;
-            --text-xl: 1.7rem;
-            --title-sm: 2.0rem;
-            --title-md: 2.3rem;
-            --title-lg: 2.6rem;
-            --primary: #1e3d59;
-            --secondary: #3f87a6;
-            --accent: #2c2c2c;
-            --shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }}
-
-        /* 全局头部 */
-        .global-header {{
-            background: rgba(255,255,255,0.98);
-            padding: 2rem 5%;
-            box-shadow: var(--shadow);
-            margin-bottom: 3rem;
-        }}
-
-        .header-container {{
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }}
-
-        .header-logo {{
-            width: 120px;
-            height: auto;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-        }}
-
-        .header-title {{
-            font-size: 2.8rem !important;
-            color: var(--primary) !important;
-            margin: 0;
-            line-height: 1.2;
-        }}
-
-        /* 主内容布局 */
-        .main-container {{
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 5%;
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 4rem;
-        }}
-
-        /* 核心内容区 */
-        .content-section {{
-            background: rgba(255,255,255,0.95);
-            padding: 3rem;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-        }}
-
-        /* 登录侧边栏 */
-        .auth-sidebar {{
-            position: sticky;
-            top: 2rem;
-            background: rgba(255,255,255,0.98);
-            padding: 3rem;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            height: fit-content;
-        }}
-
-        /* 响应式布局 */
-        @media (max-width: 1200px) {{
-            .main-container {{
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }}
-            .auth-sidebar {{
-                order: -1;
-                position: static;
-                max-width: 600px;
-                margin: 0 auto;
-            }}
-        }}
-
-        /* 登录表单样式 */
-        .auth-form input {{
-            font-size: 1.6rem !important;
-            padding: 1rem 1.2rem !important;
-        }}
-
-        .auth-form button {{
-            font-size: 1.8rem !important;
-            padding: 1.2rem !important;
-            width: 100% !important;
-        }}
-
-        /* 内容区块样式 */
-        .feature-card {{
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            border-left: 4px solid var(--secondary);
-        }}
-
-        .section-title {{
-            font-size: var(--title-md);
-            color: var(--primary);
-            border-bottom: 3px solid var(--secondary);
-            padding-bottom: 0.5rem;
-            margin-bottom: 2rem;
-        }}
-
-        /* 页面背景图设置为base64图片，透明度为99.9% */
-        body::before {{
-            content: "";
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA..."); /* 这里替换成实际的base64图片 */
-            background-size: cover;
-            background-position: center;
-            opacity: 0.001;
-            z-index: -1;
-        }}
-    </style>
-    """, unsafe_allow_html=True)
-
 
 
 # --------------------- 首页内容 ---------------------
 def show_homepage():
-    apply_custom_styles()
+    apply_global_styles()
+    render_global_header()
 
     # 全局头部
     st.markdown(f"""
@@ -350,7 +201,38 @@ def show_homepage():
     """, unsafe_allow_html=True)
 
     # 主内容容器
-    st.markdown('<div class="main-container">', unsafe_allow_html=True)
+    st.markdown("""
+    <style>
+        .main-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.96);
+        }
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+            margin-bottom: 2.5rem;
+            border-left: 6px solid #3f87a6;
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .section-title {
+            font-size: 3.2rem !important;
+            color: #1e3d59;
+            border-bottom: 4px solid #3f87a6;
+            padding-bottom: 1rem;
+            margin-bottom: 3rem;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 
     # 左侧核心内容
     with st.container():
@@ -438,7 +320,17 @@ def show_homepage():
 
     # 右侧登录侧边栏
     with st.container():
-        st.markdown('<div class="auth-sidebar">', unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="auth-sidebar" style='
+            position: sticky;
+            top: 2rem;
+            background: rgba(255,255,255,0.98);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin: 2rem;
+        '>
+        """, unsafe_allow_html=True)
 
         tab_login, tab_register, tab_forgot = st.tabs(["🔐 登录", "📝 注册", "🔑 忘记密码"])
 
