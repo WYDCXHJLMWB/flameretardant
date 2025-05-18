@@ -74,85 +74,91 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """终极样式优化方案（字体折叠修复版）"""
+    """深度优化样式方案（解决字体截断问题）"""
     st.markdown(f"""
     <style>
-        /* 基础重置 */
+        /* 全局强制重置 */
         * {{
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            box-sizing: border-box !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-family: "Microsoft YaHei", sans-serif !important;
         }}
 
-        /* 全局字体设置 */
-        html, body, .stApp, .stMarkdown, .stAlert, .stTextInput, .stNumberInput, .stSelectbox, .stMultiSelect {{
-            font-family: "Microsoft YaHei", sans-serif;
-            font-size: 24px !important;  /* 从28px下调 */
-            line-height: 1.6;
-        }}
-
-        /* 侧边栏全局设置 */
+        /* 侧边栏革命性优化 */
         [data-testid="stSidebar"] {{
-            min-width: 420px !important;  /* 从450px减小 */
-            padding: 1.5rem !important;  /* 从2rem减小 */
+            min-width: 420px !important;
+            max-width: 35vw !important;
+            padding: 1.5rem !important;
         }}
 
-        /* 输入组件强化 */
-        div[data-baseweb="input"] > div,
-        div[data-baseweb="select"] > div {{
-            min-height: 72px !important;  /* 从80px减小 */
-            padding: 20px 28px !important;  /* 从24px 32px减小 */
-            font-size: 24px !important;  /* 从28px下调 */
-        }}
-
-        /* 下拉选项优化 */
-        div[data-baseweb="select"] [role="listbox"] div,
-        div[data-baseweb="select"] [role="option"] {{
-            font-size: 22px !important;  /* 从26px下调 */
-            padding: 20px 28px !important;  /* 从24px 32px减小 */
-            line-height: 1.6 !important;  /* 增加行高 */
-            white-space: normal !important;  /* 允许文字换行 */
-        }}
-
-        /* 基体选择器专项优化 */
+        /* 基体选择器原子级改造 */
         #base-material-select {{
-            line-height: 1.8 !important;  /* 增加行高 */
+            line-height: 1.8 !important;
+            transform: scale(0.95);
+            transform-origin: left top;
         }}
         #base-material-select [data-baseweb="select"] {{
             min-height: 68px !important;
-            padding: 18px 24px !important;
+            padding: 16px 20px !important;
+        }}
+        #base-material-select [role="listbox"] {{
+            width: 380px !important;
+            max-height: 60vh !important;
+            overflow-y: auto !important;
+        }}
+        #base-material-select [role="option"] {{
+            font-size: 20px !important;
+            padding: 16px 20px !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+            line-height: 1.6 !important;
         }}
 
-        /* 标签字体优化 */
-        .stTextInput label,
-        .stNumberInput label,
-        .stSelectbox label,
-        .stMultiSelect label,
-        .stRadio label {{
-            font-size: 24px !important;  /* 从28px下调 */
-            margin-bottom: 12px !important;  /* 从16px减小 */
+        /* 输入组件量子级优化 */
+        div[data-baseweb="input"], 
+        div[data-baseweb="select"] {{
+            transform: scale(0.98);
+            transform-origin: left top;
+        }}
+        div[data-baseweb="input"] > div,
+        div[data-baseweb="select"] > div {{
+            min-height: 64px !important;
+            padding: 16px 24px !important;
+            font-size: 20px !important;
         }}
 
-        /* 响应式调整 */
+        /* 文字显示终极解决方案 */
+        .stSelectbox [role="button"],
+        .stMultiSelect [role="button"],
+        .stTextInput input,
+        .stNumberInput input {{
+            white-space: pre-wrap !important;
+            overflow-wrap: anywhere !important;
+            text-overflow: ellipsis !important;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
+        }}
+
+        /* 动态响应增强 */
         @media screen and (max-width: 1600px) {{
             [data-testid="stSidebar"] {{
-                min-width: 380px !important;  /* 从400px减小 */
+                min-width: 380px !important;
+                font-size: 0.9em !important;
             }}
-            div[data-baseweb="select"] > div {{
-                padding: 18px 24px !important;
-            }}
-            html, body {{  /* 移动端字体调整 */
-                font-size: 22px !important;
+            #base-material-select [role="listbox"] {{
+                width: 340px !important;
             }}
         }}
-
-        /* 时间序列输入优化 */
-        [data-testid="stExpander"] label {{
-            font-size: 22px !important;  /* 从24px下调 */
+        @media screen and (max-width: 1200px) {{
+            [data-testid="stSidebar"] {{
+                min-width: 320px !important;
+                font-size: 0.85em !important;
+            }}
         }}
     </style>
     """, unsafe_allow_html=True)
-
 
 def render_global_header():
     """渲染全局头部组件"""
