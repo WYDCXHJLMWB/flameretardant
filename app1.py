@@ -74,7 +74,7 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """终极样式优化方案"""
+    """终极样式优化方案（字体折叠修复版）"""
     st.markdown(f"""
     <style>
         /* 基础重置 */
@@ -87,104 +87,68 @@ def apply_global_styles():
         /* 全局字体设置 */
         html, body, .stApp, .stMarkdown, .stAlert, .stTextInput, .stNumberInput, .stSelectbox, .stMultiSelect {{
             font-family: "Microsoft YaHei", sans-serif;
-            font-size: 28px !important;
+            font-size: 24px !important;  /* 从28px下调 */
             line-height: 1.6;
         }}
 
         /* 侧边栏全局设置 */
         [data-testid="stSidebar"] {{
-            min-width: 450px !important;
-            padding: 2rem !important;
-        }}
-        [data-testid="stSidebar"] .stSelectbox, 
-        [data-testid="stSidebar"] .stMultiSelect,
-        [data-testid="stSidebar"] .stRadio {{
-            margin: 1.5rem 0;
+            min-width: 420px !important;  /* 从450px减小 */
+            padding: 1.5rem !important;  /* 从2rem减小 */
         }}
 
         /* 输入组件强化 */
         div[data-baseweb="input"] > div,
         div[data-baseweb="select"] > div {{
-            min-height: 80px !important;
-            padding: 24px 32px !important;
-            font-size: 28px !important;
-        }}
-        div[data-baseweb="input"] input,
-        div[data-baseweb="select"] [role="button"] {{
-            font-size: 28px !important;
-            padding: 12px 16px !important;
+            min-height: 72px !important;  /* 从80px减小 */
+            padding: 20px 28px !important;  /* 从24px 32px减小 */
+            font-size: 24px !important;  /* 从28px下调 */
         }}
 
-        /* 多级选择器覆盖默认样式 */
+        /* 下拉选项优化 */
         div[data-baseweb="select"] [role="listbox"] div,
         div[data-baseweb="select"] [role="option"] {{
-            font-size: 26px !important;
-            padding: 24px 32px !important;
-            line-height: 1.5 !important;
+            font-size: 22px !important;  /* 从26px下调 */
+            padding: 20px 28px !important;  /* 从24px 32px减小 */
+            line-height: 1.6 !important;  /* 增加行高 */
+            white-space: normal !important;  /* 允许文字换行 */
         }}
 
-        /* 错误提示强化 */
-        .stAlert {{
-            font-size: 24px !important;
-            padding: 24px !important;
-            border-radius: 12px;
+        /* 基体选择器专项优化 */
+        #base-material-select {{
+            line-height: 1.8 !important;  /* 增加行高 */
         }}
-        .stAlert p {{
-            margin: 12px 0 !important;
-            font-size: 1.1em !important;
+        #base-material-select [data-baseweb="select"] {{
+            min-height: 68px !important;
+            padding: 18px 24px !important;
         }}
 
-        /* 按钮组件优化 */
-        button {{
-            min-height: 80px !important;
-            padding: 0 48px !important;
-            font-size: 28px !important;
-            border-radius: 12px !important;
-        }}
-        button:hover {{
-            transform: scale(1.02);
-        }}
-
-        /* 表格特殊处理 */
-        .stDataFrame {{
-            font-size: 24px !important;
-        }}
-        .stDataFrame th {{
-            font-size: 26px !important;
-            padding: 20px !important;
-        }}
-        .stDataFrame td {{
-            padding: 18px !important;
-        }}
-
-        /* 强制覆盖Streamlit默认样式 */
+        /* 标签字体优化 */
         .stTextInput label,
         .stNumberInput label,
         .stSelectbox label,
         .stMultiSelect label,
         .stRadio label {{
-            font-size: 28px !important;
-            margin-bottom: 16px !important;
-            font-weight: 600 !important;
-            color: #1e3d59 !important;
-        }}
-
-        /* 时间序列输入特殊布局 */
-        [data-testid="stExpander"] .stNumberInput {{
-            margin: 12px 0;
-        }}
-        [data-testid="stExpander"] label {{
-            font-size: 24px !important;
+            font-size: 24px !important;  /* 从28px下调 */
+            margin-bottom: 12px !important;  /* 从16px减小 */
         }}
 
         /* 响应式调整 */
         @media screen and (max-width: 1600px) {{
             [data-testid="stSidebar"] {{
-                min-width: 400px !important;
+                min-width: 380px !important;  /* 从400px减小 */
             }}
             div[data-baseweb="select"] > div {{
-                padding: 20px 28px !important;
+                padding: 18px 24px !important;
             }}
+            html, body {{  /* 移动端字体调整 */
+                font-size: 22px !important;
+            }}
+        }}
+
+        /* 时间序列输入优化 */
+        [data-testid="stExpander"] label {{
+            font-size: 22px !important;  /* 从24px下调 */
         }}
     </style>
     """, unsafe_allow_html=True)
