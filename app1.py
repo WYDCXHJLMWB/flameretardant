@@ -74,15 +74,42 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """精准对齐样式方案"""
+    """精准对齐样式方案+背景图"""
+    background_base64 = image_to_base64("图片1.png")
+    
     st.markdown(f"""
     <style>
+        /* 新增背景图设置 */
+        .stApp {{
+            position: relative;
+            min-height: 100vh;
+        }}
+        .stApp::before {{
+            content: "";
+            background-image: url("data:image/png;base64,{background_base64}");
+            background-size: cover;
+            background-position: center;
+            opacity: 0.9;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }}
+        .stApp > div {{
+            background-color: rgba(255, 255, 255, 0.85);
+            min-height: 100vh;
+        }}
+
+        /* 保留原有对齐样式 */
         /* 父容器网格布局 */
         div[data-testid="stVerticalBlock"] > div[data-testid="stHorizontalBlock"] {{
             display: grid !important;
             grid-template-columns: 1fr 1fr;
             gap: 20px !important;
             align-items: center !important;
+            position: relative;  /* 新增层级控制 */
         }}
 
         /* 基体选择器统一样式 */
@@ -91,6 +118,8 @@ def apply_global_styles():
             display: flex !important;
             flex-direction: column !important;
             justify-content: center !important;
+            background: rgba(255,255,255,0.9) !important;  /* 新增半透明背景 */
+            border-radius: 8px !important;  /* 保持圆角一致 */
         }}
         #base-material-select [data-baseweb="select"] {{
             height: 72px !important;
@@ -98,6 +127,7 @@ def apply_global_styles():
             font-size: 18px !important;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
+            backdrop-filter: blur(2px);  /* 新增毛玻璃效果 */
         }}
 
         /* 含量输入框镜像样式 */
@@ -109,14 +139,16 @@ def apply_global_styles():
             border-radius: 8px;
             display: flex !important;
             align-items: center !important;
-            background: white !important;
+            background: rgba(255,255,255,0.9) !important;  /* 调整为半透明 */
+            backdrop-filter: blur(2px);  /* 新增效果 */
         }}
 
-        /* 标签精准对齐 */
+        /* 标签精准对齐增强 */
         label {{
             margin-bottom: 12px !important;
             font-size: 18px !important;
             transform: translateY(8px) !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);  /* 新增文字阴影 */
         }}
 
         /* 下拉菜单对齐修正 */
@@ -124,6 +156,14 @@ def apply_global_styles():
             margin-top: 8px !important;
             left: 0 !important;
             width: 100% !important;
+            background: rgba(255,255,255,0.95) !important;  /* 半透明背景 */
+            backdrop-filter: blur(4px);  /* 毛玻璃效果 */
+        }}
+        
+        /* 侧边栏优化 */
+        [data-testid="stSidebar"] {{
+            background: rgba(255,255,255,0.92) !important;
+            backdrop-filter: blur(6px);
         }}
     </style>
     """, unsafe_allow_html=True)
