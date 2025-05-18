@@ -74,93 +74,65 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """最终修复方案：精确控制组件样式"""
+    """最终样式优化方案"""
     st.markdown(f"""
     <style>
-        /* 基础重置 */
-        * {{
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }}
-
-        /* 全局背景图 */
-        body {{
-            background-image: url("data:image/png;base64,{background_base64}");
-            background-size: cover;
-            background-attachment: fixed;
-        }}
-
-        /* 内容区域半透明遮罩 */
-        .main-container, .auth-sidebar {{
-            background: rgba(255,255,255,0.96) !important;
-            backdrop-filter: blur(12px);
-        }}
-
-        /* 超大尺寸体系 */
+        /* 全局字体增强 */
         :root {{
-            --control-font: 24px;  /* 统一字体大小 */
-            --control-height: 60px; /* 统一高度 */
-            --control-padding: 16px;
-            --control-radius: 12px;
+            --mega-font: 26px;  /* 基础字体 */
+            --control-height: 64px; /* 组件高度 */
+            --select-width: 320px; /* 选择框宽度 */
         }}
 
-        /* 强制所有输入组件样式 */
-        .stTextInput input,
-        .stNumberInput input,
-        .stTextArea textarea,
-        .stSelectbox select {{
-            font-size: var(--control-font) !important;
-            height: var(--control-height) !important;
-            padding: var(--control-padding) !important;
-            border-radius: var(--control-radius) !important;
+        /* 侧边栏全局设置 */
+        [data-testid="stSidebar"] {{
+            font-size: var(--mega-font) !important;
+            min-width: 400px !important;
         }}
 
-        /* 下拉菜单特殊处理 */
+        /* 选择框优化 */
+        div[data-baseweb="select"] {{
+            width: var(--select-width) !important;
+            font-size: var(--mega-font) !important;
+        }}
         div[data-baseweb="select"] > div {{
-            padding: var(--control-padding) !important;
+            padding: 16px 24px !important;
         }}
-        div[role="listbox"] div {{
-            font-size: var(--control-font) !important;
-            padding: var(--control-padding) !important;
-            min-height: var(--control-height) !important;
-        }}
-
-        /* 按钮增强 */
-        button {{
-            height: var(--control-height) !important;
-            font-size: var(--control-font) !important;
-            padding: 0 32px !important;
-            border-radius: var(--control-radius) !important;
+        div[role="listbox"] {{
+            width: var(--select-width) !important;
+            font-size: calc(var(--mega-font) - 2px) !important;
         }}
 
-        /* 侧边栏统一样式 */
-        .sidebar .stTextInput input,
-        .sidebar .stSelectbox select,
-        .sidebar button {{
-            font-size: var(--control-font) !important;
-            height: var(--control-height) !important;
+        /* 登录界面强化 */
+        .stTabs [role="tablist"] button {{
+            font-size: 28px !important;
+            padding: 20px 32px !important;
+        }}
+        .stForm label {{
+            font-size: 24px !important;
+            margin-bottom: 16px !important;
         }}
 
-        /* 登录表单特殊处理 */
-        .auth-form input {{
-            font-size: calc(var(--control-font) + 4px) !important;
-            height: calc(var(--control-height) + 10px) !important;
-        }}
-        .auth-form button {{
-            font-size: calc(var(--control-font) + 4px) !important;
-            height: calc(var(--control-height) + 10px) !important;
+        /* 注释文字增强 */
+        .stTooltip, .stHelp {{
+            font-size: 20px !important;
+            line-height: 1.6 !important;
         }}
 
-        /* 响应式调整 */
-        @media (max-width: 768px) {{
-            :root {{
-                --control-font: 28px;
-                --control-height: 70px;
-            }}
+        /* 基体选择特殊处理 */
+        #base-material-select .stSelectbox > div {{
+            min-width: 360px !important;
+            font-size: 28px !important;
+        }}
+
+        /* 防止文字截断 */
+        .st-ae {{
+            white-space: normal !important;
+            line-height: 1.4 !important;
         }}
     </style>
     """, unsafe_allow_html=True)
+
 
 def render_global_header():
     """渲染全局头部组件"""
@@ -181,7 +153,52 @@ def render_global_header():
         </div>
     </div>
     """, unsafe_allow_html=True)
-
+def render_auth_sidebar():
+    """增强版登录侧边栏"""
+    with st.container():
+        st.markdown("""
+        <style>
+            /* 登录容器优化 */
+            .auth-container {{
+                padding: 2rem !important;
+                border-radius: 24px !important;
+            }}
+            /* 输入框强化 */
+            .auth-container input {{
+                font-size: 28px !important;
+                height: 72px !important;
+                padding: 20px !important;
+            }}
+            /* 按钮优化 */
+            .auth-container button {{
+                font-size: 28px !important;
+                height: 80px !important;
+                border-radius: 16px !important;
+            }}
+        </style>
+        """, unsafe_allow_html=True)
+def render_material_selector():
+    """增强版材料选择器"""
+    st.markdown("""
+    <style>
+        /* 基体选择容器 */
+        #base-material-select {{
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+        }}
+        /* 选择标签 */
+        #base-material-select label {{
+            font-size: 28px !important;
+            margin-bottom: 1.5rem !important;
+        }}
+        /* 下拉菜单定位修正 */
+        #base-material-select [role="listbox"] {{
+            transform: translateX(-12%) scale(1.1) !important;
+        }}
+    </style>
+    """, unsafe_allow_html=True)
 
 # --------------------- 首页内容 ---------------------
 def show_homepage():
@@ -544,7 +561,7 @@ if st.session_state.logged_in:
         # 初始化 input_values
         if 'input_values' not in st.session_state:
             st.session_state.input_values = {}  # 使用会话状态保存输入值
-    
+        
         # 基体材料数据
         matrix_materials = {
             "PP": {"name": "Polypropylene", "full_name": "Polypropylene (PP)", "range": (53.5, 99.5)},
@@ -608,6 +625,7 @@ if st.session_state.logged_in:
         st.subheader("请选择配方成分")
         col_matrix = st.columns([4, 3], gap="medium")  # 调整列宽比例
         with col_matrix[0]:
+            st.markdown('<div id="base-material-select">', unsafe_allow_html=True)
             selected_matrix = st.selectbox("选择基体材料", [matrix_materials[key]["full_name"] for key in matrix_materials], index=0)
             # 获取选中基体的缩写
             matrix_key = [key for key in matrix_materials if matrix_materials[key]["full_name"] == selected_matrix][0]
@@ -624,7 +642,7 @@ if st.session_state.logged_in:
     
         # ========== 阻燃剂显示 ==========  
         st.subheader("请选择阻燃剂")
-        
+        st.markdown('<div id="base-material-select">', unsafe_allow_html=True)
         # 显示完整名称的下拉框
         selected_flame_retardants = st.multiselect(
             "选择阻燃剂（必选锡酸锌和羟基锡酸锌）", 
@@ -659,6 +677,7 @@ if st.session_state.logged_in:
     
         # ========== 助剂显示 ==========  
         st.subheader("选择助剂")
+        st.markdown('<div id="base-material-select">', unsafe_allow_html=True)
         selected_additives = st.multiselect(
             "选择助剂（可多选）", list(additives.keys()), default=[list(additives.keys())[0]]
         )
