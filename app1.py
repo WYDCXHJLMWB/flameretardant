@@ -74,121 +74,96 @@ if 'user' not in st.session_state:
 
 # --------------------- 样式配置 ---------------------
 def apply_global_styles():
-    """应用全局样式（包含背景图和字体修正）"""
+    """应用修复对齐问题的全局样式"""
     st.markdown(f"""
     <style>
         :root {{
-            /* 字体体系（桌面端优先） */
-            --text-base: 2.2rem;  /* 基础字体 */
-            --text-lg: 2.6rem;    /* 大号文本 */
-            --text-xl: 3.0rem;    /* 超大文本 */
-            --title-sm: 3.4rem;   /* 小标题 */
-            --title-md: 3.8rem;   /* 中标题 */
-            --title-lg: 4.2rem;   /* 大标题 */
+            /* 统一尺寸体系 */
+            --text-base: 2.0rem;
+            --control-height: 4.8rem;
+            --control-padding: 1.2rem;
             
-            /* 色系配置 */
+            /* 色系保持不变 */
             --primary: #1e3d59;
             --secondary: #3f87a6;
             --accent: #2c2c2c;
-            --shadow: 0 4px 20px rgba(0,0,0,0.1);
         }}
 
-        /* 全局背景图 */
+        /* 全局布局修正 */
         body {{
-            background-image: url("data:image/png;base64,{background_base64}");
+            background: url("data:image/png;base64,{background_base64}") fixed;
             background-size: cover;
-            background-attachment: fixed;
         }}
 
-        /* 内容区域半透明遮罩 */
-        .main-content {{
-            background: rgba(255,255,255,0.92) !important;
-            backdrop-filter: blur(8px);
-            border-radius: 12px;
-            padding: 2rem;
-            margin: 1rem;
+        /* 表单组件容器统一 */
+        .stTextInput, 
+        .stNumberInput,
+        .stSelectbox,
+        .stButton {{
+            margin: 1.2rem 0 !important;
+            width: 100% !important;
         }}
 
-        /* 基础字体设置 */
-        body, button, input, select, textarea {{
+        /* 输入控件统一样式 */
+        .stTextInput input,
+        .stNumberInput input,
+        .stSelectbox select {{
             font-size: var(--text-base) !important;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
-            line-height: 1.6;
-        }}
-
-        /* 选择框字体修正 */
-        .stSelectbox div {{
-            font-size: var(--text-base) !important;
-        }}
-
-        /* 下拉选项字体 */
-        .st-ae {{
-            font-size: var(--text-base) !important;
-        }}
-
-        /* 侧边栏统一样式 */
-        .sidebar .stTextInput input,
-        .sidebar .stNumberInput input,
-        .sidebar .stSelectbox select,
-        .sidebar .stButton button {{
-            font-size: var(--text-base) !important;
-            padding: 1.2em !important;
-        }}
-
-        /* 按钮样式增强 */
-        button {{
-            font-size: var(--text-lg) !important;
-            padding: 1em 2em !important;
+            height: var(--control-height) !important;
+            padding: var(--control-padding) !important;
+            line-height: 1.2 !important;
             border-radius: 8px !important;
-            transition: all 0.3s ease !important;
         }}
 
-        /* 标题体系 */
-        h1 {{ font-size: var(--title-lg) !important; }}
-        h2 {{ font-size: var(--title-md) !important; }}
-        h3 {{ font-size: var(--title-sm) !important; }}
-
-        /* 全局头部样式 */
-        .global-header {{
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(6px);
-            padding: 2rem 5%;
-            box-shadow: var(--shadow);
-            margin-bottom: 3rem;
+        /* 下拉选项对齐修正 */
+        .st-ae [role="listbox"] {{
+            min-width: 300px !important;
+            max-width: 100% !important;
+            transform: translateX(-12%) !important;
         }}
 
-        /* 响应式调整 */
-        @media (max-width: 768px) {{
-            :root {{
-                --text-base: 1.8rem;
-                --text-lg: 2.0rem;
-                --text-xl: 2.2rem;
-            }}
-            .global-header {{
-                padding: 1rem 5%;
-            }}
+        /* 按钮高度对齐 */
+        .stButton button {{
+            height: var(--control-height) !important;
+            font-size: var(--text-base) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }}
+
+        /* 侧边栏对齐修正 */
+        .sidebar .stSelectbox [data-baseweb="select"] {{
+            width: 100% !important;
+        }}
+
+        /* 网格布局容器 */
+        .form-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            align-items: center;
         }}
     </style>
     """, unsafe_allow_html=True)
 
-def render_global_header():
-    """渲染全局头部组件"""
-    st.markdown(f"""
-    <div class="global-header">
-        <div style="max-width:1400px; margin:0 auto; display:flex; align-items:center; gap:2rem;">
-            <img src="data:image/png;base64,{icon_base64}" 
-                 style="width:120px; height:auto; border-radius:12px; box-shadow:{'var(--shadow)'}"
-                 alt="平台标志">
-            <div>
-                <h1 style="margin:0; font-size:var(--title-lg)!important; color:var(--primary)!important;">
-                    阻燃聚合物复合材料智能设计平台
-                </h1>
-                <p style="font-size:var(--text-lg)!important; margin:0.5rem 0 0; color:var(--accent)!important;">
-                    Flame Retardant Composites AI Platform
-                </p>
-            </div>
-        </div>
-    </div>
+def render_input_group():
+    """渲染统一风格的表单组"""
+    st.markdown("""
+    <style>
+        /* 表单标签样式 */
+        .stForm label {{
+            font-size: var(--text-base) !important;
+            margin-bottom: 0.8rem !important;
+            display: block !important;
+        }}
+
+        /* 输入框聚焦效果 */
+        .stTextInput input:focus, 
+        .stSelectbox select:focus {{
+            border-color: var(--secondary) !important;
+            box-shadow: 0 0 0 3px rgba(63,135,166,0.2) !important;
+        }}
+    </style>
     """, unsafe_allow_html=True)
 def apply_custom_styles():
     st.markdown(f"""
