@@ -187,19 +187,6 @@ def render_global_header():
 def show_homepage():
     apply_global_styles()
     render_global_header()
-
-    # 全局头部
-    st.markdown(f"""
-    <div class="global-header">
-        <div class="header-container">
-            <img src="data:image/png;base64,{icon_base64}" 
-                 class="header-logo"
-                 alt="平台标志">
-            <h1 class="header-title">阻燃聚合物复合材料智能设计平台</h1>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
     # 主内容容器
     st.markdown("""
     <style>
