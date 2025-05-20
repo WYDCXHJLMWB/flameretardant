@@ -813,13 +813,14 @@ if st.session_state.logged_in:
         if sub_page == "添加剂推荐":
             st.subheader("🧪 PVC添加剂智能推荐")
             predictor = Predictor("scaler_fold_1.pkl", "svc_fold_1.pkl")
+            
             with st.expander("点击查看参考样本"):
                 st.markdown("""
                 ### 参考样本
                 以下是一些参考样本，展示了不同的输入数据及对应的推荐添加剂类型：
                 """)
                 
-                    # 参考样本数据
+                # 参考样本数据
                 sample_data = [
                     ["样本1", "无添加剂", 
                      {"Sn%": 19.2, "添加比例": 0, "一甲%": 32, "黄度值_3min": 5.36, "黄度值_6min": 6.29, "黄度值_9min": 7.57, "黄度值_12min": 8.57, "黄度值_15min": 10.26, "黄度值_18min": 13.21, "黄度值_21min": 16.54, "黄度值_24min": 27.47}],
@@ -828,7 +829,7 @@ if st.session_state.logged_in:
                     ["样本3", "EA15（市售液体钙锌稳定剂）", 
                      {"Sn%": 19, "添加比例": 1.041666667, "一甲%": 31.88, "黄度值_3min": 5.24, "黄度值_6min": 6.17, "黄度值_9min": 7.11, "黄度值_12min": 8.95, "黄度值_15min": 10.33, "黄度值_18min": 13.21, "黄度值_21min": 17.48, "黄度值_24min": 28.08}]
                 ]
-    
+                
                 # 为每个样本创建一个独立的表格
                 for sample in sample_data:
                     sample_name, additive, features = sample
@@ -841,7 +842,8 @@ if st.session_state.logged_in:
                     # 转换字典为 DataFrame
                     df_sample = pd.DataFrame(list(features.items()), columns=["特征", "值"])
                     st.table(df_sample)  # 显示为表格形式
-    # 修改黄度值输入为独立输入
+                    
+            # 修改黄度值输入为独立输入
             with st.form("additive_form"):
                 st.markdown("### 基础参数")
                 col_static = st.columns(3)
@@ -939,19 +941,11 @@ if st.session_state.logged_in:
                     st.success(f"**推荐添加剂类型**  \n{additive_name}")
                     st.metric("建议添加量", 
                              f"{additive_amount:.2f}%",
-                             delta="无添加" if prediction == 1 else None)
+                             delta="无添加" if prediction == 1 else "")
+            
                 with col2:
-                    st.markdown("**完整配方表（基于PVC 100份）**")
-                    st.dataframe(styled_df,
-                                 use_container_width=True,
-                                 height=280,
-                                 column_config={
-                                     "材料名称": "材料名称",
-                                     "含量": st.column_config.NumberColumn(
-                                         "含量",
-                                         format="%.2f"
-                                     )
-                                 })
+                    st.table(styled_df)
+
     
     
     
