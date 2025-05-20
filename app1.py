@@ -915,36 +915,25 @@ if st.session_state.logged_in:
                 additive_name = result_map[prediction]
             
                 # 构建配方表
+                # 构建配方表
                 formula_data = [
                     ["PVC份数", 100.00],
                     ["加工助剂ACR份数", 1.00],
                     ["外滑剂70S份数", 0.35],
                     ["MBS份数", 5.00],
                     ["316A份数", 0.20],
-                    ["稳定剂份数", 1.00]
+                    # 将稳定剂拆分为一甲、锡和添加剂的份数（百分比转换为小数）
+                    ["一甲含量（份）", yijia_percent / 100],
+                    ["锡含量（份）", sn_percent / 100]
                 ]
-            
+                
                 if prediction != 1:
-                    formula_data.append([f"{additive_name}含量（wt%）", additive_amount])
-                else:
-                    formula_data.append([additive_name, additive_amount])
-            
+                    # 添加添加剂份数（添加比例转换为小数）
+                    formula_data.append([f"{additive_name}（份）", add_ratio / 100])
+                
                 # 创建格式化表格
                 df = pd.DataFrame(formula_data, columns=["材料名称", "含量"])
-                styled_df = df.style.format({"含量": "{:.2f}"})\
-                                      .hide(axis="index")\
-                                      .set_properties(**{'text-align': 'left'})
-            
-                # 展示推荐结果
-                col1, col2 = st.columns([1, 2])
-                with col1:
-                    st.success(f"**推荐添加剂类型**  \n{additive_name}")
-                    st.metric("建议添加量", 
-                             f"{additive_amount:.2f}%",
-                             delta="无添加" if prediction == 1 else "")
-            
-                with col2:
-                    st.table(styled_df)
+                styled_df = df.style.format({"含量": "{:.4f}"})  # 显示四位小数提高精度
 
     
     
