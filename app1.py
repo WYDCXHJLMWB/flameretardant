@@ -807,6 +807,12 @@ if st.session_state.logged_in:
 
 
     
+    elif page == "配方建议":
+        apply_global_styles()
+        render_global_header()
+        if sub_page == "配方优化":
+    
+        
         elif sub_page == "添加剂推荐":
             st.subheader("🧪 PVC添加剂智能推荐")
             predictor = Predictor("scaler_fold_1.pkl", "svc_fold_1.pkl")
