@@ -807,20 +807,16 @@ if st.session_state.logged_in:
 
 
     
-    elif page == "配方建议":
-        apply_global_styles()
-        render_global_header()
-        if sub_page == "添加剂推荐":
+        elif sub_page == "添加剂推荐":
             st.subheader("🧪 PVC添加剂智能推荐")
             predictor = Predictor("scaler_fold_1.pkl", "svc_fold_1.pkl")
-            
             with st.expander("点击查看参考样本"):
                 st.markdown("""
                 ### 参考样本
                 以下是一些参考样本，展示了不同的输入数据及对应的推荐添加剂类型：
                 """)
                 
-                # 参考样本数据
+                    # 参考样本数据
                 sample_data = [
                     ["样本1", "无添加剂", 
                      {"Sn%": 19.2, "添加比例": 0, "一甲%": 32, "黄度值_3min": 5.36, "黄度值_6min": 6.29, "黄度值_9min": 7.57, "黄度值_12min": 8.57, "黄度值_15min": 10.26, "黄度值_18min": 13.21, "黄度值_21min": 16.54, "黄度值_24min": 27.47}],
@@ -829,7 +825,7 @@ if st.session_state.logged_in:
                     ["样本3", "EA15（市售液体钙锌稳定剂）", 
                      {"Sn%": 19, "添加比例": 1.041666667, "一甲%": 31.88, "黄度值_3min": 5.24, "黄度值_6min": 6.17, "黄度值_9min": 7.11, "黄度值_12min": 8.95, "黄度值_15min": 10.33, "黄度值_18min": 13.21, "黄度值_21min": 17.48, "黄度值_24min": 28.08}]
                 ]
-                
+    
                 # 为每个样本创建一个独立的表格
                 for sample in sample_data:
                     sample_name, additive, features = sample
@@ -842,8 +838,7 @@ if st.session_state.logged_in:
                     # 转换字典为 DataFrame
                     df_sample = pd.DataFrame(list(features.items()), columns=["特征", "值"])
                     st.table(df_sample)  # 显示为表格形式
-                    
-            # 修改黄度值输入为独立输入
+    # 修改黄度值输入为独立输入
             with st.form("additive_form"):
                 st.markdown("### 基础参数")
                 col_static = st.columns(3)
@@ -915,25 +910,45 @@ if st.session_state.logged_in:
                 additive_name = result_map[prediction]
             
                 # 构建配方表
-                # 构建配方表
                 formula_data = [
                     ["PVC份数", 100.00],
                     ["加工助剂ACR份数", 1.00],
                     ["外滑剂70S份数", 0.35],
                     ["MBS份数", 5.00],
                     ["316A份数", 0.20],
-                    # 将稳定剂拆分为一甲、锡和添加剂的份数（百分比转换为小数）
-                    ["一甲含量（份）", yijia_percent / 100],
-                    ["锡含量（份）", sn_percent / 100]
+                    ["稳定剂份数", 1.00]
                 ]
-                
+            
                 if prediction != 1:
-                    # 添加添加剂份数（添加比例转换为小数）
-                    formula_data.append([f"{additive_name}（份）", add_ratio / 100])
-                
+                    formula_data.append([f"{additive_name}含量（wt%）", additive_amount])
+                else:
+                    formula_data.append([additive_name, additive_amount])
+            
                 # 创建格式化表格
                 df = pd.DataFrame(formula_data, columns=["材料名称", "含量"])
-                styled_df = df.style.format({"含量": "{:.4f}"})  # 显示四位小数提高精度
+                styled_df = df.style.format({"含量": "{:.2f}"})\
+                                      .hide(axis="index")\
+                                      .set_properties(**{'text-align': 'left'})
+            
+                # 展示推荐结果
+                col1, col2 = st.columns([1, 2])
+                with col1:
+                    st.success(f"**推荐添加剂类型**  \n{additive_name}")
+                    st.metric("建议添加量", 
+                             f"{additive_amount:.2f}%",
+                             delta="无添加" if prediction == 1 else None)
+                with col2:
+                    st.markdown("**完整配方表（基于PVC 100份）**")
+                    st.dataframe(styled_df,
+                                 use_container_width=True,
+                                 height=280,
+                                 column_config={
+                                     "材料名称": "材料名称",
+                                     "含量": st.column_config.NumberColumn(
+                                         "含量",
+                                         format="%.2f"
+                                     )
+                                 })
 
     
     
