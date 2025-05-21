@@ -919,8 +919,7 @@ if st.session_state.logged_in:
                 # 动态确定添加量和显示名称
                 additive_amount = 0.0 if prediction == 1 else add_ratio
                 additive_name = result_map[prediction]
-            
- # ...（前面的代码保持不变）
+
 
                 # 构建配方表
                 formula_data = [
@@ -935,8 +934,8 @@ if st.session_state.logged_in:
                 
                 # 计算添加剂的份数
                 if prediction != 1:
-                    # 添加剂的份数 = 一甲的份数 * 模型预测的添加剂质量分数
-                    additive_amount = round(((yijia_percent / 100) * 1.00) * add_ratio, 4)  # 计算添加剂的份数
+                    # 添加剂的份数 = (一甲的份数 * 预测的添加剂质量分数) / 100
+                    additive_amount = round(((yijia_percent / 100) * 1.00 * add_ratio) / 100, 4)  # 计算添加剂的份数
                     formula_data.append([f"{additive_name}", additive_amount])  # 将添加剂的份数加入配方表
                 
                 # 创建格式化表格
