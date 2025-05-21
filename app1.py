@@ -857,6 +857,8 @@ if st.session_state.logged_in:
                         step=0.1,
                         help="推荐范围：0.5%~5%"
                     )
+                    st.write("")  # 占位符
+                    st.write("")  # 占位符
                 with col_static[1]:
                     sn_percent = st.number_input(
                         "Sn含量 (%)", 
@@ -866,6 +868,8 @@ if st.session_state.logged_in:
                         step=0.1,
                         help="锡含量范围：0%~100%"
                     )
+                    st.write("")  # 占位符
+                    st.write("")  # 占位符
                 with col_static[2]:
                     yijia_percent = st.number_input(
                         "一甲含量 (%)",
@@ -875,6 +879,8 @@ if st.session_state.logged_in:
                         step=0.1,
                         help="一甲胺含量范围：15.1%~32%"
                     )
+                    st.write("")  # 占位符
+                    st.write("")  # 占位符
         
                 # 黄度值三栏布局（与基础参数保持相同样式）
                 st.markdown("### 黄度值")
@@ -921,6 +927,8 @@ if st.session_state.logged_in:
                         value=11.40,
                         step=0.1
                     )
+                        # 添加空白占位符保持列高度一致
+                    st.write("")  # 占位符
         
                 # 第三列
                 with cols[2]:
