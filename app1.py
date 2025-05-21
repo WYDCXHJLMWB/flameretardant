@@ -846,6 +846,8 @@ if st.session_state.logged_in:
         # 修改黄度值输入为独立输入
             with st.form("additive_form"):
                 st.markdown("### 基础参数及黄度值输入")
+                
+                # 使用三栏布局
                 col1, col2, col3 = st.columns(3)
                 
                 with col1:
@@ -869,9 +871,9 @@ if st.session_state.logged_in:
                                                    step=0.1,
                                                    help="一甲胺含量范围15.1%~32%")
                 
-                # 继续黄度值输入
+                # 继续黄度值输入，使用三列布局
                 yellow_values = {}
-                col1, col2, col3, col4 = st.columns(4)
+                col1, col2, col3 = st.columns(3)
                 yellow_values["3min"] = st.number_input("3min 黄度值", min_value=0.0, max_value=100.0, value=5.29, step=0.1)
                 yellow_values["6min"] = st.number_input("6min 黄度值", min_value=yellow_values["3min"], max_value=100.0, value=6.83, step=0.1)
                 yellow_values["9min"] = st.number_input("9min 黄度值", min_value=yellow_values["6min"], max_value=100.0, value=8.00, step=0.1)
@@ -882,6 +884,8 @@ if st.session_state.logged_in:
                 yellow_values["24min"] = st.number_input("24min 黄度值", min_value=yellow_values["21min"], max_value=100.0, value=30.29, step=0.1)
                 
                 submit_btn = st.form_submit_button("生成推荐方案")
+                
+
                 
                 
 
