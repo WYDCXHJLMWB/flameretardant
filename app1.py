@@ -847,7 +847,8 @@ if st.session_state.logged_in:
             with st.form("additive_form"):
                 # 基础参数三栏布局
                 st.markdown("### 基础参数")
-                col_static = st.columns(3)
+                col_static = st.columns(3)  # 创建等宽三列
+                
                 with col_static[0]:
                     add_ratio = st.number_input(
                         "添加比例 (%)", 
@@ -857,8 +858,7 @@ if st.session_state.logged_in:
                         step=0.1,
                         help="推荐范围：0.5%~5%"
                     )
-                    st.write("")  # 占位符
-                    st.write("")  # 占位符
+                
                 with col_static[1]:
                     sn_percent = st.number_input(
                         "Sn含量 (%)", 
@@ -868,8 +868,7 @@ if st.session_state.logged_in:
                         step=0.1,
                         help="锡含量范围：0%~100%"
                     )
-                    st.write("")  # 占位符
-                    st.write("")  # 占位符
+                
                 with col_static[2]:
                     yijia_percent = st.number_input(
                         "一甲含量 (%)",
@@ -879,12 +878,10 @@ if st.session_state.logged_in:
                         step=0.1,
                         help="一甲胺含量范围：15.1%~32%"
                     )
-                    st.write("")  # 占位符
-                    st.write("")  # 占位符
         
                 # 黄度值三栏布局（与基础参数保持相同样式）
                 st.markdown("### 黄度值")
-                cols = st.columns(3)
+                cols = st.columns(2)
                 yellow_values = {}
                 
                 # 第一列
@@ -910,9 +907,6 @@ if st.session_state.logged_in:
                         value=8.00,
                         step=0.1
                     )
-        
-                # 第二列
-                with cols[1]:
                     yellow_values["12min"] = st.number_input(
                         "12min 黄度值",
                         min_value=yellow_values["9min"],
@@ -920,6 +914,9 @@ if st.session_state.logged_in:
                         value=9.32,
                         step=0.1
                     )
+        
+                # 第二列
+                with cols[1]:
                     yellow_values["15min"] = st.number_input(
                         "15min 黄度值",
                         min_value=yellow_values["12min"],
@@ -927,11 +924,6 @@ if st.session_state.logged_in:
                         value=11.40,
                         step=0.1
                     )
-                        # 添加空白占位符保持列高度一致
-                    st.write("")  # 占位符
-        
-                # 第三列
-                with cols[2]:
                     yellow_values["18min"] = st.number_input(
                         "18min 黄度值",
                         min_value=yellow_values["15min"],
