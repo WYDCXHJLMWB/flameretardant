@@ -812,8 +812,6 @@ if st.session_state.logged_in:
                     ["质量", "质量分数", "体积分数"],
                     key="unit_type"
                 )
-        
-            
             elif sub_page == "添加剂推荐":
                 st.subheader("🧪 PVC添加剂智能推荐")
                 predictor = Predictor("scaler_fold_1.pkl", "svc_fold_1.pkl")
