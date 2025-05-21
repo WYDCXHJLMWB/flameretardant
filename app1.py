@@ -803,10 +803,6 @@ if st.session_state.logged_in:
                     st.metric(label="TS预测值", value=f"{ts_pred:.2f} MPa")
 
     
-
-
-
-    
     elif page == "配方建议":
         apply_global_styles()
         render_global_header()
@@ -818,7 +814,7 @@ if st.session_state.logged_in:
             )
     
         
-         elif sub_page == "添加剂推荐":
+        elif sub_page == "添加剂推荐":
             st.subheader("🧪 PVC添加剂智能推荐")
             predictor = Predictor("scaler_fold_1.pkl", "svc_fold_1.pkl")
             
@@ -987,6 +983,7 @@ if st.session_state.logged_in:
                                          format="%.4f"
                                      )
                                  })
+    
 
 
     
