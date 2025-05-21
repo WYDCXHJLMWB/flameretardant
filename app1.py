@@ -845,45 +845,109 @@ if st.session_state.logged_in:
                     st.table(df_sample)  # 显示为表格形式
         # 修改黄度值输入为独立输入
             with st.form("additive_form"):
-                st.markdown("### 基础参数及黄度值输入")
-                
-                # 使用三栏布局
-                col1, col2, col3 = st.columns(3)
-                
-                with col1:
-                    add_ratio = st.number_input("添加比例 (%)", 
-                                              min_value=0.0,
-                                              max_value=100.0,
-                                              value=3.64,
-                                              step=0.1)
-                with col2:
-                    sn_percent = st.number_input("Sn含量 (%)", 
-                                               min_value=0.0, 
-                                               max_value=100.0,
-                                               value=18.5,
-                                               step=0.1,
-                                               help="锡含量范围0%~100%")
-                with col3:
-                    yijia_percent = st.number_input("一甲含量 (%)",
-                                                   min_value=0.0,
-                                                   max_value=100.0,
-                                                   value=31.05,
-                                                   step=0.1,
-                                                   help="一甲胺含量范围15.1%~32%")
-                
-                # 继续黄度值输入，使用三列布局
+                # 基础参数三栏布局
+                st.markdown("### 基础参数")
+                col_static = st.columns(3)
+                with col_static[0]:
+                    add_ratio = st.number_input(
+                        "添加比例 (%)", 
+                        min_value=0.0,
+                        max_value=100.0,
+                        value=3.64,
+                        step=0.1,
+                        help="推荐范围：0.5%~5%"
+                    )
+                with col_static[1]:
+                    sn_percent = st.number_input(
+                        "Sn含量 (%)", 
+                        min_value=0.0, 
+                        max_value=100.0,
+                        value=18.5,
+                        step=0.1,
+                        help="锡含量范围：0%~100%"
+                    )
+                with col_static[2]:
+                    yijia_percent = st.number_input(
+                        "一甲含量 (%)",
+                        min_value=0.0,
+                        max_value=100.0,
+                        value=31.05,
+                        step=0.1,
+                        help="一甲胺含量范围：15.1%~32%"
+                    )
+        
+                # 黄度值三栏布局（与基础参数保持相同样式）
+                st.markdown("### 黄度值")
+                cols = st.columns(3)
                 yellow_values = {}
-                col1, col2, col3 = st.columns(3)
-                yellow_values["3min"] = st.number_input("3min 黄度值", min_value=0.0, max_value=100.0, value=5.29, step=0.1)
-                yellow_values["6min"] = st.number_input("6min 黄度值", min_value=yellow_values["3min"], max_value=100.0, value=6.83, step=0.1)
-                yellow_values["9min"] = st.number_input("9min 黄度值", min_value=yellow_values["6min"], max_value=100.0, value=8.00, step=0.1)
-                yellow_values["12min"] = st.number_input("12min 黄度值", min_value=yellow_values["9min"], max_value=100.0, value=9.32, step=0.1)
-                yellow_values["15min"] = st.number_input("15min 黄度值", min_value=yellow_values["12min"], max_value=100.0, value=11.40, step=0.1)
-                yellow_values["18min"] = st.number_input("18min 黄度值", min_value=yellow_values["15min"], max_value=100.0, value=14.12, step=0.1)
-                yellow_values["21min"] = st.number_input("21min 黄度值", min_value=yellow_values["18min"], max_value=100.0, value=18.37, step=0.1)
-                yellow_values["24min"] = st.number_input("24min 黄度值", min_value=yellow_values["21min"], max_value=100.0, value=30.29, step=0.1)
                 
-                submit_btn = st.form_submit_button("生成推荐方案")
+                # 第一列
+                with cols[0]:
+                    yellow_values["3min"] = st.number_input(
+                        "3min 黄度值",
+                        min_value=0.0,
+                        max_value=100.0,
+                        value=5.29,
+                        step=0.1
+                    )
+                    yellow_values["6min"] = st.number_input(
+                        "6min 黄度值",
+                        min_value=yellow_values["3min"],
+                        max_value=100.0,
+                        value=6.83,
+                        step=0.1
+                    )
+                    yellow_values["9min"] = st.number_input(
+                        "9min 黄度值",
+                        min_value=yellow_values["6min"],
+                        max_value=100.0,
+                        value=8.00,
+                        step=0.1
+                    )
+        
+                # 第二列
+                with cols[1]:
+                    yellow_values["12min"] = st.number_input(
+                        "12min 黄度值",
+                        min_value=yellow_values["9min"],
+                        max_value=100.0,
+                        value=9.32,
+                        step=0.1
+                    )
+                    yellow_values["15min"] = st.number_input(
+                        "15min 黄度值",
+                        min_value=yellow_values["12min"],
+                        max_value=100.0,
+                        value=11.40,
+                        step=0.1
+                    )
+        
+                # 第三列
+                with cols[2]:
+                    yellow_values["18min"] = st.number_input(
+                        "18min 黄度值",
+                        min_value=yellow_values["15min"],
+                        max_value=100.0,
+                        value=14.12,
+                        step=0.1
+                    )
+                    yellow_values["21min"] = st.number_input(
+                        "21min 黄度值",
+                        min_value=yellow_values["18min"],
+                        max_value=100.0,
+                        value=18.37,
+                        step=0.1
+                    )
+                    yellow_values["24min"] = st.number_input(
+                        "24min 黄度值",
+                        min_value=yellow_values["21min"],
+                        max_value=100.0,
+                        value=30.29,
+                        step=0.1
+                    )
+        
+                submit_btn = st.form_submit_button("🚀 生成推荐方案")
+                
                 
 
                 
