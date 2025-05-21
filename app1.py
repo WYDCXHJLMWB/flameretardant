@@ -851,8 +851,8 @@ if st.session_state.logged_in:
             with st.form("additive_form"):
                 st.markdown("### 基础参数")
                 
-                # 使用三栏布局
-                col_static1, col_static2, col_static3 = st.columns(3)
+                # 使用两栏布局
+                col_static1, col_static2 = st.columns(2)
                 with col_static1:
                     add_ratio = st.number_input("添加比例 (%)", 
                                               min_value=0.0,
@@ -866,49 +866,31 @@ if st.session_state.logged_in:
                                                value=18.5,
                                                step=0.1,
                                                help="锡含量范围0%~100%")
-                with col_static3:
-                    pass  # 空列可以用于布局调整（可选）
                 
                 st.markdown("### 一甲含量")
-                col_static4, col_static5, col_static6 = st.columns(3)
-                with col_static4:
+                col_static3, col_static4 = st.columns(2)
+                with col_static3:
                     yijia_percent = st.number_input("一甲含量 (%)",
                                                    min_value=0.0,
                                                    max_value=100.0,
                                                    value=31.05,
                                                    step=0.1,
                                                    help="一甲胺含量范围15.1%~32%")
-                with col_static5:
-                    pass  # 空列可以用于布局调整（可选）
-                with col_static6:
+                with col_static4:
                     pass  # 空列可以用于布局调整（可选）
         
                 st.markdown("### 黄度值")
-                # 使用三栏布局
+                # 使用四栏布局
                 yellow_values = {}
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    yellow_values["3min"] = st.number_input("3min 黄度值", min_value=0.0, max_value=100.0, value=5.29, step=0.1)
-                with col2:
-                    yellow_values["6min"] = st.number_input("6min 黄度值", min_value=yellow_values["3min"], max_value=100.0, value=6.83, step=0.1)
-                with col3:
-                    yellow_values["9min"] = st.number_input("9min 黄度值", min_value=yellow_values["6min"], max_value=100.0, value=8.00, step=0.1)
-        
-                col4, col5, col6 = st.columns(3)
-                with col4:
-                    yellow_values["12min"] = st.number_input("12min 黄度值", min_value=yellow_values["9min"], max_value=100.0, value=9.32, step=0.1)
-                with col5:
-                    yellow_values["15min"] = st.number_input("15min 黄度值", min_value=yellow_values["12min"], max_value=100.0, value=11.40, step=0.1)
-                with col6:
-                    yellow_values["18min"] = st.number_input("18min 黄度值", min_value=yellow_values["15min"], max_value=100.0, value=14.12, step=0.1)
-        
-                col7, col8, col9 = st.columns(3)
-                with col7:
-                    yellow_values["21min"] = st.number_input("21min 黄度值", min_value=yellow_values["18min"], max_value=100.0, value=18.37, step=0.1)
-                with col8:
-                    yellow_values["24min"] = st.number_input("24min 黄度值", min_value=yellow_values["21min"], max_value=100.0, value=30.29, step=0.1)
-                with col9:
-                    pass  # 空列可以用于布局调整（可选）
+                col1, col2, col3, col4 = st.columns(4)
+                yellow_values["3min"] = st.number_input("3min 黄度值", min_value=0.0, max_value=100.0, value=5.29, step=0.1)
+                yellow_values["6min"] = st.number_input("6min 黄度值", min_value=yellow_values["3min"], max_value=100.0, value=6.83, step=0.1)
+                yellow_values["9min"] = st.number_input("9min 黄度值", min_value=yellow_values["6min"], max_value=100.0, value=8.00, step=0.1)
+                yellow_values["12min"] = st.number_input("12min 黄度值", min_value=yellow_values["9min"], max_value=100.0, value=9.32, step=0.1)
+                yellow_values["15min"] = st.number_input("15min 黄度值", min_value=yellow_values["12min"], max_value=100.0, value=11.40, step=0.1)
+                yellow_values["18min"] = st.number_input("18min 黄度值", min_value=yellow_values["15min"], max_value=100.0, value=14.12, step=0.1)
+                yellow_values["21min"] = st.number_input("21min 黄度值", min_value=yellow_values["18min"], max_value=100.0, value=18.37, step=0.1)
+                yellow_values["24min"] = st.number_input("24min 黄度值", min_value=yellow_values["21min"], max_value=100.0, value=30.29, step=0.1)
             
                 submit_btn = st.form_submit_button("生成推荐方案")
             
@@ -952,11 +934,15 @@ if st.session_state.logged_in:
                     ["外滑剂70S", 0.35],
                     ["MBS", 5.00],
                     ["316A", 0.20],
-                    ["稳定剂", 2.80]
+                    ["稳定剂（锡）", round((sn_percent / 100) * 1.00, 4)],  # 锡在稳定剂中的份数
+                    ["稳定剂（一甲）", round((yijia_percent / 100) * 1.00, 4)]  # 一甲在稳定剂中的份数
                 ]
                 
-                # 添加推荐的添加剂
-                formula_data.append([additive_name, additive_amount])  # 将添加剂的份数加入配方表
+                # 计算添加剂的份数
+                if prediction != 1:
+                    # 添加剂的份数 = (一甲的份数 * 预测的添加剂质量分数) / 100
+                    additive_amount = round(((yijia_percent / 100) * 1.00 * add_ratio) / 100, 4)  # 计算添加剂的份数
+                    formula_data.append([f"{additive_name}", additive_amount])  # 将添加剂的份数加入配方表
                 
                 # 创建格式化表格
                 df = pd.DataFrame(formula_data, columns=["材料名称", "份数（基于PVC 100份）"])
@@ -983,7 +969,7 @@ if st.session_state.logged_in:
                                          format="%.4f"
                                      )
                                  })
-    
+
 
 
     
