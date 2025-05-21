@@ -923,31 +923,35 @@ if st.session_state.logged_in:
  # ...（前面的代码保持不变）
 
                 # 构建配方表
+
                 formula_data = [
                     ["PVC", 100.00],
                     ["加工助剂ACR", 1.00],
                     ["外滑剂70S", 0.35],
                     ["MBS", 5.00],
                     ["316A", 0.20],
-                    ["稳定剂（锡）", round((sn_percent/100)*1.00, 4)],  # 锡在稳定剂中的份数
-                    ["稳定剂（一甲）", round((yijia_percent/100)*1.00, 4)]  # 一甲在稳定剂中的份数
+                    ["稳定剂（锡）", round((sn_percent / 100) * 1.00, 4)],  # 锡在稳定剂中的份数
+                    ["稳定剂（一甲）", round((yijia_percent / 100) * 1.00, 4)]  # 一甲在稳定剂中的份数
                 ]
-
+                
+                # 计算添加剂的份数
                 if prediction != 1:
-                    formula_data.append([f"{additive_name}", round(add_ratio, 2)])  # 添加剂量作为独立项
-
+                    # 预测的添加剂质量分数是它在一甲中的质量分数，计算添加剂的份数
+                    additive_amount = round(((yijia_percent / 100) * 1.00 * add_ratio) / 100, 4)  # 计算添加剂的份数
+                    formula_data.append([f"{additive_name}", additive_amount])  # 将添加剂的份数加入配方表
+                
                 # 创建格式化表格
                 df = pd.DataFrame(formula_data, columns=["材料名称", "份数（基于PVC 100份）"])
                 styled_df = df.style.format({"份数（基于PVC 100份）": "{:.4f}"})\
-                                   .hide(axis="index")\
-                                   .set_properties(**{'text-align': 'left'})
-
+                                       .hide(axis="index")\
+                                       .set_properties(**{'text-align': 'left'})
+                
                 # 展示推荐结果
                 col1, col2 = st.columns([1, 2])
                 with col1:
                     st.success(f"**推荐添加剂类型**  \n{additive_name}")
                     st.metric("建议添加量", 
-                             f"{add_ratio:.2f} 份" if prediction != 1 else "0.00 份",
+                             f"{additive_amount:.2f} 份" if prediction != 1 else "0.00 份",
                              delta="无添加" if prediction == 1 else None)
                 with col2:
                     st.markdown("**完整配方表（基于PVC 100份）**")
@@ -961,7 +965,7 @@ if st.session_state.logged_in:
                                          format="%.4f"
                                      )
                                  })
-    
+
     
     
     # 添加页脚
