@@ -845,34 +845,35 @@ if st.session_state.logged_in:
                     st.table(df_sample)  # 显示为表格形式
         # 修改黄度值输入为独立输入
             with st.form("additive_form"):
-                st.markdown("### 基础参数")
-                col_static = st.columns(3)
-                with col_static[0]:
+                st.markdown("### 基础参数及黄度值输入")
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
                     add_ratio = st.number_input("添加比例 (%)", 
-                                                min_value=0.0,
-                                                max_value=100.0,
-                                                value=3.64,
-                                                step=0.1)
-                with col_static[1]:
+                                              min_value=0.0,
+                                              max_value=100.0,
+                                              value=3.64,
+                                              step=0.1)
+                with col2:
                     sn_percent = st.number_input("Sn含量 (%)", 
-                                                min_value=0.0, 
-                                                max_value=100.0,
-                                                value=18.5,
-                                                step=0.1,
-                                                help="锡含量范围0%~100%")
-                with col_static[2]:
+                                               min_value=0.0, 
+                                               max_value=100.0,
+                                               value=18.5,
+                                               step=0.1,
+                                               help="锡含量范围0%~100%")
+                with col3:
                     yijia_percent = st.number_input("一甲含量 (%)",
-                                                    min_value=0.0,
-                                                    max_value=100.0,
-                                                    value=31.05,
-                                                    step=0.1,
-                                                    help="一甲胺含量范围15.1%~32%")
-                    
-                st.markdown("### 黄度值")
+                                                   min_value=0.0,
+                                                   max_value=100.0,
+                                                   value=31.05,
+                                                   step=0.1,
+                                                   help="一甲胺含量范围15.1%~32%")
+                
+                # 继续黄度值输入
                 yellow_values = {}
                 col1, col2, col3, col4 = st.columns(4)
                 yellow_values["3min"] = st.number_input("3min 黄度值", min_value=0.0, max_value=100.0, value=5.29, step=0.1)
-                yellow_values["6min"] = st.number_input("6min 黄度值", min_value=yellow_values["3min"], max_value=100.0, value= 6.83, step=0.1)
+                yellow_values["6min"] = st.number_input("6min 黄度值", min_value=yellow_values["3min"], max_value=100.0, value=6.83, step=0.1)
                 yellow_values["9min"] = st.number_input("9min 黄度值", min_value=yellow_values["6min"], max_value=100.0, value=8.00, step=0.1)
                 yellow_values["12min"] = st.number_input("12min 黄度值", min_value=yellow_values["9min"], max_value=100.0, value=9.32, step=0.1)
                 yellow_values["15min"] = st.number_input("15min 黄度值", min_value=yellow_values["12min"], max_value=100.0, value=11.40, step=0.1)
@@ -882,7 +883,8 @@ if st.session_state.logged_in:
                 
                 submit_btn = st.form_submit_button("生成推荐方案")
                 
-                # 如果提交了表单，进行数据验证和预测
+                
+
             if submit_btn:
                 # 验证比例是否符合要求：每个黄度值输入必须满足递增条件
                 if any(yellow_values[t] > yellow_values[next_time] for t, next_time in zip(yellow_values.keys(), list(yellow_values.keys())[1:])):
