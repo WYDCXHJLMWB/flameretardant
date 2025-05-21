@@ -920,33 +920,34 @@ if st.session_state.logged_in:
                 additive_amount = 0.0 if prediction == 1 else add_ratio
                 additive_name = result_map[prediction]
             
+ # ...（前面的代码保持不变）
+
                 # 构建配方表
                 formula_data = [
-                    ["PVC份数", 100.00],
-                    ["加工助剂ACR份数", 1.00],
-                    ["外滑剂70S份数", 0.35],
-                    ["MBS份数", 5.00],
-                    ["316A份数", 0.20],
-                    ["稳定剂份数", 1.00]
+                    ["PVC", 100.00],
+                    ["加工助剂ACR", 1.00],
+                    ["外滑剂70S", 0.35],
+                    ["MBS", 5.00],
+                    ["316A", 0.20],
+                    ["稳定剂（锡）", round((sn_percent/100)*1.00, 4)],  # 锡在稳定剂中的份数
+                    ["稳定剂（一甲）", round((yijia_percent/100)*1.00, 4)]  # 一甲在稳定剂中的份数
                 ]
-            
+
                 if prediction != 1:
-                    formula_data.append([f"{additive_name}含量（wt%）", additive_amount])
-                else:
-                    formula_data.append([additive_name, additive_amount])
-            
+                    formula_data.append([f"{additive_name}", round(add_ratio, 2)])  # 添加剂量作为独立项
+
                 # 创建格式化表格
-                df = pd.DataFrame(formula_data, columns=["材料名称", "含量"])
-                styled_df = df.style.format({"含量": "{:.2f}"})\
-                                      .hide(axis="index")\
-                                      .set_properties(**{'text-align': 'left'})
-            
+                df = pd.DataFrame(formula_data, columns=["材料名称", "份数（基于PVC 100份）"])
+                styled_df = df.style.format({"份数（基于PVC 100份）": "{:.4f}"})\
+                                   .hide(axis="index")\
+                                   .set_properties(**{'text-align': 'left'})
+
                 # 展示推荐结果
                 col1, col2 = st.columns([1, 2])
                 with col1:
                     st.success(f"**推荐添加剂类型**  \n{additive_name}")
                     st.metric("建议添加量", 
-                             f"{additive_amount:.2f}%",
+                             f"{add_ratio:.2f} 份" if prediction != 1 else "0.00 份",
                              delta="无添加" if prediction == 1 else None)
                 with col2:
                     st.markdown("**完整配方表（基于PVC 100份）**")
@@ -955,12 +956,11 @@ if st.session_state.logged_in:
                                  height=280,
                                  column_config={
                                      "材料名称": "材料名称",
-                                     "含量": st.column_config.NumberColumn(
-                                         "含量",
-                                         format="%.2f"
+                                     "份数（基于PVC 100份）": st.column_config.NumberColumn(
+                                         "份数",
+                                         format="%.4f"
                                      )
                                  })
-    
     
     
     
