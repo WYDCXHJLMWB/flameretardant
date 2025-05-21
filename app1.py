@@ -882,7 +882,7 @@ if st.session_state.logged_in:
                 yellow_values = {}
                 
                 # 第一列
-                with cols[0]:
+                with cols[1]:
                     yellow_values["3min"] = st.number_input(
                         "3min 黄度值",
                         min_value=0.0,
@@ -906,7 +906,7 @@ if st.session_state.logged_in:
                     )
         
                 # 第二列
-                with cols[1]:
+                with cols[2]:
                     yellow_values["12min"] = st.number_input(
                         "12min 黄度值",
                         min_value=yellow_values["9min"],
@@ -923,7 +923,7 @@ if st.session_state.logged_in:
                     )
         
                 # 第三列
-                with cols[2]:
+                with cols[3]:
                     yellow_values["18min"] = st.number_input(
                         "18min 黄度值",
                         min_value=yellow_values["15min"],
