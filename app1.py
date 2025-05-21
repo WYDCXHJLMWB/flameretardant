@@ -818,16 +818,17 @@ if st.session_state.logged_in:
             )
     
         
-        elif sub_page == "添加剂推荐":
+         elif sub_page == "添加剂推荐":
             st.subheader("🧪 PVC添加剂智能推荐")
             predictor = Predictor("scaler_fold_1.pkl", "svc_fold_1.pkl")
+            
             with st.expander("点击查看参考样本"):
                 st.markdown("""
                 ### 参考样本
                 以下是一些参考样本，展示了不同的输入数据及对应的推荐添加剂类型：
                 """)
                 
-                    # 参考样本数据
+                # 参考样本数据
                 sample_data = [
                     ["样本1", "无添加剂", 
                      {"Sn%": 19.2, "添加比例": 0, "一甲%": 32, "黄度值_3min": 5.36, "黄度值_6min": 6.29, "黄度值_9min": 7.57, "黄度值_12min": 8.57, "黄度值_15min": 10.26, "黄度值_18min": 13.21, "黄度值_21min": 16.54, "黄度值_24min": 27.47}],
@@ -836,7 +837,7 @@ if st.session_state.logged_in:
                     ["样本3", "EA15（市售液体钙锌稳定剂）", 
                      {"Sn%": 19, "添加比例": 1.041666667, "一甲%": 31.88, "黄度值_3min": 5.24, "黄度值_6min": 6.17, "黄度值_9min": 7.11, "黄度值_12min": 8.95, "黄度值_15min": 10.33, "黄度值_18min": 13.21, "黄度值_21min": 17.48, "黄度值_24min": 28.08}]
                 ]
-    
+            
                 # 为每个样本创建一个独立的表格
                 for sample in sample_data:
                     sample_name, additive, features = sample
@@ -849,40 +850,57 @@ if st.session_state.logged_in:
                     # 转换字典为 DataFrame
                     df_sample = pd.DataFrame(list(features.items()), columns=["特征", "值"])
                     st.table(df_sample)  # 显示为表格形式
-    # 修改黄度值输入为独立输入
+        
+            # 修改黄度值输入为独立输入
             with st.form("additive_form"):
                 st.markdown("### 基础参数")
-                col_static = st.columns(3)
-                with col_static[0]:
+                
+                # 使用三栏布局
+                col_static1, col_static2, col_static3 = st.columns(3)
+                with col_static1:
                     add_ratio = st.number_input("添加比例 (%)", 
                                               min_value=0.0,
                                               max_value=100.0,
                                               value=3.64,
                                               step=0.1)
-                with col_static[1]:
+                with col_static2:
                     sn_percent = st.number_input("Sn含量 (%)", 
                                                min_value=0.0, 
                                                max_value=100.0,
                                                value=18.5,
                                                step=0.1,
                                                help="锡含量范围0%~100%")
-                with col_static[2]:
+                with col_static3:
+                    pass  # 空列可以用于布局调整（可选）
+                
+                st.markdown("### 一甲含量")
+                col_static4, col_static5, col_static6 = st.columns(3)
+                with col_static4:
                     yijia_percent = st.number_input("一甲含量 (%)",
                                                    min_value=0.0,
                                                    max_value=100.0,
                                                    value=31.05,
                                                    step=0.1,
                                                    help="一甲胺含量范围15.1%~32%")
-                
+                with col_static5:
+                    pass  # 空列可以用于布局调整（可选）
+                with col_static6:
+                    pass  # 空列可以用于布局调整（可选）
+        
                 st.markdown("### 黄度值")
+                # 使用三栏布局
                 yellow_values = {}
-                col1, col2, col3, col4 = st.columns(4)
+                col1, col2, col3 = st.columns(3)
                 yellow_values["3min"] = st.number_input("3min 黄度值", min_value=0.0, max_value=100.0, value=5.29, step=0.1)
-                yellow_values["6min"] = st.number_input("6min 黄度值", min_value=yellow_values["3min"], max_value=100.0, value= 6.83, step=0.1)
+                yellow_values["6min"] = st.number_input("6min 黄度值", min_value=yellow_values["3min"], max_value=100.0, value=6.83, step=0.1)
                 yellow_values["9min"] = st.number_input("9min 黄度值", min_value=yellow_values["6min"], max_value=100.0, value=8.00, step=0.1)
+        
+                col4, col5, col6 = st.columns(3)
                 yellow_values["12min"] = st.number_input("12min 黄度值", min_value=yellow_values["9min"], max_value=100.0, value=9.32, step=0.1)
                 yellow_values["15min"] = st.number_input("15min 黄度值", min_value=yellow_values["12min"], max_value=100.0, value=11.40, step=0.1)
                 yellow_values["18min"] = st.number_input("18min 黄度值", min_value=yellow_values["15min"], max_value=100.0, value=14.12, step=0.1)
+        
+                col7, col8, col9 = st.columns(3)
                 yellow_values["21min"] = st.number_input("21min 黄度值", min_value=yellow_values["18min"], max_value=100.0, value=18.37, step=0.1)
                 yellow_values["24min"] = st.number_input("24min 黄度值", min_value=yellow_values["21min"], max_value=100.0, value=30.29, step=0.1)
             
@@ -919,8 +937,8 @@ if st.session_state.logged_in:
                 # 动态确定添加量和显示名称
                 additive_amount = 0.0 if prediction == 1 else add_ratio
                 additive_name = result_map[prediction]
-
-
+        
+        
                 # 构建配方表
                 formula_data = [
                     ["PVC", 100.00],
@@ -934,15 +952,13 @@ if st.session_state.logged_in:
                 
                 # 计算添加剂的份数
                 if prediction != 1:
-                    # 添加剂的份数 = (一甲的份数 * 预测的添加剂质量分数) / 100
-                    additive_amount = round(((yijia_percent / 100) * 1.00 * add_ratio) / 100, 4)  # 计算添加剂的份数
                     formula_data.append([f"{additive_name}", additive_amount])  # 将添加剂的份数加入配方表
                 
                 # 创建格式化表格
                 df = pd.DataFrame(formula_data, columns=["材料名称", "份数（基于PVC 100份）"])
                 styled_df = df.style.format({"份数（基于PVC 100份）": "{:.4f}"})\
-                                       .hide(axis="index")\
-                                       .set_properties(**{'text-align': 'left'})
+                                           .hide(axis="index")\
+                                           .set_properties(**{'text-align': 'left'})
                 
                 # 展示推荐结果
                 col1, col2 = st.columns([1, 2])
@@ -963,6 +979,7 @@ if st.session_state.logged_in:
                                          format="%.4f"
                                      )
                                  })
+        
 
     
     
